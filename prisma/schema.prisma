@@ -1,0 +1,194 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  walletAddress String    @unique
+  username      String    @unique
+  fullName      String?
+  referralCode  String    @unique @default(cuid())
+  referredBy    String?
+  upliner       User?     @relation("ReferralTree", fields: [referredBy], references: [id])
+  downliners    User[]    @relation("ReferralTree")
+
+  // Matrix positioning
+  matrixPosition Int?     // 1-15 positions in matrix
+  matrixLevel    Int?     @default(0)
+  matrixFilled   Boolean  @default(false)
+
+  // Role
+  role          String   @default("user") // user, admin
+
+  // Investment tracking
+  totalInvested    Float @default(0)
+  totalEarnings    Float @default(0)
+  availableBalance Float @default(0)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  lastLogin DateTime?
+
+  // Relations
+  investments        Investment[]
+  commissionsEarned  Commission[] @relation("CommissionEarner")
+  commissionsPaid    Commission[] @relation("CommissionReceiver")
+  walletTransactions WalletTransaction[]
+  withdrawalRequests WithdrawalRequest[]
+
+  @@map("users")
+}
+
+model Pool {
+  id                String   @id @default(cuid())
+  name              String
+  description       String?
+  minimumInvestment Float  @default(0)
+  maximumInvestment Float?
+  dailyReturn       Float  // Percentage
+  durationDays      Int      @default(30) // Investment duration
+  isActive          Boolean  @default(true)
+  totalCapacity     Float?
+  totalInvested     Float  @default(0)
+
+  // Commission tiers for this pool
+  level1Commission  Float  @default(10) // 10%
+  level2Commission  Float  @default(5)  // 5%
+  level3Commission  Float  @default(3)  // 3%
+
+  // Bonus structure: Pool 1 = 100% bonus, Pools 2-15 = 30% bonus
+  bonusPercent      Float  @default(30) // Bonus percentage distributed to upline matrix
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  investments Investment[]
+
+  @@map("pools")
+}
+
+model Investment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  poolId    String
+  pool      Pool     @relation(fields: [poolId], references: [id])
+  amount    Float 
+  startDate DateTime @default(now())
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+  status    String   @default("active") // active, completed, withdrawn
+
+  // Daily returns tracking
+  lastClaimDate DateTime?
+  totalClaimed   Float @default(0)
+
+  // Relations
+  commissions Commission[] @relation("InvestmentCommissions")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, poolId])
+  @@map("investments")
+}
+
+model Commission {
+  id          String   @id @default(cuid())
+  fromUserId  String
+  fromUser    User     @relation("CommissionEarner", fields: [fromUserId], references: [id])
+  toUserId    String
+  toUser      User     @relation("CommissionReceiver", fields: [toUserId], references: [id])
+  investmentId String?
+  investment  Investment? @relation("InvestmentCommissions", fields: [investmentId], references: [id])
+  amount      Float
+  level       Int      // 1, 2, 3 - referral depth
+  percentage  Float   @default(0)
+  status      String   @default("pending") // pending, processed, paid
+  description String?
+
+  createdAt DateTime @default(now())
+  processedAt DateTime?
+
+  @@map("commissions")
+}
+
+model WalletTransaction {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // deposit, withdrawal, commission, referral_bonus
+  amount    Float 
+  txHash    String?  @unique // Blockchain transaction hash
+  status    String   @default("pending") // pending, confirmed, failed
+  description String?
+
+  createdAt DateTime @default(now())
+
+  @@map("wallet_transactions")
+}
+
+model WithdrawalRequest {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Float   @default(0)
+  walletAddress String
+  status    String   @default("pending") // pending, approved, rejected, completed
+  txHash    String?
+  notes     String?
+
+  createdAt DateTime @default(now())
+  processedAt DateTime?
+
+  @@map("withdrawal_requests")
+}
+
+// BFS Matrix Slot — each user has up to 15 slots filled by their downline
+model MatrixSlot {
+  id           String   @id @default(cuid())
+  ownerId      String   // The user who owns this matrix
+  position     Int      // 1-15 position in the matrix
+  filledById   String?  // User who filled this slot
+  filledAt     DateTime?
+  isFilled     Boolean  @default(false)
+  bonusAmount  Float    @default(0) // Bonus earned when this slot was filled
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([ownerId, position])
+  @@index([ownerId])
+  @@index([filledById])
+  @@map("matrix_slots")
+}
+
+// Track matrix bonus distributions (Pool 1 = 100%, Pools 2-15 = 30%)
+model MatrixBonus {
+  id           String   @id @default(cuid())
+  fromUserId   String   // User who invested
+  toUserId     String   // Upline user who received bonus
+  investmentId String
+  poolId       String
+  amount       Float    // Bonus amount
+  bonusPercent Float    // 100 or 30
+  slotPosition Int      // Which matrix slot triggered this
+  status       String   @default("processed") // processed, pending
+
+  createdAt    DateTime @default(now())
+
+  @@index([toUserId])
+  @@index([fromUserId])
+  @@map("matrix_bonuses")
+}

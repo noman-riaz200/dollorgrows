@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 190 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 150 100% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 190 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 190 100% 50%;
+    --radius: 0.75rem;
+
+    /* Exact accent colors */
+    --cyan: #00d2ff;
+    --neon-green: #00ff88;
+  }
+
+  body {
+    @apply bg-[#0a0a0f] text-white antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  /* Glass Morphism */
+  .glass {
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08];
+  }
+  .glass-hover {
+    @apply hover:bg-white/[0.06] hover:border-white/[0.15] transition-all duration-300;
+  }
+  .glass-strong {
+    @apply bg-white/[0.07] backdrop-blur-2xl border border-white/[0.12];
+  }
+
+  /* Neon Glow Utilities */
+  .glow-cyan {
+    box-shadow: 0 0 8px rgba(0, 210, 255, 0.25),
+                0 0 24px rgba(0, 210, 255, 0.15),
+                0 0 48px rgba(0, 210, 255, 0.08);
+  }
+  .glow-green {
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.25),
+                0 0 24px rgba(0, 255, 136, 0.15),
+                0 0 48px rgba(0, 255, 136, 0.08);
+  }
+  .glow-cyan-sm {
+    box-shadow: 0 0 6px rgba(0, 210, 255, 0.4);
+  }
+  .glow-green-sm {
+    box-shadow: 0 0 6px rgba(0, 255, 136, 0.4);
+  }
+
+  /* Text Glow */
+  .text-glow-cyan {
+    text-shadow: 0 0 10px rgba(0, 210, 255, 0.6),
+                 0 0 30px rgba(0, 210, 255, 0.3);
+  }
+  .text-glow-green {
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.6),
+                 0 0 30px rgba(0, 255, 136, 0.3);
+  }
+
+  /* Animated Border Gradient */
+  .gradient-border {
+    position: relative;
+    background: linear-gradient(var(--background), var(--background)) padding-box,
+                linear-gradient(135deg, #00d2ff, #00ff88) border-box;
+    border: 1px solid transparent;
+  }
+  .gradient-border-animate {
+    position: relative;
+    background: linear-gradient(var(--background), var(--background)) padding-box;
+    border: 1px solid transparent;
+  }
+
+  /* Scrollbar */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #00d2ff, #00ff88);
+    border-radius: 4px;
+  }
+}
+
+/* Custom scrollbar globally */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(17, 17, 27, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00d2ff, #00ff88);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #00b8e6, #00e67a);
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+.animate-shimmer {
+  animation: shimmer 3s linear infinite;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  background-size: 1000px 100%;
+}
+.animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradient-shift 5s ease infinite;
+}
+
+/* Selection */
+::selection {
+  background: rgba(0, 210, 255, 0.3);
+  color: white;
+}
