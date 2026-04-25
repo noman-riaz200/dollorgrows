@@ -1,7 +1,12 @@
+"use client";
+
 import { signIn } from "next-auth/react";
 import { useState, type FormEvent } from "react";
-import { Wallet, Loader2 } from "lucide-react";
+import { Wallet, Loader2, TrendingUp } from "lucide-react";
 import type { EthereumProvider } from "@/types/ethereum";
+import { GlassCard } from "@/components/ui/GlassCard";
+import { NeonButton } from "@/components/ui/NeonButton";
+import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +38,7 @@ export default function SignInPage() {
     setIsLoading(true);
 
     try {
-      const message = `Sign this message to authenticate with Fund Grow Online\nTimestamp: ${Date.now()}`;
+      const message = `Sign this message to authenticate with DollorGrows\nTimestamp: ${Date.now()}`;
       
       const provider = window.ethereum as EthereumProvider;
       const signer = provider.getSigner();
@@ -60,27 +65,29 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900 relative overflow-hidden">
-      {/* Neon accent effects */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl animate-pulse" />
-      </div>
+    <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden flex items-center justify-center">
+      <AnimatedBackground />
 
-      <div className="relative z-10 w-full max-w-md p-8">
-        <div className="bg-gray-900/80 backdrop-blur-xl border border-gray-800 rounded-2xl shadow-2xl p-8">
+      <div className="relative z-10 w-full max-w-md px-6">
+        <GlassCard padding="lg" className="text-center">
           {/* Logo */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
-              Fund Grow Online
-            </h1>
-            <p className="text-gray-400 mt-2">Network Marketing & Investment Platform</p>
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00d2ff] to-[#00ff88] flex items-center justify-center glow-cyan-sm">
+              <TrendingUp className="w-6 h-6 text-black" />
+            </div>
+            <span className="text-2xl font-bold text-white tracking-tight">
+              Dollor<span className="text-[#00d2ff]">Grows</span>
+            </span>
           </div>
+
+          <p className="text-gray-400 mb-8">
+            Connect your wallet to access your dashboard and investment pools.
+          </p>
 
           {/* Wallet Connection */}
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2 text-left">
                 Wallet Address
               </label>
               <div className="flex gap-2">
@@ -89,23 +96,24 @@ export default function SignInPage() {
                   value={walletAddress}
                   onChange={(e) => setWalletAddress(e.target.value)}
                   placeholder="0x..."
-                  className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="flex-1 px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#00d2ff]/50 transition-colors"
                   readOnly
                 />
                 <button
                   onClick={connectWallet}
-                  className="px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center gap-2"
+                  className="px-4 py-3 glass rounded-lg hover:bg-white/[0.06] transition-colors flex items-center gap-2"
                 >
-                  <Wallet className="w-5 h-5" />
+                  <Wallet className="w-5 h-5 text-[#00d2ff]" />
                 </button>
               </div>
             </div>
 
             {walletAddress && (
-              <button
+              <NeonButton
+                fullWidth
                 onClick={handleSignIn}
                 disabled={isLoading}
-                className="w-full py-3 bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white font-semibold rounded-lg shadow-lg transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+                className="flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <>
@@ -115,42 +123,41 @@ export default function SignInPage() {
                 ) : (
                   "Sign In with Wallet"
                 )}
-              </button>
+              </NeonButton>
             )}
 
-            <div className="text-center">
-              <button
-                onClick={connectWallet}
-                className="text-cyan-400 hover:text-cyan-300 text-sm"
-              >
-                Don&apos;t have a wallet? Install MetaMask
-              </button>
-            </div>
+            <button
+              onClick={connectWallet}
+              className="text-[#00d2ff] hover:text-[#00ff88] text-sm transition-colors"
+            >
+              Don&apos;t have a wallet? Install MetaMask
+            </button>
           </div>
 
           {/* Features */}
-          <div className="mt-8 pt-6 border-t border-gray-800">
+          <div className="mt-8 pt-6 border-t border-white/[0.06]">
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold text-cyan-400">15</div>
+                <div className="text-2xl font-bold text-[#00d2ff]">15</div>
                 <div className="text-xs text-gray-400">Investment Pools</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-emerald-400">3</div>
+                <div className="text-2xl font-bold text-[#00ff88]">3</div>
                 <div className="text-xs text-gray-400">Referral Levels</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-cyan-400">BSC</div>
+                <div className="text-2xl font-bold text-[#00d2ff]">BSC</div>
                 <div className="text-xs text-gray-400">Blockchain</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-emerald-400">BEP20</div>
+                <div className="text-2xl font-bold text-[#00ff88]">BEP20</div>
                 <div className="text-xs text-gray-400">Token Compatible</div>
               </div>
             </div>
           </div>
-        </div>
+        </GlassCard>
       </div>
     </div>
   );
 }
+

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
-import { Prisma, prisma as prismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
 // POST /api/investments - Create a new investment
 export async function POST(request: Request) {
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const pool = await prismaClient.pool.findUnique({
+    const pool = await prisma.pool.findUnique({
       where: { id: poolId },
     });
 
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = await prismaClient.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: session.user.id },
     });
 
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + pool.durationDays);
 
-    const result = await prismaClient.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       await tx.user.update({
         where: { id: session.user.id },
         data: {
@@ -98,7 +99,11 @@ export async function POST(request: Request) {
         },
       });
 
+      // Process referral commissions (3 levels)
       await processReferralCommissions(tx, session.user.id, poolId, amount);
+
+      // Process BFS Matrix slot assignment + bonus
+      await processMatrixAssignment(tx, session.user.id, poolId, amount, investment.id);
 
       return investment;
     });
@@ -129,7 +134,7 @@ async function processReferralCommissions(
 
   if (!user?.upliner) return;
 
-  let currentUpliner = user.upliner;
+  let currentUpliner: NonNullable<typeof user.upliner> | null = user.upliner;
   let level = 1;
 
   while (currentUpliner && level <= 3) {
@@ -189,7 +194,125 @@ async function processReferralCommissions(
     const nextUpliner = await tx.user.findUnique({
       where: { id: currentUpliner.referredBy || "" },
     });
-    currentUpliner = nextUpliner || null;
+    currentUpliner = nextUpliner as typeof currentUpliner;
     level++;
   }
 }
+
+async function processMatrixAssignment(
+  tx: Prisma.TransactionClient,
+  investorId: string,
+  poolId: string,
+  amount: number,
+  investmentId: string
+) {
+  // Get the investor's referrer
+  const investor = await tx.user.findUnique({
+    where: { id: investorId },
+    select: { referredBy: true },
+  });
+
+  if (!investor?.referredBy) return;
+
+  const referrerId = investor.referredBy;
+
+  // Ensure referrer has all 15 matrix slots initialized
+  const existingSlots = await tx.matrixSlot.count({
+    where: { ownerId: referrerId },
+  });
+
+  if (existingSlots < 15) {
+    const existingPositions = new Set(
+      (await tx.matrixSlot.findMany({
+        where: { ownerId: referrerId },
+        select: { position: true },
+      })).map((s: { position: number }) => s.position)
+    );
+
+    const slotsToCreate = [];
+    for (let i = 1; i <= 15; i++) {
+      if (!existingPositions.has(i)) {
+        slotsToCreate.push({
+          ownerId: referrerId,
+          position: i,
+          isFilled: false,
+          bonusAmount: 0,
+        });
+      }
+    }
+
+    if (slotsToCreate.length > 0) {
+      await tx.matrixSlot.createMany({
+        data: slotsToCreate,
+        skipDuplicates: true,
+      });
+    }
+  }
+
+  // Find first empty slot (BFS order: 1-15)
+  const emptySlot = await tx.matrixSlot.findFirst({
+    where: {
+      ownerId: referrerId,
+      isFilled: false,
+    },
+    orderBy: { position: "asc" },
+  });
+
+  if (!emptySlot) return; // Matrix is full
+
+  // Get pool bonus percent
+  const pool = await tx.pool.findUnique({
+    where: { id: poolId },
+    select: { bonusPercent: true, name: true },
+  });
+
+  if (!pool) return;
+
+  const bonusAmount = (amount * pool.bonusPercent) / 100;
+
+  // Fill the slot
+  await tx.matrixSlot.update({
+    where: { id: emptySlot.id },
+    data: {
+      filledById: investorId,
+      isFilled: true,
+      filledAt: new Date(),
+      bonusAmount,
+    },
+  });
+
+  // Create matrix bonus record
+  await tx.matrixBonus.create({
+    data: {
+      fromUserId: investorId,
+      toUserId: referrerId,
+      investmentId,
+      poolId,
+      amount: bonusAmount,
+      bonusPercent: pool.bonusPercent,
+      slotPosition: emptySlot.position,
+      status: "processed",
+    },
+  });
+
+  // Credit bonus to referrer
+  await tx.user.update({
+    where: { id: referrerId },
+    data: {
+      availableBalance: { increment: bonusAmount },
+      totalEarnings: { increment: bonusAmount },
+    },
+  });
+
+  // Create wallet transaction for referrer
+  await tx.walletTransaction.create({
+    data: {
+      userId: referrerId,
+      type: "referral_bonus",
+      amount: bonusAmount,
+      description: `Matrix bonus (${pool.bonusPercent}%) from slot ${emptySlot.position} - ${pool.name}`,
+      status: "completed",
+    },
+  });
+}
+

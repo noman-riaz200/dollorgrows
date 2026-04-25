@@ -60,13 +60,13 @@ export const authOptions = {
           image: null,
           walletAddress: user.walletAddress,
           username: user.username,
-          fullName: user.fullName,
+          fullName: user.fullName ?? undefined,
         };
       },
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
@@ -75,6 +75,7 @@ export const authOptions = {
         token.walletAddress = user.walletAddress;
         token.username = user.username;
         token.fullName = user.fullName;
+        token.referralCode = user.referralCode;
       }
       return token;
     },
@@ -84,6 +85,7 @@ export const authOptions = {
         session.user.walletAddress = token.walletAddress as string;
         session.user.username = token.username as string;
         session.user.fullName = token.fullName as string;
+        session.user.referralCode = token.referralCode as string;
       }
       return session;
     },

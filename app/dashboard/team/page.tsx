@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Users, Search, ChevronRight, ChevronDown } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import { Users, Search, ChevronRight, ChevronDown, TrendingUp, Award, UserPlus } from "lucide-react";
+import { GlassCard } from "@/components/ui/GlassCard";
+import { StatCard } from "@/components/ui/StatCard";
+import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 
 interface TeamMember {
   id: string;
@@ -14,12 +17,19 @@ interface TeamMember {
   children?: TeamMember[];
 }
 
+interface TeamStats {
+  totalDownline: number;
+  activeDownline: number;
+  levelCounts: Record<string, number>;
+  conversionRate: number;
+}
+
 export default function TeamPage() {
   const [teamTree, setTeamTree] = useState<TeamMember[]>([]);
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<TeamStats>({
     totalDownline: 0,
     activeDownline: 0,
-    levelCounts: {} as Record<string, number>,
+    levelCounts: {},
     conversionRate: 0,
   });
   const [loading, setLoading] = useState(true);
@@ -48,116 +58,105 @@ export default function TeamPage() {
     loadTeamData();
   }, []);
 
-  const toggleNode = (userId: string) => {
-    const newExpanded = new Set(expandedNodes);
-    if (newExpanded.has(userId)) {
-      newExpanded.delete(userId);
-    } else {
-      newExpanded.add(userId);
-    }
-    setExpandedNodes(newExpanded);
-  };
+  const toggleNode = useCallback((userId: string) => {
+    setExpandedNodes((prev) => {
+      const newExpanded = new Set(prev);
+      if (newExpanded.has(userId)) {
+        newExpanded.delete(userId);
+      } else {
+        newExpanded.add(userId);
+      }
+      return newExpanded;
+    });
+  }, []);
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">My Team</h1>
-        <p className="text-gray-400">
-          Track your downline performance and referral earnings in real-time.
-        </p>
-      </div>
+    <div className="min-h-screen bg-[#0a0a0f] relative">
+      <AnimatedBackground />
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        {[
-          {
-            label: "Total Downline",
-            value: stats.totalDownline.toString(),
-            icon: Users,
-            color: "cyan",
-          },
-          {
-            label: "Active Members",
-            value: stats.activeDownline.toString(),
-            icon: TrendingUp,
-            color: "emerald",
-          },
-          {
-            label: "Conversion Rate",
-            value: `${stats.conversionRate.toFixed(1)}%`,
-            icon: Award,
-            color: "amber",
-          },
-          {
-            label: "Your Level",
-            value: "Level 1",
-            icon: UserPlus,
-            color: "purple",
-          },
-        ].map((stat) => (
-          <div
-            key={stat.label}
-            className="bg-gray-900/60 backdrop-blur-md border border-gray-800 rounded-xl p-6"
-          >
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-400">{stat.label}</p>
-                <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
-              </div>
-              <div className={`w-10 h-10 rounded-lg bg-${stat.color}-500/20 flex items-center justify-center`}>
-                <stat.icon className={`w-5 h-5 text-${stat.color}-400`} />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <div className="relative z-10">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">My Team</h1>
+          <p className="text-gray-400">
+            Track your downline performance and referral earnings in real-time.
+          </p>
+        </div>
 
-      {/* Search & Filters */}
-      <div className="mb-6 flex gap-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search by username or wallet address..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-gray-900/60 backdrop-blur-md border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <StatCard
+            title="Total Downline"
+            value={stats.totalDownline.toString()}
+            icon={Users}
+            accent="cyan"
+          />
+          <StatCard
+            title="Active Members"
+            value={stats.activeDownline.toString()}
+            icon={TrendingUp}
+            accent="green"
+          />
+          <StatCard
+            title="Conversion Rate"
+            value={`${stats.conversionRate.toFixed(1)}%`}
+            icon={Award}
+            accent="cyan"
+          />
+          <StatCard
+            title="Your Level"
+            value="Level 1"
+            icon={UserPlus}
+            accent="green"
           />
         </div>
-      </div>
 
-      {/* Team Tree Visualization */}
-      <div className="bg-gray-900/60 backdrop-blur-md border border-gray-800 rounded-xl p-6">
-        <h2 className="text-xl font-bold text-white mb-6">Team Hierarchy</h2>
+        {/* Search */}
+        <div className="mb-6">
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <input
+              type="text"
+              placeholder="Search by username or wallet..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#00d2ff]/50 transition-colors"
+            />
+          </div>
+        </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : teamTree.length > 0 ? (
-          <div className="space-y-2">
-            {teamTree
-              .filter((member) =>
-                member.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                member.wallet.toLowerCase().includes(searchTerm.toLowerCase())
-              )
-              .map((member) => (
-                <TeamTreeNode
-                  key={member.id}
-                  member={member}
-                  expanded={expandedNodes.has(member.id)}
-                  onToggle={() => toggleNode(member.id)}
-                  level={0}
-                />
-              ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-500">No team members yet. Start referring to build your downline!</p>
-          </div>
-        )}
+        {/* Team Tree */}
+        <GlassCard>
+          <h2 className="text-xl font-bold text-white mb-6">Team Hierarchy</h2>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="w-12 h-12 border-4 border-[#00d2ff] border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : teamTree.length > 0 ? (
+            <div className="space-y-2">
+              {teamTree
+                .filter((member) =>
+                  member.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  member.wallet.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .map((member) => (
+                  <TeamTreeNode
+                    key={member.id}
+                    member={member}
+                    expandedNodes={expandedNodes}
+                    onToggle={toggleNode}
+                    level={0}
+                  />
+                ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+              <p className="text-gray-500">No team members yet. Start referring to build your downline!</p>
+            </div>
+          )}
+        </GlassCard>
       </div>
     </div>
   );
@@ -165,32 +164,32 @@ export default function TeamPage() {
 
 interface TeamTreeNodeProps {
   member: TeamMember;
-  expanded: boolean;
-  onToggle: () => void;
+  expandedNodes: Set<string>;
+  onToggle: (userId: string) => void;
   level: number;
 }
 
-function TeamTreeNode({ member, expanded, onToggle, level }: TeamTreeNodeProps) {
+function TeamTreeNode({ member, expandedNodes, onToggle, level }: TeamTreeNodeProps) {
   const hasChildren = member.children && member.children.length > 0;
+  const expanded = expandedNodes.has(member.id);
 
   return (
     <div>
       <div
         className={`group flex items-center gap-4 p-4 rounded-lg transition-all ${
           level === 0
-            ? "bg-gradient-to-r from-cyan-900/30 to-emerald-900/30 border border-cyan-800/50"
-            : "bg-gray-800/30 hover:bg-gray-800/60 border border-transparent"
+            ? "bg-gradient-to-r from-[#00d2ff]/10 to-[#00ff88]/10 border border-[#00d2ff]/20"
+            : "bg-white/[0.02] hover:bg-white/[0.04] border border-transparent"
         }`}
-        style={{ marginLeft: `${level * 24}px` }}
+        style={{ marginLeft: `${level * 20}px` }}
       >
-        {/* Expand/Collapse Button */}
         <button
-          onClick={onToggle}
-          className="w-6 h-6 flex items-center justify-center rounded hover:bg-gray-700 transition-colors"
+          onClick={() => onToggle(member.id)}
+          className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/[0.06] transition-colors"
         >
           {hasChildren ? (
             expanded ? (
-              <ChevronDown className="w-4 h-4 text-cyan-400" />
+              <ChevronDown className="w-4 h-4 text-[#00d2ff]" />
             ) : (
               <ChevronRight className="w-4 h-4 text-gray-500" />
             )
@@ -199,15 +198,13 @@ function TeamTreeNode({ member, expanded, onToggle, level }: TeamTreeNodeProps) 
           )}
         </button>
 
-        {/* User Avatar */}
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center">
-          <span className="text-white font-bold text-sm">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00d2ff] to-[#00ff88] flex items-center justify-center">
+          <span className="text-black font-bold text-sm">
             {member.username.charAt(0).toUpperCase()}
           </span>
         </div>
 
-        {/* User Info */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-white">{member.username}</span>
             <span className="text-xs text-gray-500">{member.wallet}</span>
@@ -217,29 +214,27 @@ function TeamTreeNode({ member, expanded, onToggle, level }: TeamTreeNodeProps) 
           </div>
         </div>
 
-        {/* Stats */}
         <div className="flex items-center gap-6">
           <div className="text-right">
             <p className="text-xs text-gray-500">Invested</p>
-            <p className="font-semibold text-cyan-400">${member.invested.toLocaleString()}</p>
+            <p className="font-semibold text-[#00d2ff]">${member.invested.toLocaleString()}</p>
           </div>
           <div className="text-right">
             <p className="text-xs text-gray-500">Earnings</p>
-            <p className="font-semibold text-emerald-400">${member.earnings.toLocaleString()}</p>
+            <p className="font-semibold text-[#00ff88]">${member.earnings.toLocaleString()}</p>
           </div>
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-[#00ff88] animate-pulse" />
         </div>
       </div>
 
-      {/* Children */}
       {expanded && hasChildren && (
         <div>
           {member.children!.map((child) => (
             <TeamTreeNode
               key={child.id}
               member={child}
-              expanded={expandedNodes.has(child.id)}
-              onToggle={() => toggleNode(child.id)}
+              expandedNodes={expandedNodes}
+              onToggle={onToggle}
               level={level + 1}
             />
           ))}
@@ -248,3 +243,4 @@ function TeamTreeNode({ member, expanded, onToggle, level }: TeamTreeNodeProps) 
     </div>
   );
 }
+

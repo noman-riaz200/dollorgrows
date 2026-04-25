@@ -31,7 +31,10 @@
   }
 
   body {
-    @apply bg-[#0a0a0f] text-white antialiased;
+    background-color: #0a0a0f;
+    color: white;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
@@ -39,13 +42,25 @@
 @layer utilities {
   /* Glass Morphism */
   .glass {
-    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08];
+    background-color: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
   }
   .glass-hover {
-    @apply hover:bg-white/[0.06] hover:border-white/[0.15] transition-all duration-300;
+    transition: all 0.3s ease;
+  }
+  .glass-hover:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
   }
   .glass-strong {
-    @apply bg-white/[0.07] backdrop-blur-2xl border border-white/[0.12];
+    background-color: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 0.75rem;
   }
 
   /* Neon Glow Utilities */
@@ -159,3 +174,4 @@
   background: rgba(0, 210, 255, 0.3);
   color: white;
 }
+

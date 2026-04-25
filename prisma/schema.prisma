@@ -19,7 +19,7 @@ model User {
   fullName      String?
   referralCode  String    @unique @default(cuid())
   referredBy    String?
-  upliner       User?     @relation("ReferralTree", fields: [referredBy], references: [id])
+  upliner       User?     @relation("ReferralTree", fields: [referredBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
   downliners    User[]    @relation("ReferralTree")
 
   // Matrix positioning
@@ -81,9 +81,9 @@ model Pool {
 model Investment {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   poolId    String
-  pool      Pool     @relation(fields: [poolId], references: [id])
+  pool      Pool     @relation(fields: [poolId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   amount    Float 
   startDate DateTime @default(now())
   endDate   DateTime
@@ -107,11 +107,11 @@ model Investment {
 model Commission {
   id          String   @id @default(cuid())
   fromUserId  String
-  fromUser    User     @relation("CommissionEarner", fields: [fromUserId], references: [id])
+  fromUser    User     @relation("CommissionEarner", fields: [fromUserId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   toUserId    String
-  toUser      User     @relation("CommissionReceiver", fields: [toUserId], references: [id])
+  toUser      User     @relation("CommissionReceiver", fields: [toUserId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   investmentId String?
-  investment  Investment? @relation("InvestmentCommissions", fields: [investmentId], references: [id])
+  investment  Investment? @relation("InvestmentCommissions", fields: [investmentId], references: [id], onDelete: SetNull, onUpdate: NoAction)
   amount      Float
   level       Int      // 1, 2, 3 - referral depth
   percentage  Float   @default(0)
@@ -127,7 +127,7 @@ model Commission {
 model WalletTransaction {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   type      String   // deposit, withdrawal, commission, referral_bonus
   amount    Float 
   txHash    String?  @unique // Blockchain transaction hash
@@ -142,7 +142,7 @@ model WalletTransaction {
 model WithdrawalRequest {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   amount    Float   @default(0)
   walletAddress String
   status    String   @default("pending") // pending, approved, rejected, completed

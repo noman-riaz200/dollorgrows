@@ -12,10 +12,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Fund Grow Online | Network Marketing & Investment Platform",
+  title: "DollorGrows | Investment & Networking Platform",
   description:
-    "Professional network marketing and investment platform with BFS Matrix referral system, BEP20 wallet integration, and 15 investment pools.",
-  keywords: "crypto, investment, network marketing, BEP20, BSC, matrix",
+    "High-performance investment and networking platform with BFS Matrix referral system. 15 investment pools with up to 100% matrix bonus.",
+  keywords: "crypto, investment, network marketing, BEP20, BSC, matrix, dollorgrows",
 };
 
 export default function RootLayout({

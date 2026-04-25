@@ -8,6 +8,7 @@ declare module "next-auth" {
       username?: string;
       fullName?: string;
       role?: "user" | "admin";
+      referralCode?: string;
     } & DefaultSession["user"];
   }
 
@@ -16,5 +17,6 @@ declare module "next-auth" {
     username?: string;
     fullName?: string;
     role?: "user" | "admin";
+    referralCode?: string;
   }
 }

@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Wallet, TrendingUp, ArrowRight, Check } from "lucide-react";
+import { Wallet, Check, X } from "lucide-react";
+import { PoolCard } from "@/components/ui/PoolCard";
+import { GlassCard } from "@/components/ui/GlassCard";
+import { NeonButton } from "@/components/ui/NeonButton";
+import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 
 interface Pool {
   id: string;
@@ -14,6 +18,7 @@ interface Pool {
   level1Commission: number;
   level2Commission: number;
   level3Commission: number;
+  bonusPercent: number;
   totalInvested: number;
   totalCapacity: number | null;
 }
@@ -26,17 +31,18 @@ export default function PoolsPage() {
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
-    const loadPools = async () => {
-      try {
-        const res = await fetch("/api/pools");
-        const data = await res.json();
-        setPools(data.pools || []);
-      } catch (error) {
-        console.error("Failed to fetch pools:", error);
-      }
-    };
-    loadPools();
+    fetchPools();
   }, []);
+
+  const fetchPools = async () => {
+    try {
+      const res = await fetch("/api/pools");
+      const data = await res.json();
+      setPools(data.pools || []);
+    } catch (error) {
+      console.error("Failed to fetch pools:", error);
+    }
+  };
 
   const handleInvest = async () => {
     if (!selectedPool || !investAmount) return;
@@ -58,7 +64,7 @@ export default function PoolsPage() {
         setSuccess(`Successfully invested $${investAmount} in ${selectedPool.name}!`);
         setInvestAmount("");
         setSelectedPool(null);
-        fetchPools(); // Refresh pool data
+        fetchPools();
       } else {
         alert(data.error || "Investment failed");
       }
@@ -71,179 +77,142 @@ export default function PoolsPage() {
   };
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Investment Pools</h1>
-        <p className="text-gray-400">
-          Choose from 15 carefully crafted investment pools with varying returns and durations.
-        </p>
-      </div>
+    <div className="min-h-screen bg-[#0a0a0f] relative">
+      <AnimatedBackground />
 
-      {success && (
-        <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/50 rounded-lg text-emerald-400 flex items-center gap-2">
-          <Check className="w-5 h-5" />
-          {success}
+      <div className="relative z-10">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Investment Pools</h1>
+          <p className="text-gray-400">
+            Choose from 15 carefully crafted investment pools with varying returns and durations.
+          </p>
         </div>
-      )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {pools.map((pool) => (
-          <div
-            key={pool.id}
-            onClick={() => setSelectedPool(pool)}
-            className={`cursor-pointer transition-all duration-300 bg-gray-900/60 backdrop-blur-md border rounded-xl overflow-hidden ${
-              selectedPool?.id === pool.id
-                ? "border-cyan-500 neon-cyan"
-                : "border-gray-800 hover:border-gray-700"
-            }`}
-          >
-            {/* Pool Header with gradient */}
-            <div className="h-2 bg-gradient-to-r from-cyan-500 to-emerald-500" />
+        {success && (
+          <div className="mb-6 p-4 bg-[#00ff88]/10 border border-[#00ff88]/30 rounded-xl text-[#00ff88] flex items-center gap-2">
+            <Check className="w-5 h-5" />
+            {success}
+          </div>
+        )}
 
-            <div className="p-6">
-              {/* Pool Name */}
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-1">{pool.name}</h3>
-                  <p className="text-xs text-gray-400">Investment Pool</p>
-                </div>
-                <div className="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-cyan-400" />
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {pools.map((pool) => (
+            <PoolCard
+              key={pool.id}
+              name={pool.name}
+              description={pool.description}
+              minimumInvestment={pool.minimumInvestment}
+              maximumInvestment={pool.maximumInvestment}
+              dailyReturn={pool.dailyReturn}
+              durationDays={pool.durationDays}
+              level1Commission={pool.level1Commission}
+              level2Commission={pool.level2Commission}
+              level3Commission={pool.level3Commission}
+              bonusPercent={pool.bonusPercent}
+              isSelected={selectedPool?.id === pool.id}
+              onSelect={() => setSelectedPool(pool)}
+            />
+          ))}
+        </div>
+
+        {/* Investment Modal */}
+        {selectedPool && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <GlassCard className="max-w-md w-full" glow="cyan">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-white">
+                  Invest in {selectedPool.name}
+                </h2>
+                <button
+                  onClick={() => {
+                    setSelectedPool(null);
+                    setInvestAmount("");
+                  }}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
               </div>
 
-              {/* Description */}
-              <p className="text-gray-400 text-sm mb-6 line-clamp-2">
-                {pool.description}
-              </p>
+              <p className="text-gray-400 mb-6">{selectedPool.description}</p>
 
-              {/* Key Metrics */}
+              {/* Investment Details */}
               <div className="grid grid-cols-2 gap-4 mb-6">
-                <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">Daily Return</p>
-                  <p className="text-2xl font-bold text-emerald-400">{pool.dailyReturn}%</p>
+                <div className="p-3 bg-white/[0.03] rounded-lg">
+                  <p className="text-xs text-gray-500">Daily Return</p>
+                  <p className="text-lg font-bold text-[#00ff88]">{selectedPool.dailyReturn}%</p>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">Duration</p>
-                  <p className="text-2xl font-bold text-cyan-400">{pool.durationDays} days</p>
+                <div className="p-3 bg-white/[0.03] rounded-lg">
+                  <p className="text-xs text-gray-500">Duration</p>
+                  <p className="text-lg font-bold text-[#00d2ff]">{selectedPool.durationDays} days</p>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">Min Investment</p>
-                  <p className="text-lg font-semibold text-white">${pool.minimumInvestment.toLocaleString()}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">Max Investment</p>
-                  <p className="text-lg font-semibold text-white">
-                    {pool.maximumInvestment ? `$${pool.maximumInvestment.toLocaleString()}` : "Unlimited"}
+                <div className="p-3 bg-white/[0.03] rounded-lg">
+                  <p className="text-xs text-gray-500">Matrix Bonus</p>
+                  <p className={`text-lg font-bold ${selectedPool.bonusPercent === 100 ? "text-[#00ff88]" : "text-[#00d2ff]"}`}>
+                    {selectedPool.bonusPercent}%
                   </p>
                 </div>
-              </div>
-
-              {/* Commission Levels */}
-              <div className="mb-6 p-4 bg-gray-800/50 rounded-lg">
-                <p className="text-xs text-gray-400 mb-2">Referral Commissions</p>
-                <div className="flex gap-3">
-                  <div className="flex-1 text-center">
-                    <div className="text-sm font-bold text-cyan-400">L1: {pool.level1Commission}%</div>
-                  </div>
-                  <div className="flex-1 text-center">
-                    <div className="text-sm font-bold text-emerald-400">L2: {pool.level2Commission}%</div>
-                  </div>
-                  <div className="flex-1 text-center">
-                    <div className="text-sm font-bold text-purple-400">L3: {pool.level3Commission}%</div>
-                  </div>
+                <div className="p-3 bg-white/[0.03] rounded-lg">
+                  <p className="text-xs text-gray-500">Min Investment</p>
+                  <p className="text-lg font-bold text-white">${selectedPool.minimumInvestment.toLocaleString()}</p>
                 </div>
               </div>
 
-              {/* Invest Button */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedPool(pool);
-                }}
-                className="w-full py-3 bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
-              >
-                Invest Now
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
+              {/* Amount Input */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Investment Amount (USD)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                  <input
+                    type="number"
+                    value={investAmount}
+                    onChange={(e) => setInvestAmount(e.target.value)}
+                    min={selectedPool.minimumInvestment}
+                    max={selectedPool.maximumInvestment || undefined}
+                    placeholder={`${selectedPool.minimumInvestment}`}
+                    className="w-full pl-8 pr-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#00d2ff]/50 transition-colors"
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-gray-500 mt-2">
+                  <span>Min: ${selectedPool.minimumInvestment.toLocaleString()}</span>
+                  <span>Max: {selectedPool.maximumInvestment ? `$${selectedPool.maximumInvestment.toLocaleString()}` : "No Limit"}</span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setSelectedPool(null);
+                    setInvestAmount("");
+                  }}
+                  className="flex-1 py-3 glass rounded-lg text-white hover:bg-white/[0.06] transition-colors"
+                >
+                  Cancel
+                </button>
+                <NeonButton
+                  fullWidth
+                  onClick={handleInvest}
+                  disabled={isInvesting || !investAmount}
+                  className="flex items-center justify-center gap-2"
+                >
+                  {isInvesting ? (
+                    "Processing..."
+                  ) : (
+                    <>
+                      <Wallet className="w-4 h-4" />
+                      Confirm
+                    </>
+                  )}
+                </NeonButton>
+              </div>
+            </GlassCard>
           </div>
-        ))}
+        )}
       </div>
-
-      {/* Investment Modal */}
-      {selectedPool && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 max-w-md w-full shadow-2xl">
-            <h2 className="text-2xl font-bold text-white mb-2">
-              Invest in {selectedPool.name}
-            </h2>
-            <p className="text-gray-400 mb-6">{selectedPool.description}</p>
-
-            {/* Investment Details */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="p-3 bg-gray-800/50 rounded-lg">
-                <p className="text-xs text-gray-400">Daily Return</p>
-                <p className="text-lg font-bold text-emerald-400">{selectedPool.dailyReturn}%</p>
-              </div>
-              <div className="p-3 bg-gray-800/50 rounded-lg">
-                <p className="text-xs text-gray-400">Duration</p>
-                <p className="text-lg font-bold text-cyan-400">{selectedPool.durationDays} days</p>
-              </div>
-            </div>
-
-            {/* Amount Input */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Investment Amount (USD)
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                <input
-                  type="number"
-                  value={investAmount}
-                  onChange={(e) => setInvestAmount(e.target.value)}
-                  min={selectedPool.minimumInvestment}
-                  max={selectedPool.maximumInvestment || undefined}
-                  placeholder={`${selectedPool.minimumInvestment}`}
-                  className="w-full pl-8 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                />
-              </div>
-              <div className="flex justify-between text-xs text-gray-500 mt-2">
-                <span>Min: ${selectedPool.minimumInvestment.toLocaleString()}</span>
-                <span>Max: {selectedPool.maximumInvestment ? `$${selectedPool.maximumInvestment.toLocaleString()}` : "No Limit"}</span>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  setSelectedPool(null);
-                  setInvestAmount("");
-                }}
-                className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleInvest}
-                disabled={isInvesting || !investAmount}
-                className="flex-1 py-3 bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {isInvesting ? (
-                  "Processing..."
-                ) : (
-                  <>
-                    <Wallet className="w-4 h-4" />
-                    Confirm Investment
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
+

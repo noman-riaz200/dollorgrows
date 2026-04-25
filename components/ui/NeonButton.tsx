@@ -10,7 +10,7 @@ interface NeonButtonProps {
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
   disabled?: boolean;
-  onClick?: () => void;
+  onClick?: (e?: unknown) => void;
   type?: "button" | "submit";
 }
 
