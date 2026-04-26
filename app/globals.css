@@ -175,3 +175,97 @@
   color: white;
 }
 
+/* Auth Page Entrance Animations */
+@keyframes auth-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes auth-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 6px rgba(0, 210, 255, 0.4), 0 0 12px rgba(0, 210, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.6), 0 0 24px rgba(0, 210, 255, 0.3);
+  }
+}
+
+@keyframes glow-pulse-green {
+  0%, 100% {
+    box-shadow: 0 0 6px rgba(0, 255, 136, 0.4), 0 0 12px rgba(0, 255, 136, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(0, 255, 136, 0.6), 0 0 24px rgba(0, 255, 136, 0.3);
+  }
+}
+
+.animate-auth-fade-in {
+  animation: auth-fade-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-auth-slide-up {
+  animation: auth-slide-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.animate-glow-pulse-green {
+  animation: glow-pulse-green 2s ease-in-out infinite;
+}
+
+/* Stagger children animation delays */
+.auth-stagger-1 { animation-delay: 0.05s; opacity: 0; }
+.auth-stagger-2 { animation-delay: 0.1s; opacity: 0; }
+.auth-stagger-3 { animation-delay: 0.15s; opacity: 0; }
+.auth-stagger-4 { animation-delay: 0.2s; opacity: 0; }
+.auth-stagger-5 { animation-delay: 0.25s; opacity: 0; }
+.auth-stagger-6 { animation-delay: 0.3s; opacity: 0; }
+.auth-stagger-7 { animation-delay: 0.35s; opacity: 0; }
+.auth-stagger-8 { animation-delay: 0.4s; opacity: 0; }
+
+/* Google button neon glow */
+.google-btn-glow {
+  transition: all 0.3s ease;
+}
+.google-btn-glow:hover {
+  box-shadow: 0 0 8px rgba(0, 210, 255, 0.3), 0 0 20px rgba(0, 210, 255, 0.15), inset 0 0 10px rgba(0, 210, 255, 0.05);
+  border-color: rgba(0, 210, 255, 0.4) !important;
+}
+
+.google-btn-glow-green:hover {
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.3), 0 0 20px rgba(0, 255, 136, 0.15), inset 0 0 10px rgba(0, 255, 136, 0.05);
+  border-color: rgba(0, 255, 136, 0.4) !important;
+}
+
+/* Input focus glow enhancement */
+.input-glow:focus-within {
+  box-shadow: 0 0 0 1px rgba(0, 210, 255, 0.3), 0 0 12px rgba(0, 210, 255, 0.1);
+}
+
+/* Link hover glow */
+.link-glow {
+  transition: all 0.3s ease;
+}
+.link-glow:hover {
+  text-shadow: 0 0 8px rgba(0, 210, 255, 0.5);
+}
+

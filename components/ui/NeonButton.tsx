@@ -12,6 +12,7 @@ interface NeonButtonProps {
   disabled?: boolean;
   onClick?: (e?: unknown) => void;
   type?: "button" | "submit";
+  animate?: boolean;
 }
 
 export function NeonButton({
@@ -23,6 +24,7 @@ export function NeonButton({
   disabled = false,
   onClick,
   type = "button",
+  animate = false,
 }: NeonButtonProps) {
   const sizeClasses = {
     sm: "px-4 py-2 text-sm",
@@ -47,6 +49,9 @@ export function NeonButton({
         sizeClasses[size],
         variantClasses[variant],
         fullWidth && "w-full",
+        animate && variant === "gradient" && "animate-glow-pulse",
+        animate && variant === "cyan" && "animate-glow-pulse",
+        animate && variant === "green" && "animate-glow-pulse-green",
         className
       )}
     >
