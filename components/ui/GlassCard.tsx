@@ -9,6 +9,7 @@ interface GlassCardProps {
   hover?: boolean;
   glow?: "cyan" | "green" | "none";
   padding?: "sm" | "md" | "lg";
+  neonBorder?: "cyan" | "green" | "none";
 }
 
 export function GlassCard({
@@ -17,6 +18,7 @@ export function GlassCard({
   hover = true,
   glow = "none",
   padding = "md",
+  neonBorder = "none",
 }: GlassCardProps) {
   const paddingClasses = {
     sm: "p-4",
@@ -32,6 +34,8 @@ export function GlassCard({
         hover && "glass-hover",
         glow === "cyan" && "glow-cyan",
         glow === "green" && "glow-green",
+        neonBorder === "cyan" && "neon-border-cyan",
+        neonBorder === "green" && "neon-border-green",
         className
       )}
     >

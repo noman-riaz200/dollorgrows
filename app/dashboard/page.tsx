@@ -5,16 +5,36 @@ import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  BarChart3,
-  Users,
   Wallet,
-  TrendingUp,
+  PiggyBank,
+  Percent,
+  Users,
+  UserCheck,
+  Clock,
+  User,
+  ArrowDownLeft,
+  ArrowLeftRight,
   ArrowUpRight,
   Layers,
+  TrendingUp,
+  BarChart3,
+  DollarSign,
 } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPie, Pie, Cell } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart as RechartsPie,
+  Pie,
+  Cell,
+} from "recharts";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { StatCard } from "@/components/ui/StatCard";
+import { NeonButton } from "@/components/ui/NeonButton";
 import { MatrixGrid } from "@/components/ui/MatrixGrid";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 
@@ -24,8 +44,15 @@ interface DashboardStats {
   totalInvested: number;
   totalEarnings: number;
   availableBalance: number;
+  balanceWallet: number;
+  poolWallet: number;
+  poolCommission: number;
   teamSize: number;
   activeReferrals: number;
+  pendingUsers: number;
+  sponsorName: string;
+  totalWithdrawal: number;
+  totalExchange: number;
   dailyROI: number;
 }
 
@@ -61,8 +88,15 @@ export default function DashboardPage() {
     totalInvested: 0,
     totalEarnings: 0,
     availableBalance: 0,
+    balanceWallet: 0,
+    poolWallet: 0,
+    poolCommission: 0,
     teamSize: 0,
     activeReferrals: 0,
+    pendingUsers: 0,
+    sponsorName: "—",
+    totalWithdrawal: 0,
+    totalExchange: 0,
     dailyROI: 0,
   });
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
@@ -88,7 +122,7 @@ export default function DashboardPage() {
           const dashData = await dashRes.json();
           const matrixData = await matrixRes.json();
 
-          setStats(dashData.stats);
+          setStats((prev) => ({ ...prev, ...dashData.stats }));
           setRecentActivity(dashData.recentActivity || []);
           setChartData(dashData.chartData || []);
           setPoolDistribution(dashData.poolDistribution || []);
@@ -104,6 +138,9 @@ export default function DashboardPage() {
       loadData();
     }
   }, [session]);
+
+  const totalBalance =
+    stats.balanceWallet + stats.poolWallet + stats.poolCommission;
 
   if (status === "loading") {
     return (
@@ -121,46 +158,112 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Welcome back, <span className="text-[#00d2ff]">{session?.user?.name || "User"}</span>!
+            Welcome back,{" "}
+            <span className="text-[#00d2ff]">
+              {session?.user?.name || "User"}
+            </span>
+            !
           </h1>
           <p className="text-gray-400">
             Here&apos;s an overview of your portfolio and earnings.
           </p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {/* ─── HERO: Total Balance ─── */}
+        <GlassCard
+          className="mb-8"
+          neonBorder="cyan"
+          padding="lg"
+          glow="cyan"
+        >
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="flex items-center gap-5">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00d2ff] to-[#00ff88] flex items-center justify-center glow-cyan-sm">
+                <DollarSign className="w-8 h-8 text-black" />
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Total Balance</p>
+                <p className="text-4xl md:text-5xl font-bold text-white text-glow-cyan">
+                  ${totalBalance.toLocaleString()}
+                </p>
+              </div>
+            </div>
+            <Link href="/dashboard/wallet" className="shrink-0">
+              <NeonButton variant="gradient" size="lg" animate>
+                Top Up
+              </NeonButton>
+            </Link>
+          </div>
+        </GlassCard>
+
+        {/* ─── MAIN CARDS: Balance Wallet, Pool Wallet, Pool Commission ─── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <StatCard
-            title="Total Invested"
-            value={`$${stats.totalInvested.toLocaleString()}`}
-            change="0%"
-            positive={true}
+            title="Balance Wallet"
+            value={`$${stats.balanceWallet.toLocaleString()}`}
             icon={Wallet}
             accent="cyan"
+            neonBorder="cyan"
           />
           <StatCard
-            title="Total Earnings"
-            value={`$${stats.totalEarnings.toLocaleString()}`}
-            change="12%"
-            positive={true}
-            icon={TrendingUp}
+            title="Pool Wallet"
+            value={`$${stats.poolWallet.toLocaleString()}`}
+            icon={PiggyBank}
             accent="green"
+            neonBorder="green"
           />
           <StatCard
-            title="Available Balance"
-            value={`$${stats.availableBalance.toLocaleString()}`}
-            change="0%"
-            positive={true}
-            icon={BarChart3}
+            title="Pool Commission"
+            value={`$${stats.poolCommission.toLocaleString()}`}
+            icon={Percent}
             accent="cyan"
+            neonBorder="cyan"
           />
+        </div>
+
+        {/* ─── SECONDARY CARDS: 6 cards ─── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           <StatCard
-            title="Team Size"
+            title="Total Referrals"
             value={stats.teamSize.toString()}
-            change={`+${stats.activeReferrals}`}
-            positive={true}
             icon={Users}
             accent="green"
+            neonBorder="green"
+          />
+          <StatCard
+            title="Active Users"
+            value={stats.activeReferrals.toString()}
+            icon={UserCheck}
+            accent="cyan"
+            neonBorder="cyan"
+          />
+          <StatCard
+            title="Pending Users"
+            value={stats.pendingUsers.toString()}
+            icon={Clock}
+            accent="green"
+            neonBorder="green"
+          />
+          <StatCard
+            title="Sponsor Name"
+            value={stats.sponsorName}
+            icon={User}
+            accent="cyan"
+            neonBorder="cyan"
+          />
+          <StatCard
+            title="Withdrawal"
+            value={`$${stats.totalWithdrawal.toLocaleString()}`}
+            icon={ArrowDownLeft}
+            accent="green"
+            neonBorder="green"
+          />
+          <StatCard
+            title="Exchange"
+            value={`$${stats.totalExchange.toLocaleString()}`}
+            icon={ArrowLeftRight}
+            accent="cyan"
+            neonBorder="cyan"
           />
         </div>
 
@@ -197,11 +300,16 @@ export default function DashboardPage() {
 
           {/* Earnings Chart */}
           <GlassCard className="lg:col-span-2">
-            <h3 className="text-lg font-bold text-white mb-4">Earnings Overview</h3>
+            <h3 className="text-lg font-bold text-white mb-4">
+              Earnings Overview
+            </h3>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="rgba(255,255,255,0.05)"
+                  />
                   <XAxis dataKey="date" stroke="#6b7280" fontSize={12} />
                   <YAxis stroke="#6b7280" fontSize={12} />
                   <Tooltip
@@ -238,7 +346,9 @@ export default function DashboardPage() {
         <div className="grid lg:grid-cols-2 gap-6 mb-8">
           {/* Pool Distribution */}
           <GlassCard>
-            <h3 className="text-lg font-bold text-white mb-4">Pool Distribution</h3>
+            <h3 className="text-lg font-bold text-white mb-4">
+              Pool Distribution
+            </h3>
             <div className="h-72 flex items-center justify-center">
               {poolDistribution.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
@@ -253,9 +363,14 @@ export default function DashboardPage() {
                       fill="#8884d8"
                       dataKey="value"
                     >
-                      {poolDistribution.map((entry: PoolDistItem, index: number) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
+                      {poolDistribution.map(
+                        (entry: PoolDistItem, index: number) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        )
+                      )}
                     </Pie>
                     <Tooltip
                       contentStyle={{
@@ -294,14 +409,16 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-4">
                       <div
                         className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          activity.type === "commission" || activity.type === "referral_bonus"
+                          activity.type === "commission" ||
+                          activity.type === "referral_bonus"
                             ? "bg-[#00ff88]/10 text-[#00ff88]"
                             : activity.type === "investment"
                             ? "bg-[#00d2ff]/10 text-[#00d2ff]"
                             : "bg-white/[0.03] text-gray-400"
                         }`}
                       >
-                        {activity.type === "commission" || activity.type === "referral_bonus" ? (
+                        {activity.type === "commission" ||
+                        activity.type === "referral_bonus" ? (
                           <TrendingUp className="w-5 h-5" />
                         ) : activity.type === "investment" ? (
                           <Wallet className="w-5 h-5" />
@@ -310,19 +427,30 @@ export default function DashboardPage() {
                         )}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-white">{activity.description}</p>
+                        <p className="text-sm font-medium text-white">
+                          {activity.description}
+                        </p>
                         <p className="text-xs text-gray-500">
                           {new Date(activity.createdAt).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
-                    <div className={`text-sm font-bold ${activity.amount > 0 ? "text-[#00ff88]" : "text-red-400"}`}>
-                      {activity.amount > 0 ? "+" : ""}${activity.amount.toFixed(2)}
+                    <div
+                      className={`text-sm font-bold ${
+                        activity.amount > 0
+                          ? "text-[#00ff88]"
+                          : "text-red-400"
+                      }`}
+                    >
+                      {activity.amount > 0 ? "+" : ""}
+                      ${activity.amount.toFixed(2)}
                     </div>
                   </div>
                 ))
               ) : (
-                <p className="text-gray-500 text-center py-8">No recent activity</p>
+                <p className="text-gray-500 text-center py-8">
+                  No recent activity
+                </p>
               )}
             </div>
           </GlassCard>

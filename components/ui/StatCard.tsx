@@ -11,6 +11,7 @@ interface StatCardProps {
   icon: LucideIcon;
   accent?: "cyan" | "green";
   className?: string;
+  neonBorder?: "cyan" | "green" | "none";
 }
 
 export function StatCard({
@@ -21,9 +22,17 @@ export function StatCard({
   icon: Icon,
   accent = "cyan",
   className,
+  neonBorder = "none",
 }: StatCardProps) {
   return (
-    <div className={cn("glass rounded-xl p-6 glass-hover", className)}>
+    <div
+      className={cn(
+        "glass rounded-xl p-6 glass-hover",
+        neonBorder === "cyan" && "neon-border-cyan",
+        neonBorder === "green" && "neon-border-green",
+        className
+      )}
+    >
       <div className="flex items-start justify-between mb-4">
         <div
           className={cn(

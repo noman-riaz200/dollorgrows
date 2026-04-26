@@ -71,13 +71,55 @@ export async function GET() {
       })
     );
 
+    // Get sponsor name
+    const userWithSponsor = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { sponsor: { select: { name: true } } },
+    });
+
+    // Get pending users (referrals with no active investments)
+    const pendingUsers = await prisma.user.count({
+      where: {
+        sponsorId: userId,
+        investments: {
+          none: { isActive: true },
+        },
+      },
+    });
+
+    // Get total withdrawal amount
+    const totalWithdrawal = await prisma.withdrawalRequest.aggregate({
+      where: {
+        userId,
+        status: { in: ["approved", "completed"] },
+      },
+      _sum: { amount: true },
+    });
+
+    // Get total exchange amount (from transactions with type 'exchange')
+    const totalExchange = await prisma.transaction.aggregate({
+      where: {
+        userId,
+        type: "exchange",
+        status: { in: ["confirmed", "completed"] },
+      },
+      _sum: { amount: true },
+    });
+
     return NextResponse.json({
       stats: {
         totalInvested: Number(wallet?.poolWallet || 0),
         totalEarnings: Number(wallet?.poolCommission || 0),
         availableBalance: Number(wallet?.balanceWallet || 0),
+        balanceWallet: Number(wallet?.balanceWallet || 0),
+        poolWallet: Number(wallet?.poolWallet || 0),
+        poolCommission: Number(wallet?.poolCommission || 0),
         teamSize: teamCount,
         activeReferrals,
+        pendingUsers,
+        sponsorName: userWithSponsor?.sponsor?.name || "—",
+        totalWithdrawal: Number(totalWithdrawal._sum.amount || 0),
+        totalExchange: Number(totalExchange._sum.amount || 0),
         dailyROI: 0,
       },
       recentActivity,

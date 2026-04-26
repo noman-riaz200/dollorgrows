@@ -104,6 +104,20 @@
     border: 1px solid transparent;
   }
 
+  /* Neon Border Utilities */
+  .neon-border-cyan {
+    border: 1px solid rgba(0, 210, 255, 0.4);
+    box-shadow: 0 0 6px rgba(0, 210, 255, 0.3),
+                0 0 12px rgba(0, 210, 255, 0.15),
+                inset 0 0 6px rgba(0, 210, 255, 0.05);
+  }
+  .neon-border-green {
+    border: 1px solid rgba(0, 255, 136, 0.4);
+    box-shadow: 0 0 6px rgba(0, 255, 136, 0.3),
+                0 0 12px rgba(0, 255, 136, 0.15),
+                inset 0 0 6px rgba(0, 255, 136, 0.05);
+  }
+
   /* Scrollbar */
   .scrollbar-thin::-webkit-scrollbar {
     width: 4px;
