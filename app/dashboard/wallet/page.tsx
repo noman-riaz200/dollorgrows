@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Wallet, Send, Download, ArrowUpRight, ArrowDownRight, Plus, RefreshCw, X } from "lucide-react";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { NeonButton } from "@/components/ui/NeonButton";
-import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
-
-interface Transaction {
-  id: string;
-  type: string;
-  amount: number;
+import { toast } from "sonner";
+import {
+  Wallet,
+  Send,
+  Download,
+  ArrowUpRight,
+  ArrowDownRight,
+  Plus,
+  RefreshCw,
   status: string;
   description: string;
   createdAt: string;

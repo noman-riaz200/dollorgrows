@@ -1,12 +1,24 @@
-# Referral Link Page Redesign — TODO
+# Wallet Dashboard Implementation TODO
 
 ## Steps
-- [x] Read and understand existing codebase files
-- [x] Create comprehensive plan
-- [x] Install `qrcode.react` dependency
-- [ ] Redesign `/app/dashboard/referrals/page.tsx` with 3 sections:
-  - Section 1: Large QR Code + Copy Link button
-  - Section 2: Referral Rewards info box (100% Pool 1, 30% Pools 2-15)
-  - Section 3: My Referral Details table (Name, Phone, Email, Referral Code)
-- [ ] Test build and verify functionality
-- [ ] Commit and push changes
+- [ ] Create/rewrite `app/dashboard/wallet/page.tsx` with all features
+  - [ ] Fix syntax error (stray `status: string;` in imports)
+  - [ ] Connect Wallet button (MetaMask via window.ethereum)
+  - [ ] BEP20 status indicator card
+  - [ ] Exchange form (source/target wallet + amount)
+  - [ ] Withdrawal section: Total Available + Total Donated cards
+  - [ ] Withdrawal form with address + amount
+  - [ ] Transaction table with status badges (Pending/Success/Failed)
+  - [ ] Toast notifications via sonner
+  - [ ] Proper data fetching from /api/wallet and /api/wallet/deposit
+- [ ] Run `npm run build` to verify
+  - Transaction table with status badges (Pending=amber, Success=green, Failed=red)
+  - Toast notifications via sonner
+- [x] `app/dashboard/exchange/page.tsx` — Real exchange history table
+
+## Testing
+- [ ] Run `npm run dev`
+- [ ] Test MetaMask connect
+- [ ] Test exchange flow
+- [ ] Test withdrawal flow
+
