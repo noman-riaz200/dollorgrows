@@ -55,30 +55,31 @@ export default function AdminPage() {
     activePools: 0,
   });
 
+const fetchAdminData = async () => {
+    try {
+      const [poolsRes, usersRes] = await Promise.all([
+        fetch("/api/admin/pools"),
+        fetch("/api/admin/users"),
+      ]);
+
+      const poolsData = await poolsRes.json();
+      const usersData = await usersRes.json();
+
+      setPools(poolsData.pools || []);
+      setUsers(usersData.users || []);
+      setStats({
+        totalUsers: usersData.count || 0,
+        totalInvestments: usersData.totalInvestments || 0,
+        totalVolume: usersData.totalVolume || 0,
+        activePools: poolsData.count || 0,
+      });
+    } catch (error) {
+      console.error("Admin fetch error:", error);
+    }
+  };
+
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [poolsRes, usersRes] = await Promise.all([
-          fetch("/api/admin/pools"),
-          fetch("/api/admin/users"),
-        ]);
-
-        const poolsData = await poolsRes.json();
-        const usersData = await usersRes.json();
-
-        setPools(poolsData.pools || []);
-        setUsers(usersData.users || []);
-        setStats({
-          totalUsers: usersData.count || 0,
-          totalInvestments: usersData.totalInvestments || 0,
-          totalVolume: usersData.totalVolume || 0,
-          activePools: poolsData.count || 0,
-        });
-      } catch (error) {
-        console.error("Admin fetch error:", error);
-      }
-    };
-    loadData();
+    fetchAdminData();
   }, []);
 
   // Simple auth check - in production use proper role-based auth

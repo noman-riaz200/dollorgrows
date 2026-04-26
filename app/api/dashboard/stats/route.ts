@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
@@ -98,7 +98,8 @@ export async function GET() {
   }
 }
 
-async function generateChartData() {
+async function generateChartData(userId?: string) {
+  void userId; // reserved for future use
   // Mock chart data - in production, generate from actual transactions
   const days = 30;
   const data = [];

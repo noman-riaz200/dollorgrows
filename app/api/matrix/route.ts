@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 // GET /api/matrix - Get current user's matrix slots
@@ -11,18 +11,9 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const slots = await prisma.matrixSlot.findMany({
+const slots = await prisma.matrixSlot.findMany({
       where: { ownerId: session.user.id },
       orderBy: { position: "asc" },
-      include: {
-        filledBy: {
-          select: {
-            username: true,
-            walletAddress: true,
-            totalInvested: true,
-          },
-        },
-      },
     });
 
     // Ensure all 15 positions exist
@@ -46,19 +37,10 @@ export async function GET() {
       });
     }
 
-    // Re-fetch after creating missing slots
+// Re-fetch after creating missing slots
     const allSlots = await prisma.matrixSlot.findMany({
       where: { ownerId: session.user.id },
       orderBy: { position: "asc" },
-      include: {
-        filledBy: {
-          select: {
-            username: true,
-            walletAddress: true,
-            totalInvested: true,
-          },
-        },
-      },
     });
 
     // Get matrix bonus stats
@@ -72,17 +54,30 @@ export async function GET() {
       _sum: { amount: true },
     });
 
+// Fetch user details for filled slots
+    const filledByIds = allSlots.filter((s) => s.filledById).map((s) => s.filledById!);
+    const filledUsers = filledByIds.length > 0
+      ? await prisma.user.findMany({
+          where: { id: { in: filledByIds } },
+          select: { id: true, username: true, walletAddress: true },
+        })
+      : [];
+    const userMap = new Map(filledUsers.map((u) => [u.id, u]));
+
     return NextResponse.json({
-      slots: allSlots.map((s) => ({
-        position: s.position,
-        isFilled: s.isFilled,
-        filledBy: s.filledBy?.username || null,
-        filledByWallet: s.filledBy?.walletAddress
-          ? `${s.filledBy.walletAddress.slice(0, 6)}...${s.filledBy.walletAddress.slice(-4)}`
-          : null,
-        bonusAmount: Number(s.bonusAmount),
-        filledAt: s.filledAt,
-      })),
+      slots: allSlots.map((s) => {
+        const filledUser = s.filledById ? userMap.get(s.filledById) : null;
+        return {
+          position: s.position,
+          isFilled: s.isFilled,
+          filledBy: filledUser?.username || null,
+          filledByWallet: filledUser?.walletAddress
+            ? `${filledUser.walletAddress.slice(0, 6)}...${filledUser.walletAddress.slice(-4)}`
+            : null,
+          bonusAmount: Number(s.bonusAmount),
+          filledAt: s.filledAt,
+        };
+      }),
       stats: {
         filled: allSlots.filter((s) => s.isFilled).length,
         total: 15,

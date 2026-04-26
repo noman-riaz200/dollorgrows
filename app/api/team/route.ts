@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 // GET /api/team - Get user's downline tree
@@ -39,7 +39,19 @@ export async function GET(request: Request) {
   }
 }
 
-async function buildTeamTree(userId: string, maxDepth: number, currentDepth: number = 0) {
+interface TeamNode {
+  user: {
+    id: string;
+    username: string;
+    wallet: string;
+    invested: number;
+    earnings: number;
+    downlineCount: number;
+  };
+  children: TeamNode[] | null;
+}
+
+async function buildTeamTree(userId: string, maxDepth: number, currentDepth: number = 0): Promise<TeamNode[] | null> {
   if (currentDepth >= maxDepth) return null;
 
   const users = await prisma.user.findMany({
@@ -59,8 +71,8 @@ async function buildTeamTree(userId: string, maxDepth: number, currentDepth: num
 
   if (users.length === 0) return null;
 
-  const childrenPromises = users.map(async (user) => {
-    const children = await buildTeamTree(user.id, maxDepth, currentDepth + 1);
+  const childrenPromises: Promise<TeamNode>[] = users.map(async (user) => {
+    const childNodes = await buildTeamTree(user.id, maxDepth, currentDepth + 1);
     return {
       user: {
         id: user.id,
@@ -70,13 +82,13 @@ async function buildTeamTree(userId: string, maxDepth: number, currentDepth: num
         earnings: Number(user.totalEarnings),
         downlineCount: user._count.downliners,
       },
-      children,
+      children: childNodes,
     };
   });
 
   const children = await Promise.all(childrenPromises);
 
-  return children.filter(Boolean);
+  return children.filter(Boolean) as TeamNode[];
 }
 
 // GET /api/team/stats - Get team statistics

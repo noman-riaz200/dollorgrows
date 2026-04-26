@@ -32,7 +32,6 @@
 - [x] Update `app/api/auth/[...nextauth]/route.ts` with referralCode in session
 
 ## Final Steps
-- [ ] Run `npx prisma db push`
-- [ ] Run `npm run db:seed`
-- [ ] Run `npm run build`
-
+- [x] Run `npx prisma db push`
+- [x] Run `npm run db:seed`
+- [x] Run `npm run build`

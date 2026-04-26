@@ -12,7 +12,7 @@ import {
   Globe,
   Lock,
 } from "lucide-react";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { NeonButton } from "@/components/ui/NeonButton";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
