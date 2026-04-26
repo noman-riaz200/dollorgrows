@@ -2,42 +2,26 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { Copy, Check, Users, Layers, TrendingUp } from "lucide-react";
+import { Copy, Check, Link2, Gift, User, Phone, Mail, Hash, Share2, Twitter, Facebook, Send } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { NeonButton } from "@/components/ui/NeonButton";
-import { MatrixGrid } from "@/components/ui/MatrixGrid";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
-
-interface MatrixSlotData {
-  position: number;
-  isFilled: boolean;
-  filledBy: string | null;
-  bonusAmount: number;
-}
 
 export default function ReferralsPage() {
   const { data: session } = useSession();
   const [copied, setCopied] = useState(false);
-  const [matrixSlots, setMatrixSlots] = useState<MatrixSlotData[]>([]);
-  const [matrixStats, setMatrixStats] = useState({ filled: 0, total: 15, totalBonusEarned: 0 });
 
-  const referralLink = `${typeof window !== "undefined" ? window.location.origin : ""}/auth/signin?ref=${session?.user?.referralCode || "YOURCODE"}`;
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://dollorgrows.com";
+  const referralCode = session?.user?.referralCode || "YOURCODE";
+  const referralLink = `${baseUrl}/auth/register?ref=${referralCode}`;
 
-  useEffect(() => {
-    const loadMatrix = async () => {
-      try {
-        const res = await fetch("/api/matrix");
-        const data = await res.json();
-        if (data.slots) {
-          setMatrixSlots(data.slots);
-          setMatrixStats(data.stats);
-        }
-      } catch (error) {
-        console.error("Failed to fetch matrix:", error);
-      }
-    };
-    if (session) loadMatrix();
-  }, [session]);
+  const userDetails = {
+    name: session?.user?.name || "—",
+    phone: session?.user?.phone || "—",
+    email: session?.user?.email || "—",
+    referralCode: referralCode,
+  };
 
   const copyToClipboard = async () => {
     try {
@@ -49,155 +33,217 @@ export default function ReferralsPage() {
     }
   };
 
-  const shareVia = async (platform: string) => {
+  const shareVia = (platform: string) => {
     const text = `Join DollorGrows - The future of network marketing and investment! Use my referral link: ${referralLink}`;
     const urls: Record<string, string> = {
       twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`,
       telegram: `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent("Join DollorGrows!")}`,
     };
-    window.open(urls[platform], "_blank", "width=600,height=400");
+    if (urls[platform]) window.open(urls[platform], "_blank", "width=600,height=400");
   };
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] relative">
       <AnimatedBackground />
 
-      <div className="relative z-10">
+      <div className="relative z-10 max-w-6xl mx-auto">
+        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Referral Program</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">Referral Link</h1>
           <p className="text-gray-400">
-            Invite friends and earn up to 15% commissions on their investments across 3 levels.
+            Share your unique referral link and earn commissions on every investment made by your referrals.
           </p>
         </div>
 
-        {/* Commission Structure */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          {[
-            { level: "Level 1", percentage: "10-15%", desc: "Direct referrals", color: "#00d2ff" },
-            { level: "Level 2", percentage: "5-10%", desc: "Second level", color: "#00ff88" },
-            { level: "Level 3", percentage: "3-5%", desc: "Third level", color: "#8b5cf6" },
-          ].map((tier) => (
-            <GlassCard key={tier.level} className="text-center">
-              <div className="text-4xl font-bold mb-2" style={{ color: tier.color }}>
-                {tier.percentage}
-              </div>
-              <h3 className="text-lg font-semibold text-white mb-1">{tier.level}</h3>
-              <p className="text-gray-400 text-sm">{tier.desc}</p>
-            </GlassCard>
-          ))}
-        </div>
-
-        {/* Matrix + Referral Link Row */}
+        {/* Section 1 & 2 Grid */}
         <div className="grid lg:grid-cols-2 gap-6 mb-8">
-          {/* Matrix Visualization */}
-          <GlassCard glow="cyan">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Layers className="w-5 h-5 text-[#00d2ff]" />
-                Your BFS Matrix
-              </h3>
-              <span className="text-xs text-[#00ff88] font-medium">
-                {matrixStats.filled}/{matrixStats.total} filled
-              </span>
-            </div>
-            <MatrixGrid
-              slots={matrixSlots.map((s) => ({
-                position: s.position,
-                isFilled: s.isFilled,
-                filledBy: s.filledBy || undefined,
-                bonusAmount: s.bonusAmount,
-              }))}
-            />
-            <div className="mt-4 pt-4 border-t border-white/[0.06]">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Total Bonus Earned</span>
-                <span className="text-[#00ff88] font-bold">
-                  ${matrixStats.totalBonusEarned.toLocaleString()}
-                </span>
-              </div>
-            </div>
-          </GlassCard>
-
-          {/* Referral Link Card */}
-          <GlassCard glow="green">
+          {/* Section 1: QR Code + Copy Link */}
+          <GlassCard glow="cyan" neonBorder="cyan" className="flex flex-col items-center text-center">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#00d2ff]/20 to-[#00ff88]/20 flex items-center justify-center">
-                <Users className="w-6 h-6 text-[#00d2ff]" />
+                <Link2 className="w-6 h-6 text-[#00d2ff]" />
               </div>
-              <div>
-                <h2 className="text-xl font-bold text-white">Your Referral Link</h2>
-                <p className="text-gray-400 text-sm">Share this link to earn commissions</p>
+              <div className="text-left">
+                <h2 className="text-xl font-bold text-white">Your Referral QR Code</h2>
+                <p className="text-gray-400 text-sm">Scan or share your link</p>
               </div>
             </div>
 
-            <div className="flex gap-3 mb-4">
+            {/* QR Code */}
+            <div className="p-4 bg-white rounded-xl mb-6">
+              <QRCodeSVG
+                value={referralLink}
+                size={200}
+                level="H"
+                includeMargin={false}
+                imageSettings={{
+                  src: "/favicon.ico",
+                  height: 24,
+                  width: 24,
+                  excavate: true,
+                }}
+              />
+            </div>
+
+            {/* Referral URL */}
+            <div className="w-full flex gap-3 mb-4">
               <input
                 type="text"
                 value={referralLink}
                 readOnly
                 className="flex-1 px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-lg text-white font-mono text-sm"
               />
-              <NeonButton onClick={copyToClipboard} className="flex items-center gap-2">
+              <NeonButton onClick={copyToClipboard} className="flex items-center gap-2 shrink-0">
                 {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-                {copied ? "Copied!" : "Copy"}
+                {copied ? "Copied!" : "Copy Link"}
               </NeonButton>
             </div>
 
-            <div className="flex gap-3">
+            {/* Social Share Buttons */}
+            <div className="flex gap-3 w-full">
               <button
                 onClick={() => shareVia("twitter")}
-                className="flex-1 py-2 glass rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/[0.06] transition-colors"
+                className="flex-1 py-2.5 glass rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/[0.06] transition-colors flex items-center justify-center gap-2"
               >
+                <Twitter className="w-4 h-4" />
                 Twitter
               </button>
               <button
                 onClick={() => shareVia("facebook")}
-                className="flex-1 py-2 glass rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/[0.06] transition-colors"
+                className="flex-1 py-2.5 glass rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/[0.06] transition-colors flex items-center justify-center gap-2"
               >
+                <Facebook className="w-4 h-4" />
                 Facebook
               </button>
               <button
                 onClick={() => shareVia("telegram")}
-                className="flex-1 py-2 glass rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/[0.06] transition-colors"
+                className="flex-1 py-2.5 glass rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/[0.06] transition-colors flex items-center justify-center gap-2"
               >
+                <Send className="w-4 h-4" />
                 Telegram
               </button>
             </div>
           </GlassCard>
+
+          {/* Section 2: Referral Rewards */}
+          <GlassCard glow="green" neonBorder="green">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#00ff88]/20 to-[#00d2ff]/20 flex items-center justify-center">
+                <Gift className="w-6 h-6 text-[#00ff88]" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">Referral Rewards</h2>
+                <p className="text-gray-400 text-sm">Earn bonuses on every referral</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {/* Pool 1 Reward */}
+              <div className="p-4 rounded-lg bg-gradient-to-r from-[#00ff88]/10 to-transparent border border-[#00ff88]/20">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-lg font-semibold text-white">Pool 1 — Genesis Pool</h3>
+                  <span className="text-2xl font-bold text-[#00ff88]">100%</span>
+                </div>
+                <p className="text-gray-400 text-sm">
+                  Unprecedented <span className="text-[#00ff88] font-semibold">100% matrix bonus</span> distributed to your upline when your referrals fill matrix slots in the Genesis Pool.
+                </p>
+              </div>
+
+              {/* Pools 2-15 Reward */}
+              <div className="p-4 rounded-lg bg-gradient-to-r from-[#00d2ff]/10 to-transparent border border-[#00d2ff]/20">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-lg font-semibold text-white">Pools 2 — 15</h3>
+                  <span className="text-2xl font-bold text-[#00d2ff]">30%</span>
+                </div>
+                <p className="text-gray-400 text-sm">
+                  All other pools provide a solid <span className="text-[#00d2ff] font-semibold">30% bonus</span> on referral investments, giving you consistent passive income across all tiers.
+                </p>
+              </div>
+
+              {/* Additional Info */}
+              <div className="p-4 rounded-lg bg-white/[0.02] border border-white/[0.06]">
+                <h3 className="text-sm font-semibold text-white mb-2">How It Works</h3>
+                <ul className="space-y-2 text-sm text-gray-400">
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#00d2ff] mt-0.5">•</span>
+                    Share your referral link with friends and followers
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#00d2ff] mt-0.5">•</span>
+                    They sign up using your link and invest in pools
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#00ff88] mt-0.5">•</span>
+                    You earn instant bonuses based on the pool they join
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </GlassCard>
         </div>
 
-        {/* How It Works */}
+        {/* Section 3: My Referral Details Table */}
         <GlassCard>
-          <h2 className="text-xl font-bold text-white mb-6">How Referrals Work</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                step: "1",
-                title: "Share Your Link",
-                desc: "Send your unique referral link to friends and followers.",
-              },
-              {
-                step: "2",
-                title: "They Register & Invest",
-                desc: "Your referrals sign up using your link and make their first investment.",
-              },
-              {
-                step: "3",
-                title: "Earn Commissions",
-                desc: "Receive instant commissions and matrix bonuses on their investments.",
-              },
-            ].map((step) => (
-              <div key={step.step} className="relative">
-                <div className="absolute -left-2 top-0 w-8 h-8 rounded-full bg-gradient-to-br from-[#00d2ff] to-[#00ff88] flex items-center justify-center text-black font-bold text-sm">
-                  {step.step}
-                </div>
-                <div className="pl-8">
-                  <h3 className="text-lg font-semibold text-white mb-2">{step.title}</h3>
-                  <p className="text-gray-400 text-sm">{step.desc}</p>
-                </div>
-              </div>
-            ))}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#00d2ff]/20 to-[#00ff88]/20 flex items-center justify-center">
+              <User className="w-5 h-5 text-[#00d2ff]" />
+            </div>
+            <h2 className="text-xl font-bold text-white">My Referral Details</h2>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-white/[0.08]">
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      Name
+                    </div>
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4" />
+                      Phone
+                    </div>
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-4 h-4" />
+                      Email
+                    </div>
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                    <div className="flex items-center gap-2">
+                      <Hash className="w-4 h-4" />
+                      Referral Code
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
+                  <td className="py-4 px-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#00d2ff] to-[#00ff88] flex items-center justify-center">
+                        <span className="text-black font-bold text-xs">
+                          {userDetails.name[0]?.toUpperCase() || "U"}
+                        </span>
+                      </div>
+                      <span className="text-white font-medium">{userDetails.name}</span>
+                    </div>
+                  </td>
+                  <td className="py-4 px-4 text-gray-300">{userDetails.phone}</td>
+                  <td className="py-4 px-4 text-gray-300">{userDetails.email}</td>
+                  <td className="py-4 px-4">
+                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#00d2ff]/10 border border-[#00d2ff]/20 text-[#00d2ff] font-mono text-sm font-semibold">
+                      {userDetails.referralCode}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </GlassCard>
       </div>
