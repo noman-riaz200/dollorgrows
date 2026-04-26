@@ -183,6 +183,52 @@
   animation: gradient-shift 5s ease infinite;
 }
 
+/* React Flow Dark Theme Overrides */
+.react-flow {
+  --xy-edge-stroke-default: rgba(0, 210, 255, 0.3);
+  --xy-edge-stroke-selected-default: #00d2ff;
+  --xy-connectionline-stroke-default: #00d2ff;
+  --xy-handle-background-color-default: #00ff88;
+  --xy-handle-border-color-default: #0a0a0f;
+  --xy-minimap-background-color-default: #0a0a0f;
+  --xy-minimap-mask-background-color-default: rgba(0, 0, 0, 0.6);
+  --xy-minimap-mask-stroke-color-default: #00d2ff;
+  --xy-minimap-node-background-color-default: rgba(0, 210, 255, 0.4);
+  --xy-minimap-node-stroke-color-default: transparent;
+  --xy-controls-button-background-color-default: rgba(255, 255, 255, 0.05);
+  --xy-controls-button-background-color-hover-default: rgba(255, 255, 255, 0.1);
+  --xy-controls-button-color-default: #9ca3af;
+  --xy-controls-button-color-hover-default: #ffffff;
+  --xy-controls-button-border-color-default: rgba(255, 255, 255, 0.08);
+  --xy-panel-background-color-default: transparent;
+}
+
+.react-flow__node {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  min-width: auto !important;
+}
+
+.react-flow__edge-path {
+  filter: drop-shadow(0 0 4px rgba(0, 210, 255, 0.3));
+}
+
+.react-flow__handle {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+}
+
+.react-flow__handle:hover {
+  box-shadow: 0 0 0 4px rgba(0, 255, 136, 0.2);
+}
+
+.react-flow__background {
+  opacity: 0.5;
+}
+
 /* Selection */
 ::selection {
   background: rgba(0, 210, 255, 0.3);

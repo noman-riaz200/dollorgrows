@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-// GET /api/team - Get user's downline tree
+// GET /api/team - Get user's downline tree with root user
 export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -15,6 +15,25 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const depth = parseInt(searchParams.get("depth") || "3");
     const userId = session.user.id;
+
+    // Get current user (root)
+    const currentUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        referralCode: true,
+        _count: {
+          select: { referrals: true },
+        },
+      },
+    });
+
+    if (!currentUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
     // Get user's immediate referrals
     const referrals = await prisma.user.findMany({
@@ -29,7 +48,32 @@ export async function GET(request: Request) {
     // Build tree recursively
     const tree = await buildTeamTree(userId, depth);
 
-    return NextResponse.json({ tree, total: referrals.length });
+    // Calculate level based on direct referrals
+    const directReferrals = currentUser._count.referrals;
+    const level = calculateLevel(directReferrals);
+    const nextLevelRequirement = getNextLevelRequirement(directReferrals);
+
+    return NextResponse.json({
+      root: {
+        id: currentUser.id,
+        name: currentUser.name,
+        email: currentUser.email,
+        createdAt: currentUser.createdAt.toISOString(),
+        referralCode: currentUser.referralCode,
+        downlineCount: directReferrals,
+      },
+      tree,
+      total: referrals.length,
+      directReferrals,
+      level: level.name,
+      levelNumber: level.number,
+      nextLevelRequirement,
+      progress: {
+        current: directReferrals,
+        required: nextLevelRequirement,
+        remaining: Math.max(0, nextLevelRequirement - directReferrals),
+      },
+    });
   } catch (error) {
     console.error("Team API error:", error);
     return NextResponse.json(
@@ -39,19 +83,36 @@ export async function GET(request: Request) {
   }
 }
 
+function calculateLevel(directReferrals: number): { name: string; number: number } {
+  if (directReferrals >= 100) return { name: "Diamond", number: 5 };
+  if (directReferrals >= 50) return { name: "Platinum", number: 4 };
+  if (directReferrals >= 20) return { name: "Gold", number: 3 };
+  if (directReferrals >= 5) return { name: "Silver", number: 2 };
+  return { name: "Bronze", number: 1 };
+}
+
+function getNextLevelRequirement(directReferrals: number): number {
+  if (directReferrals >= 100) return 100; // Max level
+  if (directReferrals >= 50) return 100;
+  if (directReferrals >= 20) return 50;
+  if (directReferrals >= 5) return 20;
+  return 3; // Bronze -> Silver requires 3 direct referrals
+}
+
 interface TeamNode {
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    invested: number;
-    earnings: number;
-    downlineCount: number;
-  };
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+  downlineCount: number;
   children: TeamNode[] | null;
 }
 
-async function buildTeamTree(userId: string, maxDepth: number, currentDepth: number = 0): Promise<TeamNode[] | null> {
+async function buildTeamTree(
+  userId: string,
+  maxDepth: number,
+  currentDepth: number = 0
+): Promise<TeamNode[] | null> {
   if (currentDepth >= maxDepth) return null;
 
   const users = await prisma.user.findMany({
@@ -78,14 +139,11 @@ async function buildTeamTree(userId: string, maxDepth: number, currentDepth: num
   const childrenPromises: Promise<TeamNode>[] = users.map(async (user) => {
     const childNodes = await buildTeamTree(user.id, maxDepth, currentDepth + 1);
     return {
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email.slice(0, 3) + "..." + user.email.slice(-10),
-        invested: Number(user.wallet?.poolWallet || 0),
-        earnings: Number(user.wallet?.poolCommission || 0),
-        downlineCount: user._count.referrals,
-      },
+      id: user.id,
+      name: user.name,
+      email: user.email.slice(0, 3) + "..." + user.email.slice(-10),
+      createdAt: user.createdAt.toISOString(),
+      downlineCount: user._count.referrals,
       children: childNodes,
     };
   });
@@ -95,70 +153,4 @@ async function buildTeamTree(userId: string, maxDepth: number, currentDepth: num
   return children.filter(Boolean) as TeamNode[];
 }
 
-// GET /api/team/stats - Get team statistics
-export async function GET_STATS() {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    let totalDownline = 0;
-    let activeDownline = 0;
-    const levelCounts: Record<string, number> = {};
-
-    // BFS traversal
-    const queue: { id: string; level: number }[] = [
-      { id: session.user.id, level: 0 },
-    ];
-    const visited = new Set<string>();
-
-    while (queue.length > 0) {
-      const { id, level } = queue.shift()!;
-
-      if (visited.has(id)) continue;
-      visited.add(id);
-
-      if (level > 0) {
-        totalDownline++;
-        levelCounts[`level_${level}`] = (levelCounts[`level_${level}`] || 0) + 1;
-      }
-
-      if (level >= 5) continue;
-
-      const referrals = await prisma.user.findMany({
-        where: { sponsorId: id },
-        select: {
-          id: true,
-          investments: {
-            where: { isActive: true },
-            select: { id: true },
-          },
-        },
-      });
-
-      for (const user of referrals) {
-        if (!visited.has(user.id)) {
-          queue.push({ id: user.id, level: level + 1 });
-          if (user.investments.length > 0) {
-            activeDownline++;
-          }
-        }
-      }
-    }
-
-    return NextResponse.json({
-      totalDownline,
-      activeDownline,
-      levelCounts,
-      conversionRate: totalDownline > 0 ? (activeDownline / totalDownline) * 100 : 0,
-    });
-  } catch (error) {
-    console.error("Team stats error:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch team stats" },
-      { status: 500 }
-    );
-  }
-}
 
