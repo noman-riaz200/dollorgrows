@@ -4,33 +4,43 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import {
-  BarChart3,
+  LayoutDashboard,
+  Link2,
+  UserPlus,
   Users,
-  Wallet,
-  TrendingUp,
+  Percent,
+  CreditCard,
+  ArrowLeftRight,
+  Settings,
+  Search,
+  ShieldCheck,
   LogOut,
   Menu,
   X,
-  Layers,
+  ChevronDown,
 } from "lucide-react";
 import { useState } from "react";
 import { ReactNode } from "react";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
-  { href: "/dashboard/pools", label: "Pools", icon: Layers },
-  { href: "/dashboard/team", label: "My Team", icon: Users },
-  { href: "/dashboard/wallet", label: "Wallet", icon: Wallet },
-  { href: "/dashboard/referrals", label: "Referrals", icon: TrendingUp },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard/referrals", label: "Referral Link", icon: Link2 },
+  { href: "/dashboard/team", label: "Referral Team", icon: UserPlus },
+  { href: "/dashboard/teams", label: "Teams", icon: Users },
+  { href: "/dashboard/commission", label: "Team Commission", icon: Percent },
+  { href: "/dashboard/plans", label: "Plans", icon: CreditCard },
+  { href: "/dashboard/exchange", label: "Exchange History", icon: ArrowLeftRight },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { data: session } = useSession();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] relative">
+    <div className="min-h-screen bg-gradient-to-br from-[#020d1a] via-[#0a1628] to-[#020d1a] relative">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
@@ -50,10 +60,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
             <Link href="/dashboard" className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00d2ff] to-[#00ff88] flex items-center justify-center glow-cyan-sm">
-                <TrendingUp className="w-6 h-6 text-black" />
+                <LayoutDashboard className="w-6 h-6 text-black" />
               </div>
               <span className="text-xl font-bold text-white tracking-tight">
-                Dollor<span className="text-[#00d2ff]">Grows</span>
+                dollor<span className="text-[#00d2ff]">grows</span>
               </span>
             </Link>
             <button
@@ -65,7 +75,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-thin">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -86,25 +96,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             })}
           </nav>
 
-          {/* User Profile */}
+          {/* Sign Out */}
           <div className="p-4 border-t border-white/[0.06]">
-            <div className="flex items-center gap-3 px-4 py-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00d2ff] to-[#00ff88] flex items-center justify-center">
-                <span className="text-black font-bold text-sm">
-                  {session?.user?.name?.[0]?.toUpperCase() || "U"}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">
-                  {session?.user?.name || "User"}
-                </p>
-                <p className="text-xs text-gray-500 truncate">
-                  {session?.user?.email
-                    ? session.user.email
-                    : "No email"}
-                </p>
-              </div>
-            </div>
             <button
               onClick={() => signOut({ callbackUrl: "/auth/signin" })}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-white/[0.03] hover:text-red-400 transition-all"
@@ -116,28 +109,64 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <div className="lg:ml-64">
-        {/* Mobile header */}
-        <div className="lg:hidden sticky top-0 z-30 flex items-center gap-4 p-4 glass border-b border-white/[0.06]">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="text-gray-400 hover:text-white"
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00d2ff] to-[#00ff88] flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-black" />
-            </div>
-            <span className="text-lg font-bold text-white tracking-tight">
-              Dollor<span className="text-[#00d2ff]">Grows</span>
-            </span>
-          </div>
-        </div>
+      {/* Main Content Wrapper */}
+      <div className="lg:ml-64 flex flex-col h-screen">
+        {/* Sticky Topbar */}
+        <header className="sticky top-0 z-30 glass-strong border-b border-white/[0.06] px-4 lg:px-8 py-4">
+          <div className="flex items-center justify-between gap-4">
+            {/* Left: Mobile menu + Search */}
+            <div className="flex items-center gap-4 flex-1">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden text-gray-400 hover:text-white"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
 
-        {/* Page Content */}
-        <main className="p-4 lg:p-8">{children}</main>
+              {/* Search Bar */}
+              <div className="relative max-w-md w-full hidden sm:block">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-500 focus:outline-none focus:border-[#00d2ff]/50 focus:ring-1 focus:ring-[#00d2ff]/20 transition-all text-sm"
+                />
+              </div>
+            </div>
+
+            {/* Right: PIN Badge + User Profile */}
+            <div className="flex items-center gap-4">
+              {/* PIN Secured Badge */}
+              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#00ff88]/10 border border-[#00ff88]/20">
+                <ShieldCheck className="w-4 h-4 text-[#00ff88]" />
+                <span className="text-sm font-medium text-[#00ff88]">PIN Secured</span>
+              </div>
+
+              {/* User Profile */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00d2ff] to-[#00ff88] flex items-center justify-center glow-cyan-sm">
+                  <span className="text-black font-bold text-sm">
+                    {session?.user?.name?.[0]?.toUpperCase() || "M"}
+                  </span>
+                </div>
+                <div className="hidden sm:block">
+                  <p className="text-sm font-medium text-white">Muhammad Noman Riaz</p>
+                  <p className="text-xs text-gray-500">
+                    {session?.user?.email || "noman@dollorgrows.com"}
+                  </p>
+                </div>
+                <ChevronDown className="w-4 h-4 text-gray-500 hidden sm:block" />
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Scrollable Main Content */}
+        <main className="flex-1 overflow-y-auto p-4 lg:p-8 scrollbar-thin">
+          {children}
+        </main>
       </div>
     </div>
   );
