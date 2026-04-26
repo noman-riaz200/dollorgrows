@@ -27,7 +27,8 @@
 - [x] `middleware.ts` - Ensure auth routes are public
 
 ### 7. Database Migration
-- [ ] Run `npx prisma db push` to apply schema changes
+- [x] Run `npx prisma db push` to apply schema changes
+- [x] Seed database with demo data
 
 ### 8. Build & Test
 - [ ] Run `npm run build` to verify compilation
