@@ -14,16 +14,18 @@ import {
 
 interface AdminUser {
   id: string;
-  username?: string;
-  email?: string;
-  walletAddress?: string;
-  totalInvested: number;
-  totalEarnings: number;
-  availableBalance: number;
+  name: string;
+  email: string;
+  referralCode: string;
   createdAt: string;
+  wallet?: {
+    balanceWallet: number;
+    poolWallet: number;
+    poolCommission: number;
+  };
   _count: {
     investments: number;
-    downliners: number;
+    referrals: number;
   };
 }
 
@@ -55,7 +57,7 @@ export default function AdminPage() {
     activePools: 0,
   });
 
-const fetchAdminData = async () => {
+  const fetchAdminData = async () => {
     try {
       const [poolsRes, usersRes] = await Promise.all([
         fetch("/api/admin/pools"),
@@ -82,7 +84,7 @@ const fetchAdminData = async () => {
     fetchAdminData();
   }, []);
 
-  // Simple auth check - in production use proper role-based auth
+  // Simple auth check
   if (!session) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-950">
@@ -236,9 +238,9 @@ const fetchAdminData = async () => {
               <thead>
                 <tr className="border-b border-gray-800">
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">User</th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Wallet</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Email</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Balance</th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Invested</th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Earnings</th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Joined</th>
                 </tr>
               </thead>
@@ -249,22 +251,26 @@ const fetchAdminData = async () => {
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center">
                           <span className="text-white text-sm font-bold">
-                            {user.username?.charAt(0).toUpperCase() || "U"}
+                            {user.name?.charAt(0).toUpperCase() || "U"}
                           </span>
                         </div>
                         <div>
-                          <p className="font-medium text-white">{user.username}</p>
-                          <p className="text-xs text-gray-500">{user.email}</p>
+                          <p className="font-medium text-white">{user.name}</p>
+                          <p className="text-xs text-gray-500">{user.referralCode}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <code className="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded">
-                        {user.walletAddress?.slice(0, 10)}...
+                        {user.email}
                       </code>
                     </td>
-                    <td className="px-6 py-4 text-gray-300">${Number(user.totalInvested).toLocaleString()}</td>
-                    <td className="px-6 py-4 text-emerald-400">${Number(user.totalEarnings).toLocaleString()}</td>
+                    <td className="px-6 py-4 text-gray-300">
+                      ${Number(user.wallet?.balanceWallet || 0).toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 text-emerald-400">
+                      ${Number(user.wallet?.poolWallet || 0).toLocaleString()}
+                    </td>
                     <td className="px-6 py-4 text-gray-500">
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
@@ -316,3 +322,4 @@ const fetchAdminData = async () => {
     </div>
   );
 }
+

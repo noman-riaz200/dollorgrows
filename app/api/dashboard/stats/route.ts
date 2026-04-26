@@ -13,25 +13,20 @@ export async function GET() {
 
     const userId = session.user.id;
 
-    // Get user stats
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        totalInvested: true,
-        totalEarnings: true,
-        availableBalance: true,
-      },
+    // Get user stats from Wallet
+    const wallet = await prisma.wallet.findUnique({
+      where: { userId },
     });
 
-    // Get team size (downliners count)
+    // Get team size (referrals count)
     const teamCount = await prisma.user.count({
-      where: { referredBy: userId },
+      where: { sponsorId: userId },
     });
 
     // Get active referrals (those who invested)
     const activeReferrals = await prisma.user.count({
       where: {
-        referredBy: userId,
+        sponsorId: userId,
         investments: {
           some: { isActive: true },
         },
@@ -39,7 +34,7 @@ export async function GET() {
     });
 
     // Get recent activity (last 10 transactions)
-    const recentActivity = await prisma.walletTransaction.findMany({
+    const recentActivity = await prisma.transaction.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
       take: 10,
@@ -78,12 +73,12 @@ export async function GET() {
 
     return NextResponse.json({
       stats: {
-        totalInvested: Number(user?.totalInvested || 0),
-        totalEarnings: Number(user?.totalEarnings || 0),
-        availableBalance: Number(user?.availableBalance || 0),
+        totalInvested: Number(wallet?.poolWallet || 0),
+        totalEarnings: Number(wallet?.poolCommission || 0),
+        availableBalance: Number(wallet?.balanceWallet || 0),
         teamSize: teamCount,
         activeReferrals,
-        dailyROI: 0, // Calculate based on active investments
+        dailyROI: 0,
       },
       recentActivity,
       chartData,
@@ -99,8 +94,7 @@ export async function GET() {
 }
 
 async function generateChartData(userId?: string) {
-  void userId; // reserved for future use
-  // Mock chart data - in production, generate from actual transactions
+  void userId;
   const days = 30;
   const data = [];
   let earnings = 0;
@@ -120,3 +114,4 @@ async function generateChartData(userId?: string) {
 
   return data;
 }
+

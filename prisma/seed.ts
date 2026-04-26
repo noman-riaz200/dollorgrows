@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -193,9 +194,9 @@ async function main() {
       const pool = await prisma.pool.create({
         data: poolData,
       });
-console.log(`✓ Created pool: ${pool.name}`);
+      console.log(`✓ Created pool: ${pool.name}`);
     } catch (error: any) {
-      if (error.code === 'P2002') {
+      if (error.code === "P2002") {
         console.log(`✓ Pool already exists: ${poolData.name}`);
       } else {
         throw error;
@@ -203,25 +204,35 @@ console.log(`✓ Created pool: ${pool.name}`);
     }
   }
 
+  const adminPassword = await bcrypt.hash("admin123", 12);
+  const adminPin = await bcrypt.hash("123456", 12);
+
   let demoUser = await prisma.user.findFirst({
-    where: { walletAddress: "0xDemoAdmin1234567890abcdef1234567890ab" },
+    where: { email: "admin@dollorgrows.com" },
   });
 
   if (!demoUser) {
     demoUser = await prisma.user.create({
       data: {
+        name: "DollorGrows Administrator",
         email: "admin@dollorgrows.com",
-        walletAddress: "0xDemoAdmin1234567890abcdef1234567890ab",
-        username: "dollorgrows_admin",
-        fullName: "DollorGrows Administrator",
+        password: adminPassword,
+        securityPin: adminPin,
         referralCode: "DOLLOR2024",
         role: "admin",
-        totalInvested: 5000,
-        totalEarnings: 2500,
-        availableBalance: 1000,
       },
     });
-    console.log(`✓ Created demo admin: ${demoUser.username}`);
+
+    await prisma.wallet.create({
+      data: {
+        userId: demoUser.id,
+        balanceWallet: 1000,
+        poolWallet: 5000,
+        poolCommission: 2500,
+      },
+    });
+
+    console.log(`✓ Created demo admin: ${demoUser.name}`);
 
     const slotPromises = Array.from({ length: 15 }, (_, i) =>
       prisma.matrixSlot.create({
@@ -248,3 +259,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+

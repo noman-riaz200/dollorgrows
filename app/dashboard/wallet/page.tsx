@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Wallet, Send, Download, ArrowUpRight, ArrowDownRight, Plus, RefreshCw, X } from "lucide-react";
-import type { EthereumProvider } from "@/types/ethereum";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { NeonButton } from "@/components/ui/NeonButton";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
@@ -21,6 +20,8 @@ interface Transaction {
 export default function WalletPage() {
   const { data: session } = useSession();
   const [balance, setBalance] = useState(0);
+  const [poolWallet, setPoolWallet] = useState(0);
+  const [poolCommission, setPoolCommission] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
@@ -39,6 +40,8 @@ export default function WalletPage() {
       const res = await fetch("/api/dashboard/stats");
       const data = await res.json();
       setBalance(data.stats.availableBalance);
+      setPoolWallet(data.stats.totalInvested);
+      setPoolCommission(data.stats.totalEarnings);
 
       const txRes = await fetch("/api/wallet/deposit");
       const txData = await txRes.json();
@@ -94,22 +97,6 @@ export default function WalletPage() {
     }
   };
 
-  const connectWallet = async () => {
-    if (!window.ethereum) {
-      alert("Please install MetaMask!");
-      return;
-    }
-    try {
-      const provider = window.ethereum as EthereumProvider;
-      const accounts = await provider.request({
-        method: "eth_requestAccounts",
-      }) as string[];
-      setWalletAddress(accounts[0]);
-    } catch (error) {
-      console.error("Failed to connect wallet:", error);
-    }
-  };
-
   const totalDeposits = transactions
     .filter((t) => t.type === "deposit")
     .reduce((sum, t) => sum + t.amount, 0);
@@ -128,27 +115,41 @@ export default function WalletPage() {
           <p className="text-gray-400">Manage your deposits, withdrawals, and transaction history.</p>
         </div>
 
-        {/* Balance Card */}
-        <GlassCard glow="cyan" className="mb-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#00d2ff]/5 rounded-full blur-3xl" />
-          <div className="relative z-10">
-            <p className="text-gray-400 mb-2">Available Balance</p>
-            <p className="text-5xl font-bold text-white mb-6">${balance.toLocaleString()}</p>
-            <div className="flex gap-4">
-              <NeonButton onClick={() => setShowDepositModal(true)} className="flex items-center gap-2">
-                <Download className="w-5 h-5" />
-                Deposit
-              </NeonButton>
-              <button
-                onClick={() => setShowWithdrawModal(true)}
-                className="px-6 py-3 glass rounded-lg text-white hover:bg-white/[0.06] transition-colors flex items-center gap-2"
-              >
-                <Send className="w-5 h-5" />
-                Withdraw
-              </button>
+        {/* Balance Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <GlassCard glow="cyan" className="relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#00d2ff]/5 rounded-full blur-3xl" />
+            <div className="relative z-10">
+              <p className="text-gray-400 mb-2">Available Balance</p>
+              <p className="text-4xl font-bold text-white mb-4">${balance.toLocaleString()}</p>
+              <div className="flex gap-4">
+                <NeonButton onClick={() => setShowDepositModal(true)} className="flex items-center gap-2">
+                  <Download className="w-5 h-5" />
+                  Deposit
+                </NeonButton>
+                <button
+                  onClick={() => setShowWithdrawModal(true)}
+                  className="px-6 py-3 glass rounded-lg text-white hover:bg-white/[0.06] transition-colors flex items-center gap-2"
+                >
+                  <Send className="w-5 h-5" />
+                  Withdraw
+                </button>
+              </div>
             </div>
-          </div>
-        </GlassCard>
+          </GlassCard>
+
+          <GlassCard>
+            <p className="text-gray-400 mb-2">Pool Wallet</p>
+            <p className="text-3xl font-bold text-white">${poolWallet.toLocaleString()}</p>
+            <p className="text-xs text-gray-500 mt-2">Total invested in pools</p>
+          </GlassCard>
+
+          <GlassCard>
+            <p className="text-gray-400 mb-2">Pool Commission</p>
+            <p className="text-3xl font-bold text-[#00ff88]">${poolCommission.toLocaleString()}</p>
+            <p className="text-xs text-gray-500 mt-2">Total referral earnings</p>
+          </GlassCard>
+        </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -345,7 +346,7 @@ export default function WalletPage() {
                   className="flex-1 px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#00d2ff]/50 transition-colors"
                 />
                 <button
-                  onClick={connectWallet}
+                  onClick={() => alert("Connect wallet feature coming soon")}
                   className="px-4 py-3 glass rounded-lg hover:bg-white/[0.06] transition-colors"
                 >
                   <Wallet className="w-5 h-5 text-[#00d2ff]" />

@@ -20,8 +20,8 @@ export async function POST(request: Request) {
 
     // In production, verify blockchain transaction here
 
-    // Create wallet transaction
-    const transaction = await prisma.walletTransaction.create({
+    // Create transaction record
+    const transaction = await prisma.transaction.create({
       data: {
         userId: session.user.id,
         type: "deposit",
@@ -30,6 +30,19 @@ export async function POST(request: Request) {
         status: "pending",
         description: "BEP20 Token Deposit",
       },
+    });
+
+    // Auto-approve deposit and add to balance
+    await prisma.wallet.update({
+      where: { userId: session.user.id },
+      data: {
+        balanceWallet: { increment: amount },
+      },
+    });
+
+    await prisma.transaction.update({
+      where: { id: transaction.id },
+      data: { status: "completed" },
     });
 
     return NextResponse.json({ success: true, transaction });
@@ -54,14 +67,14 @@ export async function GET(req: Request) {
     const limit = parseInt(searchParams.get("limit") || "50");
     const offset = parseInt(searchParams.get("offset") || "0");
 
-    const transactions = await prisma.walletTransaction.findMany({
+    const transactions = await prisma.transaction.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
       take: limit,
       skip: offset,
     });
 
-    const total = await prisma.walletTransaction.count({
+    const total = await prisma.transaction.count({
       where: { userId: session.user.id },
     });
 
@@ -74,3 +87,4 @@ export async function GET(req: Request) {
     );
   }
 }
+

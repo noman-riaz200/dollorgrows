@@ -2,63 +2,41 @@
 
 import { signIn } from "next-auth/react";
 import { useState, type FormEvent } from "react";
-import { Wallet, Loader2, TrendingUp } from "lucide-react";
-import type { EthereumProvider } from "@/types/ethereum";
+import { Loader2, TrendingUp, Mail, Lock } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { NeonButton } from "@/components/ui/NeonButton";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [walletAddress, setWalletAddress] = useState("");
-
-  const connectWallet = async () => {
-    if (!window.ethereum) {
-      alert("Please install MetaMask to connect your wallet!");
-      return;
-    }
-
-    try {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      }) as string[];
-      setWalletAddress(accounts[0]);
-    } catch (error) {
-      console.error("Failed to connect wallet:", error);
-    }
-  };
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSignIn = async (e: FormEvent) => {
-    e?.preventDefault();
-    if (!walletAddress) {
-      alert("Please connect your wallet first!");
+    e.preventDefault();
+    if (!email || !password) {
+      setError("Please enter both email and password");
       return;
     }
 
     setIsLoading(true);
+    setError("");
 
     try {
-      const message = `Sign this message to authenticate with DollorGrows\nTimestamp: ${Date.now()}`;
-      
-      const provider = window.ethereum as EthereumProvider;
-      const signer = provider.getSigner();
-      const signature = await signer.signMessage(message);
-
       const result = await signIn("credentials", {
-        walletAddress,
-        signature,
-        message,
+        email,
+        password,
         redirect: false,
       });
 
       if (result?.error) {
-        alert("Authentication failed: " + result.error);
+        setError("Invalid email or password");
       } else {
         window.location.href = "/dashboard";
       }
-    } catch (error: unknown) {
-      const err = error as Error;
-      alert("Failed to sign in: " + err.message);
+    } catch (err) {
+      setError("Failed to sign in. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -81,57 +59,72 @@ export default function SignInPage() {
           </div>
 
           <p className="text-gray-400 mb-8">
-            Connect your wallet to access your dashboard and investment pools.
+            Sign in to access your dashboard and investment pools.
           </p>
 
-          {/* Wallet Connection */}
-          <div className="space-y-6">
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+              {error}
+            </div>
+          )}
+
+          {/* Sign In Form */}
+          <form onSubmit={handleSignIn} className="space-y-6 text-left">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2 text-left">
-                Wallet Address
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Email Address
               </label>
               <div className="flex gap-2">
+                <div className="flex items-center px-3 bg-white/[0.03] border border-white/[0.08] rounded-l-lg">
+                  <Mail className="w-5 h-5 text-gray-500" />
+                </div>
                 <input
-                  type="text"
-                  value={walletAddress}
-                  onChange={(e) => setWalletAddress(e.target.value)}
-                  placeholder="0x..."
-                  className="flex-1 px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#00d2ff]/50 transition-colors"
-                  readOnly
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="flex-1 px-4 py-3 bg-white/[0.03] border border-l-0 border-white/[0.08] rounded-r-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#00d2ff]/50 transition-colors"
                 />
-                <button
-                  onClick={connectWallet}
-                  className="px-4 py-3 glass rounded-lg hover:bg-white/[0.06] transition-colors flex items-center gap-2"
-                >
-                  <Wallet className="w-5 h-5 text-[#00d2ff]" />
-                </button>
               </div>
             </div>
 
-            {walletAddress && (
-              <NeonButton
-                fullWidth
-                onClick={handleSignIn}
-                disabled={isLoading}
-                className="flex items-center justify-center gap-2"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Signing...
-                  </>
-                ) : (
-                  "Sign In with Wallet"
-                )}
-              </NeonButton>
-            )}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Password
+              </label>
+              <div className="flex gap-2">
+                <div className="flex items-center px-3 bg-white/[0.03] border border-white/[0.08] rounded-l-lg">
+                  <Lock className="w-5 h-5 text-gray-500" />
+                </div>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="flex-1 px-4 py-3 bg-white/[0.03] border border-l-0 border-white/[0.08] rounded-r-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#00d2ff]/50 transition-colors"
+                />
+              </div>
+            </div>
 
-            <button
-              onClick={connectWallet}
-              className="text-[#00d2ff] hover:text-[#00ff88] text-sm transition-colors"
+            <NeonButton
+              fullWidth
+              type="submit"
+              disabled={isLoading}
+              className="flex items-center justify-center gap-2"
             >
-              Don&apos;t have a wallet? Install MetaMask
-            </button>
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                "Sign In"
+              )}
+            </NeonButton>
+          </form>
+
+          <div className="mt-6 text-sm text-gray-500">
+            Demo: <span className="text-gray-400">admin@dollorgrows.com</span> / <span className="text-gray-400">admin123</span>
           </div>
 
           {/* Features */}

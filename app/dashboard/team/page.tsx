@@ -8,8 +8,8 @@ import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 
 interface TeamMember {
   id: string;
-  username: string;
-  wallet: string;
+  name: string;
+  email: string;
   invested: number;
   earnings: number;
   downlineCount: number;
@@ -117,7 +117,7 @@ export default function TeamPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
             <input
               type="text"
-              placeholder="Search by username or wallet..."
+              placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#00d2ff]/50 transition-colors"
@@ -137,8 +137,8 @@ export default function TeamPage() {
             <div className="space-y-2">
               {teamTree
                 .filter((member) =>
-                  member.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  member.wallet.toLowerCase().includes(searchTerm.toLowerCase())
+                  member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  member.email.toLowerCase().includes(searchTerm.toLowerCase())
                 )
                 .map((member) => (
                   <TeamTreeNode
@@ -200,14 +200,14 @@ function TeamTreeNode({ member, expandedNodes, onToggle, level }: TeamTreeNodePr
 
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00d2ff] to-[#00ff88] flex items-center justify-center">
           <span className="text-black font-bold text-sm">
-            {member.username.charAt(0).toUpperCase()}
+            {member.name.charAt(0).toUpperCase()}
           </span>
         </div>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-white">{member.username}</span>
-            <span className="text-xs text-gray-500">{member.wallet}</span>
+            <span className="font-semibold text-white">{member.name}</span>
+            <span className="text-xs text-gray-500">{member.email}</span>
           </div>
           <div className="text-xs text-gray-400 mt-1">
             Downline: {member.downlineCount} members

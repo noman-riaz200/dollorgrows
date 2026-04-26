@@ -11,23 +11,25 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // In production, verify admin role
-
     const users = await prisma.user.findMany({
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
-        username: true,
+        name: true,
         email: true,
-        walletAddress: true,
-        totalInvested: true,
-        totalEarnings: true,
-        availableBalance: true,
+        referralCode: true,
         createdAt: true,
+        wallet: {
+          select: {
+            balanceWallet: true,
+            poolWallet: true,
+            poolCommission: true,
+          },
+        },
         _count: {
           select: {
             investments: true,
-            downliners: true,
+            referrals: true,
           },
         },
       },
@@ -54,3 +56,4 @@ export async function GET() {
     );
   }
 }
+

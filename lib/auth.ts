@@ -1,44 +1,36 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
 export const authOptions = {
-  adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
-      name: "Wallet",
+      name: "Credentials",
       credentials: {
-        walletAddress: { label: "Wallet Address", type: "text" },
-        signature: { label: "Signature", type: "text" },
-        message: { label: "Message", type: "text" },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.walletAddress) {
+        if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
-        const { walletAddress } = credentials as {
-          walletAddress: string;
+        const { email, password } = credentials as {
+          email: string;
+          password: string;
         };
 
-        let user = await prisma.user.findUnique({
-          where: { walletAddress },
+        const user = await prisma.user.findUnique({
+          where: { email },
         });
 
         if (!user) {
-          const username = `User_${walletAddress.slice(2, 10)}`;
-          const referralCode = `REF${walletAddress.slice(2, 10).toUpperCase()}`;
+          return null;
+        }
 
-          user = await prisma.user.create({
-            data: {
-              walletAddress,
-              username,
-              referralCode,
-              totalInvested: 0,
-              totalEarnings: 0,
-              availableBalance: 0,
-            },
-          });
+        const isValid = await bcrypt.compare(password, user.password);
+        if (!isValid) {
+          return null;
         }
 
         await prisma.user.update({
@@ -46,15 +38,12 @@ export const authOptions = {
           data: { lastLogin: new Date() },
         });
 
-return {
+        return {
           id: user.id,
-          email: user.email ?? undefined,
-          name: user.username,
-          image: null,
-          walletAddress: user.walletAddress,
-          username: user.username,
-          fullName: user.fullName ?? undefined,
+          email: user.email,
+          name: user.name,
           referralCode: user.referralCode,
+          role: user.role as "user" | "admin",
         };
       },
     }),
@@ -66,20 +55,19 @@ return {
   callbacks: {
     async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
-        token.walletAddress = user.walletAddress;
-        token.username = user.username;
-        token.fullName = user.fullName;
+        token.name = user.name;
         token.referralCode = user.referralCode;
+        token.role = user.role;
       }
       return token;
     },
     async session({ session, token }: { session: any; token: any }) {
       if (token) {
         session.user.id = token.sub!;
-        session.user.walletAddress = token.walletAddress as string;
-        session.user.username = token.username as string;
-        session.user.fullName = token.fullName as string;
+        session.user.name = token.name as string;
+        session.user.email = token.email as string;
         session.user.referralCode = token.referralCode as string;
+        session.user.role = token.role as string;
       }
       return session;
     },
@@ -88,3 +76,4 @@ return {
     signIn: "/auth/signin",
   },
 };
+

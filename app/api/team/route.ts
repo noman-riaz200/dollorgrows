@@ -16,12 +16,12 @@ export async function GET(request: Request) {
     const depth = parseInt(searchParams.get("depth") || "3");
     const userId = session.user.id;
 
-    // Get user's immediate downliners
-    const downliners = await prisma.user.findMany({
-      where: { referredBy: userId },
+    // Get user's immediate referrals
+    const referrals = await prisma.user.findMany({
+      where: { sponsorId: userId },
       include: {
         _count: {
-          select: { downliners: true },
+          select: { referrals: true },
         },
       },
     });
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     // Build tree recursively
     const tree = await buildTeamTree(userId, depth);
 
-    return NextResponse.json({ tree, total: downliners.length });
+    return NextResponse.json({ tree, total: referrals.length });
   } catch (error) {
     console.error("Team API error:", error);
     return NextResponse.json(
@@ -42,8 +42,8 @@ export async function GET(request: Request) {
 interface TeamNode {
   user: {
     id: string;
-    username: string;
-    wallet: string;
+    name: string;
+    email: string;
     invested: number;
     earnings: number;
     downlineCount: number;
@@ -55,16 +55,20 @@ async function buildTeamTree(userId: string, maxDepth: number, currentDepth: num
   if (currentDepth >= maxDepth) return null;
 
   const users = await prisma.user.findMany({
-    where: { referredBy: userId },
+    where: { sponsorId: userId },
     select: {
       id: true,
-      username: true,
-      walletAddress: true,
-      totalInvested: true,
-      totalEarnings: true,
+      name: true,
+      email: true,
       createdAt: true,
+      wallet: {
+        select: {
+          poolWallet: true,
+          poolCommission: true,
+        },
+      },
       _count: {
-        select: { downliners: true },
+        select: { referrals: true },
       },
     },
   });
@@ -76,11 +80,11 @@ async function buildTeamTree(userId: string, maxDepth: number, currentDepth: num
     return {
       user: {
         id: user.id,
-        username: user.username,
-        wallet: user.walletAddress.slice(0, 6) + "..." + user.walletAddress.slice(-4),
-        invested: Number(user.totalInvested),
-        earnings: Number(user.totalEarnings),
-        downlineCount: user._count.downliners,
+        name: user.name,
+        email: user.email.slice(0, 3) + "..." + user.email.slice(-10),
+        invested: Number(user.wallet?.poolWallet || 0),
+        earnings: Number(user.wallet?.poolCommission || 0),
+        downlineCount: user._count.referrals,
       },
       children: childNodes,
     };
@@ -122,8 +126,8 @@ export async function GET_STATS() {
 
       if (level >= 5) continue;
 
-      const downliners = await prisma.user.findMany({
-        where: { referredBy: id },
+      const referrals = await prisma.user.findMany({
+        where: { sponsorId: id },
         select: {
           id: true,
           investments: {
@@ -133,7 +137,7 @@ export async function GET_STATS() {
         },
       });
 
-      for (const user of downliners) {
+      for (const user of referrals) {
         if (!visited.has(user.id)) {
           queue.push({ id: user.id, level: level + 1 });
           if (user.investments.length > 0) {
@@ -157,3 +161,4 @@ export async function GET_STATS() {
     );
   }
 }
+

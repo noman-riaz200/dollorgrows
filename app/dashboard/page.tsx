@@ -10,7 +10,6 @@ import {
   Wallet,
   TrendingUp,
   ArrowUpRight,
-  ArrowDownRight,
   Layers,
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPie, Pie, Cell } from "recharts";
@@ -122,7 +121,7 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Welcome back, <span className="text-[#00d2ff]">{session?.user?.username || "User"}</span>!
+            Welcome back, <span className="text-[#00d2ff]">{session?.user?.name || "User"}</span>!
           </h1>
           <p className="text-gray-400">
             Here&apos;s an overview of your portfolio and earnings.

@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-
 // POST /api/investments - Create a new investment
 export async function POST(request: Request) {
   try {
@@ -48,11 +47,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+    const wallet = await prisma.wallet.findUnique({
+      where: { userId: session.user.id },
     });
 
-    if (!user || user.availableBalance < amount) {
+    if (!wallet || wallet.balanceWallet < amount) {
       return NextResponse.json(
         { error: "Insufficient balance" },
         { status: 400 }
@@ -64,11 +63,11 @@ export async function POST(request: Request) {
     endDate.setDate(endDate.getDate() + pool.durationDays);
 
     const result = await prisma.$transaction(async (tx) => {
-      await tx.user.update({
-        where: { id: session.user.id },
+      await tx.wallet.update({
+        where: { userId: session.user.id },
         data: {
-          availableBalance: { decrement: amount },
-          totalInvested: { increment: amount },
+          balanceWallet: { decrement: amount },
+          poolWallet: { increment: amount },
         },
       });
 
@@ -89,7 +88,7 @@ export async function POST(request: Request) {
         },
       });
 
-      await tx.walletTransaction.create({
+      await tx.transaction.create({
         data: {
           userId: session.user.id,
           type: "investment",
@@ -129,15 +128,15 @@ async function processReferralCommissions(
 ) {
   const user = await tx.user.findUnique({
     where: { id: userId },
-    include: { upliner: true },
+    include: { sponsor: true },
   });
 
-  if (!user?.upliner) return;
+  if (!user?.sponsor) return;
 
-  let currentUpliner: NonNullable<typeof user.upliner> | null = user.upliner;
+  let currentSponsor: NonNullable<typeof user.sponsor> | null = user.sponsor;
   let level = 1;
 
-  while (currentUpliner && level <= 3) {
+  while (currentSponsor && level <= 3) {
     const pool = await tx.pool.findUnique({
       where: { id: poolId },
     });
@@ -163,7 +162,7 @@ async function processReferralCommissions(
       await tx.commission.create({
         data: {
           fromUserId: userId,
-          toUserId: currentUpliner.id,
+          toUserId: currentSponsor.id,
           amount: commissionAmount,
           level,
           percentage: commissionRate,
@@ -172,17 +171,17 @@ async function processReferralCommissions(
         },
       });
 
-      await tx.user.update({
-        where: { id: currentUpliner.id },
+      await tx.wallet.update({
+        where: { userId: currentSponsor.id },
         data: {
-          availableBalance: { increment: commissionAmount },
-          totalEarnings: { increment: commissionAmount },
+          balanceWallet: { increment: commissionAmount },
+          poolCommission: { increment: commissionAmount },
         },
       });
 
-      await tx.walletTransaction.create({
+      await tx.transaction.create({
         data: {
-          userId: currentUpliner.id,
+          userId: currentSponsor.id,
           type: "commission",
           amount: commissionAmount,
           description: `Level ${level} referral commission`,
@@ -191,10 +190,10 @@ async function processReferralCommissions(
       });
     }
 
-    const nextUpliner = await tx.user.findUnique({
-      where: { id: currentUpliner.referredBy || "" },
+    const nextSponsor = await tx.user.findUnique({
+      where: { id: currentSponsor.sponsorId || "" },
     });
-    currentUpliner = nextUpliner as typeof currentUpliner;
+    currentSponsor = nextSponsor as typeof currentSponsor;
     level++;
   }
 }
@@ -206,25 +205,25 @@ async function processMatrixAssignment(
   amount: number,
   investmentId: string
 ) {
-  // Get the investor's referrer
+  // Get the investor's sponsor
   const investor = await tx.user.findUnique({
     where: { id: investorId },
-    select: { referredBy: true },
+    select: { sponsorId: true },
   });
 
-  if (!investor?.referredBy) return;
+  if (!investor?.sponsorId) return;
 
-  const referrerId = investor.referredBy;
+  const sponsorId = investor.sponsorId;
 
-  // Ensure referrer has all 15 matrix slots initialized
+  // Ensure sponsor has all 15 matrix slots initialized
   const existingSlots = await tx.matrixSlot.count({
-    where: { ownerId: referrerId },
+    where: { ownerId: sponsorId },
   });
 
   if (existingSlots < 15) {
     const existingPositions = new Set(
       (await tx.matrixSlot.findMany({
-        where: { ownerId: referrerId },
+        where: { ownerId: sponsorId },
         select: { position: true },
       })).map((s: { position: number }) => s.position)
     );
@@ -233,7 +232,7 @@ async function processMatrixAssignment(
     for (let i = 1; i <= 15; i++) {
       if (!existingPositions.has(i)) {
         slotsToCreate.push({
-          ownerId: referrerId,
+          ownerId: sponsorId,
           position: i,
           isFilled: false,
           bonusAmount: 0,
@@ -252,13 +251,13 @@ async function processMatrixAssignment(
   // Find first empty slot (BFS order: 1-15)
   const emptySlot = await tx.matrixSlot.findFirst({
     where: {
-      ownerId: referrerId,
+      ownerId: sponsorId,
       isFilled: false,
     },
     orderBy: { position: "asc" },
   });
 
-  if (!emptySlot) return; // Matrix is full
+  if (!emptySlot) return;
 
   // Get pool bonus percent
   const pool = await tx.pool.findUnique({
@@ -285,7 +284,7 @@ async function processMatrixAssignment(
   await tx.matrixBonus.create({
     data: {
       fromUserId: investorId,
-      toUserId: referrerId,
+      toUserId: sponsorId,
       investmentId,
       poolId,
       amount: bonusAmount,
@@ -295,19 +294,19 @@ async function processMatrixAssignment(
     },
   });
 
-  // Credit bonus to referrer
-  await tx.user.update({
-    where: { id: referrerId },
+  // Credit bonus to sponsor
+  await tx.wallet.update({
+    where: { userId: sponsorId },
     data: {
-      availableBalance: { increment: bonusAmount },
-      totalEarnings: { increment: bonusAmount },
+      balanceWallet: { increment: bonusAmount },
+      poolCommission: { increment: bonusAmount },
     },
   });
 
-  // Create wallet transaction for referrer
-  await tx.walletTransaction.create({
+  // Create transaction for sponsor
+  await tx.transaction.create({
     data: {
-      userId: referrerId,
+      userId: sponsorId,
       type: "referral_bonus",
       amount: bonusAmount,
       description: `Matrix bonus (${pool.bonusPercent}%) from slot ${emptySlot.position} - ${pool.name}`,
