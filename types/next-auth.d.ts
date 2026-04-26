@@ -8,14 +8,19 @@ declare module "next-auth" {
       email: string;
       role?: "user" | "admin";
       referralCode?: string;
+      country?: string | null;
+      phone?: string | null;
     } & DefaultSession["user"];
   }
 
   interface User {
+    id?: string;
     name: string;
     email: string;
     role?: "user" | "admin";
     referralCode?: string;
+    country?: string | null;
+    phone?: string | null;
   }
 }
 

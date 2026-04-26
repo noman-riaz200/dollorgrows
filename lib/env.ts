@@ -10,6 +10,8 @@ const envSchema = z.object({
   NEXT_PUBLIC_LEVEL1_COMMISSION: z.string().default("10"),
   NEXT_PUBLIC_LEVEL2_COMMISSION: z.string().default("5"),
   NEXT_PUBLIC_LEVEL3_COMMISSION: z.string().default("3"),
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
 });
 
 export function validateEnv() {

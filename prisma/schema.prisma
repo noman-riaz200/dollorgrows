@@ -21,6 +21,11 @@ model User {
   sponsor       User?     @relation("ReferralTree", fields: [sponsorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   referrals     User[]    @relation("ReferralTree")
 
+  // Contact Info
+  phone         String?
+  country       String?
+  phoneCode     String?   @map("phone_code")
+
   // Role
   role          String   @default("user") // user, admin
 
