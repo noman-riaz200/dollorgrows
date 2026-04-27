@@ -26,6 +26,9 @@ model User {
   country       String?
   phoneCode     String?   @map("phone_code")
 
+  // Profile
+  avatar        String?
+
   // Role
   role          String   @default("user") // user, admin
 

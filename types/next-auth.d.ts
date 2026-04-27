@@ -10,6 +10,7 @@ declare module "next-auth" {
       referralCode?: string;
       country?: string | null;
       phone?: string | null;
+      avatar?: string | null;
     } & DefaultSession["user"];
   }
 
@@ -21,6 +22,7 @@ declare module "next-auth" {
     referralCode?: string;
     country?: string | null;
     phone?: string | null;
+    avatar?: string | null;
   }
 }
 

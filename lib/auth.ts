@@ -51,6 +51,7 @@ export const authOptions = {
           role: user.role as "user" | "admin",
           country: user.country,
           phone: user.phone,
+          avatar: user.avatar,
         };
       },
     }),
@@ -84,12 +85,14 @@ export const authOptions = {
           user.role = newUser.role;
           user.country = newUser.country;
           user.phone = newUser.phone;
+          user.avatar = newUser.avatar;
         } else {
           user.id = existingUser.id;
           user.referralCode = existingUser.referralCode;
           user.role = existingUser.role;
           user.country = existingUser.country;
           user.phone = existingUser.phone;
+          user.avatar = existingUser.avatar;
         }
       }
       return true;
@@ -102,6 +105,7 @@ export const authOptions = {
         token.role = user.role;
         token.country = user.country;
         token.phone = user.phone;
+        token.avatar = user.avatar;
       }
       return token;
     },
@@ -114,6 +118,7 @@ export const authOptions = {
         session.user.role = token.role as string;
         session.user.country = token.country as string;
         session.user.phone = token.phone as string;
+        session.user.avatar = token.avatar as string;
       }
       return session;
     },
