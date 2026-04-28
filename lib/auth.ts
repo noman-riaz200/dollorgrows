@@ -97,7 +97,7 @@ export const authOptions = {
       }
       return true;
     },
-    async jwt({ token, user }: { token: any; user: any }) {
+async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
@@ -106,6 +106,7 @@ export const authOptions = {
         token.country = user.country;
         token.phone = user.phone;
         token.avatar = user.avatar;
+        token.status = user.status;
       }
       return token;
     },
@@ -119,6 +120,7 @@ export const authOptions = {
         session.user.country = token.country as string;
         session.user.phone = token.phone as string;
         session.user.avatar = token.avatar as string;
+        session.user.status = token.status as string;
       }
       return session;
     },

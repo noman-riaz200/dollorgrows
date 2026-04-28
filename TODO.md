@@ -1,19 +1,28 @@
-# Settings Module Implementation
+# DollorGrows Implementation Plan
 
-## Steps
-- [x] Update `prisma/schema.prisma` — add `avatar` field to User model
-- [x] Update `types/next-auth.d.ts` — add `avatar` to Session.user
-- [x] Update `lib/auth.ts` — include avatar in JWT & session callbacks
-- [x] Create `lib/validations/settings.ts` — Zod schemas for profile, email, PIN
-- [x] Create `app/api/settings/route.ts` — GET current user settings
-- [x] Create `app/api/settings/profile/route.ts` — PUT update profile (name, phone, country, avatar)
-- [x] Create `app/api/settings/email/route.ts` — PUT change email with password verification
-- [x] Create `app/api/settings/pin/route.ts` — PUT update 6-digit security PIN
-- [x] Rewrite `app/dashboard/settings/page.tsx` — full tabbed settings UI with:
-  - Tab 1: Update Profile (avatar upload, name, phone, country)
-  - Tab 2: Change Email (new email + current password)
-  - Tab 3: Security PIN (6-digit numeric keypad)
-- [x] Run `npm run db:push` to apply schema changes
-- [x] Fix TypeScript errors (Zod `.issues`, unreachable comparisons, icon imports)
-- [x] Build check — settings module compiles cleanly (remaining errors are pre-existing in other files)
+## Phase 1: Schema & API (COMPLETED)
+- [x] Update `prisma/schema.prisma` — add Settings, Notification, DailyProfit models + status/network fields
+- [x] Create `app/api/admin/deposits/route.ts` — GET pending + POST approve/reject
+- [x] Create `app/api/admin/withdrawals/route.ts` — GET pending + POST approve/reject
+- [x] Create `app/api/admin/users/[id]/block/route.ts` — POST toggle block/unblock
+- [x] Create `app/api/admin/settings/route.ts` — GET/PUT platform config
+- [x] Create `app/api/admin/commissions/route.ts` — GET commission report
+- [x] Create `app/api/profit/claim/route.ts` — POST daily profit claiming
+- [x] Create `app/api/notifications/route.ts` — GET user notifications
+- [x] Create `app/api/notifications/read/route.ts` — POST mark as read
+- [x] Create `app/api/settings/public/route.ts` — GET public settings (deposit addresses)
+- [x] Update `app/api/wallet/deposit/route.ts` — USDT TxID flow with pending status
+- [x] Update `middleware.ts` — admin role checks + blocked user protection
+- [x] Fix `app/admin/page.tsx` — full admin panel with pools/deposits/withdrawals/users tabs
+- [x] Run `npx prisma db push` to apply schema changes
 
+## Phase 2: Frontend Pages (IN PROGRESS)
+- [ ] Fix `app/dashboard/commission/page.tsx` — real commission history with levels
+- [ ] Fix `app/dashboard/teams/page.tsx` — team stats/content
+- [ ] Fix `app/dashboard/exchange/page.tsx` — exchange transaction history
+- [ ] Update `app/dashboard/wallet/page.tsx` — USDT deposit flow with QR + TxID
+
+## Phase 3: Build & Polish
+- [ ] TypeScript build check
+- [ ] Fix remaining lint errors
+- [ ] Test admin approval flows
