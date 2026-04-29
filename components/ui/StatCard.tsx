@@ -59,7 +59,7 @@ export function StatCard({
           </span>
         )}
       </div>
-      <p className="text-2xl font-bold text-white mb-1">{value}</p>
+      <p className="text-xl sm:text-2xl font-bold text-white mb-1">{value}</p>
       <p className="text-gray-400 text-sm">{title}</p>
     </div>
   );

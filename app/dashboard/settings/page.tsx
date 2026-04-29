@@ -332,8 +332,8 @@ export default function SettingsPage() {
     { key: "pin", label: "Security PIN", icon: Shield },
   ];
 
-  return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+return (
+    <div className="space-y-6">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>

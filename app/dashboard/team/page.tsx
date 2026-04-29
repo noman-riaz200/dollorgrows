@@ -11,7 +11,6 @@ import {
   Zap,
 } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
-import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import TeamFlowGraph from "@/components/team/TeamFlowGraph";
 
 interface TeamMember {
@@ -85,17 +84,14 @@ export default function TeamPage() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] relative">
-      <AnimatedBackground />
-
-      <div className="relative z-10">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">My Team</h1>
-          <p className="text-gray-400">
-            Visualize your referral network and track your team growth.
-          </p>
-        </div>
+    <div>
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-white mb-2">My Team</h1>
+        <p className="text-gray-400">
+          Visualize your referral network and track your team growth.
+        </p>
+      </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -190,7 +186,6 @@ export default function TeamPage() {
           )}
         </div>
       </div>
-    </div>
   );
 }
 

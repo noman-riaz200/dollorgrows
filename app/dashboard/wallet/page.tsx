@@ -25,7 +25,6 @@ import {
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { NeonButton } from "@/components/ui/NeonButton";
-import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { formatAddress } from "@/lib/utils";
 
 /* ─── Types ─── */
@@ -310,10 +309,7 @@ export default function WalletPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] relative">
-      <AnimatedBackground />
-
-      <div className="relative z-10 max-w-7xl mx-auto">
+    <div>
         {/* ─── Header ─── */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
@@ -477,11 +473,11 @@ export default function WalletPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/[0.06]">
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-4">Type</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-4">Amount</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-4">Description</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-4">Date</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-4">Status</th>
+<th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-2 sm:px-4">Type</th>
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-2 sm:px-4">Amount</th>
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-2 sm:px-4">Description</th>
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-2 sm:px-4">Date</th>
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-2 sm:px-4">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -491,23 +487,23 @@ export default function WalletPage() {
                       key={tx.id}
                       className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors"
                     >
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-3">
+<td className="py-4 px-2 sm:px-4">
+                        <div className="flex items-center gap-2 sm:gap-3">
                           <div className="w-8 h-8 rounded-lg bg-white/[0.03] flex items-center justify-center">
                             <TypeIcon type={tx.type} />
                           </div>
                           <span className="text-sm font-medium text-white capitalize">{tx.type}</span>
                         </div>
                       </td>
-                      <td className="py-4 px-4">
+                      <td className="py-4 px-2 sm:px-4">
                         <span className={`text-sm font-bold ${tx.amount >= 0 ? "text-[#00ff88]" : "text-red-400"}`}>
                           {tx.amount >= 0 ? "+" : ""}${Math.abs(tx.amount).toLocaleString()}
                         </span>
                       </td>
-                      <td className="py-4 px-4">
+                      <td className="py-4 px-2 sm:px-4">
                         <span className="text-sm text-gray-400">{tx.description || "-"}</span>
                       </td>
-                      <td className="py-4 px-4">
+                      <td className="py-4 px-2 sm:px-4">
                         <span className="text-sm text-gray-500">
                           {new Date(tx.createdAt).toLocaleDateString("en-US", {
                             year: "numeric",
@@ -518,7 +514,7 @@ export default function WalletPage() {
                           })}
                         </span>
                       </td>
-                      <td className="py-4 px-4">
+                      <td className="py-4 px-2 sm:px-4">
                         <StatusBadge status={tx.status} />
                       </td>
                     </tr>
@@ -535,13 +531,12 @@ export default function WalletPage() {
                 )}
               </tbody>
             </table>
-          </div>
+</div>
         </GlassCard>
-      </div>
 
       {/* ─── Deposit Modal ─── */}
       {showDepositModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <GlassCard className="w-full max-w-md relative" neonBorder="cyan">
             <button
               onClick={() => setShowDepositModal(false)}
@@ -576,7 +571,7 @@ export default function WalletPage() {
 
       {/* ─── Withdraw Modal ─── */}
       {showWithdrawModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+<div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <GlassCard className="w-full max-w-md relative" neonBorder="green">
             <button
               onClick={() => setShowWithdrawModal(false)}
@@ -622,7 +617,7 @@ export default function WalletPage() {
 
       {/* ─── Exchange Modal ─── */}
       {showExchangeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+<div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <GlassCard className="w-full max-w-md relative" neonBorder="cyan">
             <button
               onClick={() => setShowExchangeModal(false)}

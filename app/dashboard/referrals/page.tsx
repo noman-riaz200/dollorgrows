@@ -6,8 +6,6 @@ import { Copy, Check, Link2, Gift, User, Phone, Mail, Hash, Share2, Twitter, Fac
 import { QRCodeSVG } from "qrcode.react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { NeonButton } from "@/components/ui/NeonButton";
-import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
-
 export default function ReferralsPage() {
   const { data: session } = useSession();
   const [copied, setCopied] = useState(false);
@@ -44,11 +42,8 @@ export default function ReferralsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] relative">
-      <AnimatedBackground />
-
-      <div className="relative z-10 max-w-6xl mx-auto">
-        {/* Header */}
+    <div>
+      {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Referral Link</h1>
           <p className="text-gray-400">
@@ -247,7 +242,7 @@ export default function ReferralsPage() {
           </div>
         </GlassCard>
       </div>
-    </div>
+</div>
   );
 }
 

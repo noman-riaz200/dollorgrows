@@ -36,7 +36,6 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { StatCard } from "@/components/ui/StatCard";
 import { NeonButton } from "@/components/ui/NeonButton";
 import { MatrixGrid } from "@/components/ui/MatrixGrid";
-import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 
 const COLORS = ["#00d2ff", "#00ff88", "#8b5cf6", "#f59e0b", "#ef4444"] as const;
 
@@ -146,30 +145,27 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f]">
         <div className="w-16 h-16 border-4 border-[#00d2ff] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
+</div>
+  );
+}
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] relative">
-      <AnimatedBackground />
+    <div>
+{/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+          Welcome back,{" "}
+          <span className="text-[#00d2ff]">
+            {session?.user?.name || "User"}
+          </span>
+          !
+        </h1>
+        <p className="text-gray-400">
+          Here&apos;s an overview of your portfolio and earnings.
+        </p>
+      </div>
 
-      <div className="relative z-10">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Welcome back,{" "}
-            <span className="text-[#00d2ff]">
-              {session?.user?.name || "User"}
-            </span>
-            !
-          </h1>
-          <p className="text-gray-400">
-            Here&apos;s an overview of your portfolio and earnings.
-          </p>
-        </div>
-
-        {/* ─── HERO: Total Balance ─── */}
+      {/* ─── HERO: Total Balance ─── */}
         <GlassCard
           className="mb-8"
           neonBorder="cyan"
@@ -303,7 +299,7 @@ export default function DashboardPage() {
             <h3 className="text-lg font-bold text-white mb-4">
               Earnings Overview
             </h3>
-            <div className="h-72">
+            <div className="h-64 md:h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData}>
                   <CartesianGrid
@@ -455,8 +451,6 @@ export default function DashboardPage() {
             </div>
           </GlassCard>
         </div>
-      </div>
-    </div>
   );
 }
 
