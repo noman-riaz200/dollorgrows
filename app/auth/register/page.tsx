@@ -12,7 +12,7 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Chrome,
+  Globe,
   User,
   Gift,
   MapPin,
@@ -158,7 +158,7 @@ export default function RegisterPage() {
             "google-btn-glow-green"
           )}
         >
-          <Chrome className="w-5 h-5 text-[#00ff88]" />
+          <Globe className="w-5 h-5 text-[#00ff88]" />
           <span>Sign up with Google</span>
         </button>
 

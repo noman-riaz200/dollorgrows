@@ -27,6 +27,18 @@ const faqData: FAQItem[] = [
   {
     question: "Is my investment secure?",
     answer: "Absolutely. We prioritize the security of your investments through industry-leading encryption, secure banking partnerships, and regulatory compliance. Your funds are protected by robust security measures and we're transparent about all investment risks."
+  },
+  {
+    question: "What are the expected returns?",
+    answer: "Returns vary based on the investment plan you choose, ranging from 10% to 25% annually. Our platform provides detailed projections and real-time tracking so you can monitor your investment growth."
+  },
+  {
+    question: "Can I withdraw my initial investment?",
+    answer: "Yes, you can withdraw your initial investment after the lock-in period specified in your chosen plan. We offer flexible terms to accommodate different investment horizons and financial goals."
+  },
+  {
+    question: "Is there a mobile app available?",
+    answer: "Yes, we offer a fully-featured mobile app for both iOS and Android devices. You can manage your investments, track performance, and make withdrawals directly from your mobile device."
   }
 ];
 
@@ -41,9 +53,11 @@ export default function Faqs() {
     <section className="faqs-section">
       <div className="faqs-container">
         <div className="faqs-header">
-          <h2 className="faqs-title">FAQs</h2>
+          <h2 className="faqs-title">
+            <span>Frequently Asked</span> Questions
+          </h2>
           <p className="faqs-subtitle">
-            Find answers to the most common questions about Fund Grow Online
+            Find answers to the most common questions about Fund Grow Online and our investment platform
           </p>
         </div>
         
@@ -78,160 +92,23 @@ export default function Faqs() {
                 </span>
               </button>
               <div className="faq-answer">
-                <p>{item.answer}</p>
+                <div className="faq-answer-content">
+                  <p>{item.answer}</p>
+                </div>
               </div>
             </div>
           ))}
         </div>
+
+        <div className="faq-cta">
+          <p className="faq-cta-text">
+            Still have questions? We're here to help!
+          </p>
+          <a href="/contact" className="faq-cta-button">
+            Contact Our Support Team
+          </a>
+        </div>
       </div>
-
-      <style jsx>{`
-        .faqs-section {
-          background-color: #f8f9fa;
-          padding: 80px 20px;
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .faqs-container {
-          max-width: 800px;
-          width: 100%;
-          margin: 0 auto;
-        }
-
-        .faqs-header {
-          text-align: center;
-          margin-bottom: 50px;
-        }
-
-        .faqs-title {
-          font-size: 48px;
-          font-weight: 700;
-          color: #1a1a2e;
-          margin: 0 0 16px 0;
-          letter-spacing: -0.02em;
-        }
-
-        .faqs-subtitle {
-          font-size: 18px;
-          color: #666;
-          margin: 0;
-          line-height: 1.6;
-        }
-
-        .faqs-list {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .faq-item {
-          background: #ffffff;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-          transition: box-shadow 0.3s ease;
-        }
-
-        .faq-item:hover {
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        }
-
-        .faq-item.active {
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        }
-
-        .faq-question {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 24px 28px;
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          text-align: left;
-          transition: background-color 0.2s ease;
-        }
-
-        .faq-question:hover {
-          background-color: #fafafa;
-        }
-
-        .faq-question-text {
-          font-size: 18px;
-          font-weight: 600;
-          color: #1a1a2e;
-          flex: 1;
-          padding-right: 16px;
-        }
-
-        .faq-icon {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          background-color: #e8f5e9;
-          color: #2e7d32;
-          flex-shrink: 0;
-          transition: transform 0.3s ease, background-color 0.3s ease;
-        }
-
-        .faq-item.active .faq-icon {
-          transform: rotate(45deg);
-          background-color: #2e7d32;
-          color: #ffffff;
-        }
-
-        .faq-answer {
-          max-height: 0;
-          overflow: hidden;
-          transition: max-height 0.3s ease, padding 0.3s ease;
-        }
-
-        .faq-item.active .faq-answer {
-          max-height: 300px;
-        }
-
-        .faq-answer p {
-          padding: 0 28px 24px 28px;
-          margin: 0;
-          font-size: 16px;
-          line-height: 1.7;
-          color: #555;
-        }
-
-        @media (max-width: 768px) {
-          .faqs-section {
-            padding: 60px 16px;
-          }
-
-          .faqs-title {
-            font-size: 36px;
-          }
-
-          .faqs-subtitle {
-            font-size: 16px;
-          }
-
-          .faq-question {
-            padding: 20px 24px;
-          }
-
-          .faq-question-text {
-            font-size: 16px;
-          }
-
-          .faq-answer p {
-            padding: 0 24px 20px 24px;
-            font-size: 15px;
-          }
-        }
-      `}</style>
     </section>
   );
 }

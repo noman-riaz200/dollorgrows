@@ -52,55 +52,55 @@ export function PoolCard({
       />
 
       <div className="p-5">
-        <div className="flex items-start justify-between mb-3">
+      <div className="d-flex align-items-start justify-content-between mb-3">
           <div>
-            <h3 className="text-lg font-bold text-white">{name}</h3>
+            <h3 className="h5 fw-bold text-white">{name}</h3>
             {isGenesis && (
-              <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-[#00ff88]/20 text-[#00ff88] text-xs font-bold">
+              <span className="inline-block mt-1 px-2 py-px rounded-pill bg-[#00ff88]/20 text-[#00ff88] xsmall fw-bold">
                 100% BONUS
               </span>
             )}
           </div>
-          <div className="w-9 h-9 rounded-lg bg-[#00d2ff]/10 flex items-center justify-center">
+          <div className="w-36px h-36px rounded-3 bg-[#00d2ff]/10 d-flex align-items-center justify-content-center">
             <TrendingUp className="w-5 h-5 text-[#00d2ff]" />
           </div>
         </div>
 
-        <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+        <p className="text-muted small mb-4 line-clamp-2">
           {description || "No description available."}
         </p>
 
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="row row-cols-2 g-3 mb-4">
           <div>
-            <p className="text-[10px] text-gray-500 uppercase tracking-wider">Daily Return</p>
-            <p className="text-xl font-bold text-[#00ff88]">{dailyReturn}%</p>
+            <p className="xsmall text-muted uppercase tracking-wider">Daily Return</p>
+            <p className="fs-4 fw-bold text-[#00ff88]">{dailyReturn}%</p>
           </div>
           <div>
-            <p className="text-[10px] text-gray-500 uppercase tracking-wider">Duration</p>
-            <p className="text-xl font-bold text-[#00d2ff]">{durationDays}d</p>
+            <p className="xsmall text-muted uppercase tracking-wider">Duration</p>
+            <p className="fs-4 fw-bold text-[#00d2ff]">{durationDays}d</p>
           </div>
           <div>
-            <p className="text-[10px] text-gray-500 uppercase tracking-wider">Min</p>
-            <p className="text-sm font-semibold text-white">${minimumInvestment.toLocaleString()}</p>
+            <p className="xsmall text-muted uppercase tracking-wider">Min</p>
+            <p className="small fw-semibold text-white">${minimumInvestment.toLocaleString()}</p>
           </div>
           <div>
-            <p className="text-[10px] text-gray-500 uppercase tracking-wider">Max</p>
-            <p className="text-sm font-semibold text-white">
+            <p className="xsmall text-muted uppercase tracking-wider">Max</p>
+            <p className="small fw-semibold text-white">
               {maximumInvestment ? `$${maximumInvestment.toLocaleString()}` : "Unlimited"}
             </p>
           </div>
         </div>
 
-        <div className="p-2.5 bg-white/[0.03] rounded-lg mb-3">
-          <p className="text-[10px] text-gray-500 mb-1.5">Referral Commissions</p>
-          <div className="flex gap-2">
-            <span className="flex-1 text-center text-xs font-bold text-[#00d2ff]">{level1Commission}%</span>
-            <span className="flex-1 text-center text-xs font-bold text-[#00ff88]">{level2Commission}%</span>
-            <span className="flex-1 text-center text-xs font-bold text-purple-400">{level3Commission}%</span>
+        <div className="p-2 bg-white/[0.03] rounded-3 mb-3">
+          <p className="xsmall text-muted mb-1">Referral Commissions</p>
+          <div className="d-flex gap-2">
+            <span className="flex-1 text-center xsmall fw-bold text-[#00d2ff]">{level1Commission}%</span>
+            <span className="flex-1 text-center xsmall fw-bold text-[#00ff88]">{level2Commission}%</span>
+            <span className="flex-1 text-center xsmall fw-bold text-purple-400">{level3Commission}%</span>
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-1 text-xs text-[#00d2ff] font-medium">
+        <div className="d-flex align-items-center justify-content-center gap-1 xsmall text-[#00d2ff] fw-medium">
           Click to invest <ArrowRight className="w-3 h-3" />
         </div>
       </div>

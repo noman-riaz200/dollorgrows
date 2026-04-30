@@ -4,111 +4,83 @@ import React from 'react';
 
 const OurServices: React.FC = () => {
   return (
-    <>
-      <section className="services-section">
-        <div className="container">
-          <h2>Our Services</h2>
-          <p className="subtitle">Unlock financial growth with our Crowdfunding Plans designed for all levels</p>
-          <div className="services-grid">
-            <div className="service-card">
-              <svg className="icon" viewBox="0 0 24 24" fill="currentColor">
+    <section className="services-section">
+      <div className="services-container">
+        <div className="services-header">
+          <h2 className="services-title">
+            <span>Our Premium</span> Services
+          </h2>
+          <p className="services-subtitle">
+            Unlock financial growth with our comprehensive suite of investment solutions designed for maximum returns and security
+          </p>
+        </div>
+        <div className="services-grid">
+          <div className="service-card">
+            <div className="service-icon-wrapper">
+              <svg className="service-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
               </svg>
-              <h3>Flexible Plans</h3>
-              <p>Investments from $10 to $100,000</p>
             </div>
-            <div className="service-card">
-              <svg className="icon" viewBox="0 0 24 24" fill="currentColor">
+            <h3 className="service-card-title">Flexible Investment Plans</h3>
+            <p className="service-card-desc">
+              Choose from a wide range of investment options from $10 to $100,000 with customizable terms and competitive returns.
+            </p>
+            <ul className="service-features">
+              <li>Daily profit withdrawals</li>
+              <li>Compound interest options</li>
+              <li>Risk management tools</li>
+              <li>Portfolio diversification</li>
+            </ul>
+            <a href="/dashboard/plans" className="service-cta">
+              Explore Plans
+            </a>
+          </div>
+          
+          <div className="service-card">
+            <div className="service-icon-wrapper">
+              <svg className="service-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
               </svg>
-              <h3>Dual-phase Income</h3>
-              <p>Instant and long-term multiplication</p>
             </div>
-            <div className="service-card">
-              <svg className="icon" viewBox="0 0 24 24" fill="currentColor">
+            <h3 className="service-card-title">Dual-phase Income System</h3>
+            <p className="service-card-desc">
+              Earn both instant returns and long-term growth through our innovative dual-phase income distribution model.
+            </p>
+            <ul className="service-features">
+              <li>Instant daily profits</li>
+              <li>Long-term capital growth</li>
+              <li>Automatic reinvestment</li>
+              <li>Performance bonuses</li>
+            </ul>
+            <a href="/dashboard" className="service-cta">
+              Start Earning
+            </a>
+          </div>
+          
+          <div className="service-card">
+            <div className="service-icon-wrapper">
+              <svg className="service-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
               </svg>
-              <h3>Referral Rewards</h3>
-              <p>Potential earnings of up to $53,836</p>
             </div>
+            <h3 className="service-card-title">Referral & Team Rewards</h3>
+            <p className="service-card-desc">
+              Build your network and earn substantial rewards through our multi-level referral program with unlimited earning potential.
+            </p>
+            <ul className="service-features">
+              <li>Multi-level commissions</li>
+              <li>Team performance bonuses</li>
+              <li>Leadership rewards</li>
+              <li>Weekly payout system</li>
+            </ul>
+            <a href="/dashboard/referrals" className="service-cta">
+              Build Your Team
+            </a>
           </div>
         </div>
-      </section>
-
-      <style jsx>{`
-        .services-section {
-          padding: 80px 20px;
-          background-color: #f8f9fa;
-        }
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          text-align: center;
-        }
-        h2 {
-          font-size: 3rem;
-          font-weight: bold;
-          color: #333;
-          margin-bottom: 20px;
-        }
-        .subtitle {
-          font-size: 1.2rem;
-          color: #666;
-          margin-bottom: 60px;
-          max-width: 600px;
-          margin-left: auto;
-          margin-right: auto;
-        }
-        .services-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 40px;
-          max-width: 1000px;
-          margin: 0 auto;
-        }
-        .service-card {
-          background: white;
-          padding: 40px 30px;
-          border-radius: 12px;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .service-card:hover {
-          transform: translateY(-10px);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
-        .icon {
-          width: 60px;
-          height: 60px;
-          color: #006400; /* dark green */
-          margin-bottom: 20px;
-        }
-        .service-card h3 {
-          font-size: 1.5rem;
-          color: #333;
-          margin-bottom: 12px;
-        }
-        .service-card p {
-          font-size: 1rem;
-          color: #666;
-          line-height: 1.6;
-        }
-        @media (max-width: 768px) {
-          .services-section {
-            padding: 60px 20px;
-          }
-          h2 {
-            font-size: 2.5rem;
-          }
-          .services-grid {
-            grid-template-columns: 1fr;
-            gap: 30px;
-          }
-        }
-      `}</style>
-    </>
+      </div>
+    </section>
   );
 };
 
 export default OurServices;
-

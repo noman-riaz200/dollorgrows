@@ -11,99 +11,163 @@ const GetinTouch: React.FC = () => {
 
   return React.createElement(
     'section',
-    { className: 'getintouch-section' },
+    { className: 'contact-section' },
     React.createElement(
       'div',
-      { className: 'getintouch-overlay' },
+      { className: 'contact-container' },
       React.createElement(
         'div',
-        { className: 'getintouch-container' },
+        { className: 'contact-content' },
+        React.createElement(
+          'h2',
+          { className: 'contact-title' },
+          React.createElement(
+            'span',
+            null,
+            'Get in Touch'
+          ),
+          ' With Us'
+        ),
+        React.createElement(
+          'p',
+          { className: 'contact-subtitle' },
+          'Have questions or need assistance? Our team is here to help you with any inquiries about our services, investments, or platform features.'
+        ),
         React.createElement(
           'div',
-          { className: 'getintouch-content' },
+          { className: 'contact-info' },
           React.createElement(
             'div',
-            { className: 'getintouch-text' },
+            { className: 'contact-item' },
             React.createElement(
-              'h2',
-              { className: 'getintouch-title' },
-              'Get in touch'
+              'div',
+              { className: 'contact-icon' },
+              React.createElement('i', null, '📍')
             ),
             React.createElement(
-              'p',
-              { className: 'getintouch-subtitle' },
-              'Feel free to contact us and we will get back to you as soon as possible'
+              'div',
+              { className: 'contact-details' },
+              React.createElement('h4', null, 'Visit Our Office'),
+              React.createElement('p', null, '123 Financial District, New York, NY 10001')
             )
           ),
           React.createElement(
             'div',
-            { className: 'getintouch-form-wrapper' },
+            { className: 'contact-item' },
             React.createElement(
-              'form',
-              { 
-                className: 'getintouch-form',
-                onSubmit: handleSubmit
-              },
-              React.createElement(
-                'div',
-                { className: 'form-group' },
-                React.createElement(
-                  'label',
-                  { htmlFor: 'name', className: 'form-label' },
-                  'Name'
-                ),
-                React.createElement('input', {
-                  type: 'text',
-                  id: 'name',
-                  name: 'name',
-                  className: 'form-input',
-                  placeholder: 'Enter your name',
-                  required: true
-                })
-              ),
-              React.createElement(
-                'div',
-                { className: 'form-group' },
-                React.createElement(
-                  'label',
-                  { htmlFor: 'email', className: 'form-label' },
-                  'E-mail'
-                ),
-                React.createElement('input', {
-                  type: 'email',
-                  id: 'email',
-                  name: 'email',
-                  className: 'form-input',
-                  placeholder: 'Enter your email',
-                  required: true
-                })
-              ),
-              React.createElement(
-                'div',
-                { className: 'form-group' },
-                React.createElement(
-                  'label',
-                  { htmlFor: 'message', className: 'form-label' },
-                  'Message'
-                ),
-                React.createElement('textarea', {
-                  id: 'message',
-                  name: 'message',
-                  className: 'form-textarea',
-                  placeholder: 'Enter your message',
-                  rows: 5,
-                  required: true
-                })
-              ),
-              React.createElement(
-                'button',
-                { 
-                  type: 'submit',
-                  className: 'form-button'
-                },
-                'Send'
-              )
+              'div',
+              { className: 'contact-icon' },
+              React.createElement('i', null, '📧')
+            ),
+            React.createElement(
+              'div',
+              { className: 'contact-details' },
+              React.createElement('h4', null, 'Email Us'),
+              React.createElement('p', null, 'support@dollargrowth.com')
             )
+          ),
+          React.createElement(
+            'div',
+            { className: 'contact-item' },
+            React.createElement(
+              'div',
+              { className: 'contact-icon' },
+              React.createElement('i', null, '📞')
+            ),
+            React.createElement(
+              'div',
+              { className: 'contact-details' },
+              React.createElement('h4', null, 'Call Us'),
+              React.createElement('p', null, '+1 (555) 123-4567')
+            )
+          )
+        )
+      ),
+      React.createElement(
+        'div',
+        { className: 'contact-form-wrapper' },
+        React.createElement(
+          'form',
+          { 
+            className: 'contact-form',
+            onSubmit: handleSubmit
+          },
+          React.createElement(
+            'div',
+            { className: 'form-group' },
+            React.createElement(
+              'label',
+              { htmlFor: 'name', className: 'form-label' },
+              'Full Name'
+            ),
+            React.createElement('input', {
+              type: 'text',
+              id: 'name',
+              name: 'name',
+              className: 'form-input',
+              placeholder: 'Enter your full name',
+              required: true
+            })
+          ),
+          React.createElement(
+            'div',
+            { className: 'form-group' },
+            React.createElement(
+              'label',
+              { htmlFor: 'email', className: 'form-label' },
+              'Email Address'
+            ),
+            React.createElement('input', {
+              type: 'email',
+              id: 'email',
+              name: 'email',
+              className: 'form-input',
+              placeholder: 'Enter your email address',
+              required: true
+            })
+          ),
+          React.createElement(
+            'div',
+            { className: 'form-group' },
+            React.createElement(
+              'label',
+              { htmlFor: 'subject', className: 'form-label' },
+              'Subject'
+            ),
+            React.createElement('input', {
+              type: 'text',
+              id: 'subject',
+              name: 'subject',
+              className: 'form-input',
+              placeholder: 'What is this regarding?',
+              required: true
+            })
+          ),
+          React.createElement(
+            'div',
+            { className: 'form-group' },
+            React.createElement(
+              'label',
+              { htmlFor: 'message', className: 'form-label' },
+              'Message'
+            ),
+            React.createElement('textarea', {
+              id: 'message',
+              name: 'message',
+              className: 'form-textarea',
+              placeholder: 'Tell us how we can help you...',
+              rows: 5,
+              required: true
+            })
+          ),
+          React.createElement(
+            'button',
+            { 
+              type: 'submit',
+              className: 'form-button'
+            },
+            React.createElement('span', null, 'Send Message'),
+            React.createElement('i', null, '→')
           )
         )
       )

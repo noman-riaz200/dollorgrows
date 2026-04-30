@@ -1,42 +1,90 @@
 "use client";
 
-import { useState } from 'react';
-import { NeonButton } from "./NeonButton";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { NeonButton } from "./NeonButton";
+
+type NavLink = { href: string; label: string };
+
+const navLinks: NavLink[] = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/services", label: "Services" },
+  { href: "/contact", label: "Contact" },
+];
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const toggleMenu = () => setIsMenuOpen((v) => !v);
+  const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <nav className="beautiful-navbar">
-      <div className="nav-container">
-        <Link href="/" className="logo">
-          Dollar Growth
+    <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
+      <div className="navbar-container">
+        <Link href="/" className="navbar-brand" onClick={closeMenu}>
+          <span className="navbar-brand-icon" aria-hidden="true">
+            $
+          </span>
+          <span className="navbar-brand-text">DollarGrowth</span>
         </Link>
 
-        <button className="hamburger" onClick={toggleMenu} aria-label="Toggle menu">
-          <span></span>
-          <span></span>
-          <span></span>
+        <button
+          className={`hamburger ${isMenuOpen ? "active" : ""}`}
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
+          aria-expanded={isMenuOpen}
+        >
+          <span />
+          <span />
+          <span />
         </button>
 
-        <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
-          <li><Link href="/" className="nav-link" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
-          <li><Link href="/about" className="nav-link" onClick={() => setIsMenuOpen(false)}>About</Link></li>
-          <li><Link href="/services" className="nav-link" onClick={() => setIsMenuOpen(false)}>Services</Link></li>
-          <li><Link href="/contact" className="nav-link" onClick={() => setIsMenuOpen(false)}>Contact</Link></li>
+        <div
+          className={`nav-menu-overlay ${isMenuOpen ? "active" : ""}`}
+          onClick={closeMenu}
+          aria-hidden="true"
+        />
+
+        <ul className={`navbar-menu ${isMenuOpen ? "active" : ""}`}>
+          {navLinks.map((link) => (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                className={`navbar-link ${
+                  pathname === link.href ? "active" : ""
+                }`}
+                onClick={closeMenu}
+              >
+                {link.label}
+              </Link>
+            </li>
+          ))}
         </ul>
 
-        <div className="nav-actions">
-          <NeonButton variant="green" size="md">Sign In</NeonButton>
-          <NeonButton variant="green" size="md">Sign Up</NeonButton>
+        <div className="navbar-actions">
+          <Link href="/auth/signin" className="nav-btn-link" onClick={closeMenu}>
+            <NeonButton variant="green" size="sm">
+              Sign In
+            </NeonButton>
+          </Link>
+          <Link href="/auth/register" className="nav-btn-link" onClick={closeMenu}>
+            <NeonButton variant="gradient" size="sm">
+              Sign Up
+            </NeonButton>
+          </Link>
         </div>
       </div>
     </nav>
   );
 }
-

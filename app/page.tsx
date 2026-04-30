@@ -1,4 +1,4 @@
-// import { Navbar } from '@/components/ui/Navbar';
+import { Navbar } from '@/components/ui/Navbar';
 import Hero from '@/components/ui/Hero';
 import HowItWorks from '@/components/ui/HowItWorks';
 import OurServices from '@/components/ui/OurServices';
@@ -11,8 +11,7 @@ import Footer from '@/components/ui/Footer';
 export default function Home() {
   return (
     <>
-      
-      <Hero />
+       <Hero />
        <OurServices />
        <HowItWorks />
        <Faqs />

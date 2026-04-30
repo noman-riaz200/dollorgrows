@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Navbar } from "@/components/ui/Navbar";
@@ -29,8 +28,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-<html lang="en" className="light" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased bg-background text-foreground min-h-screen`} suppressHydrationWarning>
+<html lang="en" suppressHydrationWarning>
+      <body className={inter.variable} suppressHydrationWarning>
 
         <ThemeProvider
           attribute="class"

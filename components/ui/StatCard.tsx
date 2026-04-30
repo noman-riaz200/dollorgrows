@@ -9,7 +9,7 @@ interface StatCardProps {
   change?: string;
   positive?: boolean;
   icon: LucideIcon;
-  accent?: "cyan" | "green";
+accent?: "blue" | "mint";
   className?: string;
   neonBorder?: "cyan" | "green" | "none";
 }
@@ -20,23 +20,23 @@ export function StatCard({
   change,
   positive = true,
   icon: Icon,
-  accent = "cyan",
+accent = "blue",
   className,
   neonBorder = "none",
 }: StatCardProps) {
   return (
     <div
       className={cn(
-        "glass rounded-xl p-6 glass-hover",
+        "glass rounded-4 p-4 p-md-5 glass-hover",
         neonBorder === "cyan" && "neon-border-cyan",
         neonBorder === "green" && "neon-border-green",
         className
       )}
     >
-      <div className="flex items-start justify-between mb-4">
+      <div className="d-flex align-items-start justify-content-between mb-3">
         <div
           className={cn(
-            "w-12 h-12 rounded-xl flex items-center justify-center",
+            "w-48px h-48px rounded-3 d-flex align-items-center justify-content-center",
             accent === "cyan" ? "bg-[#00d2ff]/10" : "bg-[#00ff88]/10"
           )}
         >
@@ -50,8 +50,8 @@ export function StatCard({
         {change && (
           <span
             className={cn(
-              "text-sm font-medium",
-              positive ? "text-[#00ff88]" : "text-red-400"
+              "small fw-medium",
+              positive ? "text-[#00ff88]" : "text-danger"
             )}
           >
             {positive ? "+" : ""}
@@ -59,8 +59,8 @@ export function StatCard({
           </span>
         )}
       </div>
-      <p className="text-xl sm:text-2xl font-bold text-white mb-1">{value}</p>
-      <p className="text-gray-400 text-sm">{title}</p>
+      <p className="fs-4 fs-md-3 fw-bold text-white mb-1">{value}</p>
+      <p className="text-muted small">{title}</p>
     </div>
   );
 }
