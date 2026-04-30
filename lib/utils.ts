@@ -1,8 +1,5 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+export function cn(...inputs: any[]): string {
+  return inputs.filter(Boolean).map(String).join(" ");
 }
 
 export function formatCurrency(amount: number): string {

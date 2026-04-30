@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { Navbar } from "@/components/ui/Navbar";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+
 
 const inter = Inter({
   subsets: ["latin"],
@@ -12,10 +15,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "DollorGrows | Investment & Networking Platform",
+  title: "Dollar Growth | Investment Platform",
   description:
-    "High-performance investment and networking platform with BFS Matrix referral system. 15 investment pools with up to 100% matrix bonus.",
-  keywords: "crypto, investment, network marketing, BEP20, BSC, matrix, dollorgrows",
+
+    "Premier investment platform with advanced growth strategies and secure returns. Dollar Growth - Where your investments multiply.",
+  keywords: "crypto, investment, dollar growth, finance, growth platform, dollarorgrows",
+
 };
 
 export default function RootLayout({
@@ -24,17 +29,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.variable} font-sans antialiased bg-gray-950 text-white min-h-screen`}>
+<html lang="en" className="light" suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans antialiased bg-background text-foreground min-h-screen`} suppressHydrationWarning>
+
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
+          <Navbar />
           <AuthProvider>{children}</AuthProvider>
           <Toaster
-            theme="dark"
+            theme="light"
             position="top-right"
             richColors
             closeButton
