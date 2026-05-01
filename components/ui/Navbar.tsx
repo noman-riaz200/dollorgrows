@@ -25,6 +25,11 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Hide navbar on dashboard routes
+  if (pathname?.startsWith('/dashboard')) {
+    return null;
+  }
+
   const toggleMenu = () => setIsMenuOpen((v) => !v);
   const closeMenu = () => setIsMenuOpen(false);
 

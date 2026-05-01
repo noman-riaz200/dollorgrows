@@ -333,58 +333,54 @@ export default function SettingsPage() {
   ];
 
 return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
-        <p className="text-gray-400">Manage your account and preferences.</p>
-      </div>
+  <div className="settings-page">
+    {/* Header */}
+    <div className="page-header">
+      <h1>Settings</h1>
+      <p>Manage your account and preferences.</p>
+    </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6 overflow-x-auto scrollbar-thin pb-1">
-        {tabs.map((tab) => {
-          const isActive = activeTab === tab.key;
-          return (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-2 px-5 py-3 rounded-xl border transition-all whitespace-nowrap ${
-                isActive
-                  ? "bg-[#00d2ff]/10 border-[#00d2ff]/30 text-[#00d2ff]"
-                  : "bg-white/[0.03] border-white/[0.06] text-gray-400 hover:bg-white/[0.06] hover:text-white"
-              }`}
-            >
-              <tab.icon className="w-4 h-4" />
-              <span className="text-sm font-medium">{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
+    {/* Tabs */}
+    <div className="settings-tabs">
+      {tabs.map((tab) => {
+        const isActive = activeTab === tab.key;
+        return (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`settings-tab ${isActive ? "active" : ""}`}
+          >
+            <tab.icon className="tab-icon" />
+            <span className="tab-label">{tab.label}</span>
+          </button>
+        );
+      })}
+    </div>
 
-      {/* ─── Tab: Update Profile ─── */}
-      {activeTab === "profile" && (
-        <GlassCard neonBorder="cyan" glow="cyan">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-            <User className="w-5 h-5 text-[#00d2ff]" />
-            Update Profile
-          </h2>
+    {/* ─── Tab: Update Profile ─── */}
+    {activeTab === "profile" && (
+      <GlassCard neonBorder="blue" glow="blue">
+        <h2 className="section-title">
+          <User className="section-icon" />
+          Update Profile
+        </h2>
 
-          <div className="space-y-6">
+          <div className="settings-form">
             {/* Avatar */}
-            <div className="flex flex-col items-center gap-4">
+            <div className="avatar-section">
               <div
                 onClick={handleAvatarClick}
-                className="relative w-28 h-28 rounded-full cursor-pointer group"
+                className="avatar-container"
               >
                 {avatarPreview ? (
                   <img
                     src={avatarPreview}
                     alt="Avatar"
-                    className="w-full h-full rounded-full object-cover border-2 border-[#00d2ff]/30"
+                    className="avatar-image"
                   />
                 ) : (
-                  <div className="w-full h-full rounded-full bg-gradient-to-br from-[#00d2ff] to-[#00ff88] flex items-center justify-center">
-                    <span className="text-3xl font-bold text-black">
+                  <div className="avatar-placeholder">
+                    <span className="avatar-initial">
                       {name?.[0]?.toUpperCase() ||
                         session?.user?.name?.[0]?.toUpperCase() ||
                         "U"}
@@ -392,9 +388,9 @@ return (
                   </div>
                 )}
                 {/* Hover overlay */}
-                <div className="absolute inset-0 rounded-full bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border-2 border-[#00d2ff]/50">
-                  <Camera className="w-6 h-6 text-[#00d2ff] mb-1" />
-                  <span className="text-xs text-white font-medium">Change</span>
+                <div className="avatar-overlay">
+                  <Camera className="avatar-camera-icon" />
+                  <span className="avatar-overlay-text">Change</span>
                 </div>
               </div>
               <input
@@ -404,24 +400,24 @@ return (
                 onChange={handleFileChange}
                 className="hidden"
               />
-              <p className="text-xs text-gray-500">Click to upload avatar (max 2MB)</p>
+              <p className="avatar-hint">Click to upload avatar (max 2MB)</p>
             </div>
 
             {/* Name */}
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">Full Name</label>
+            <div className="form-group">
+              <label className="form-label">Full Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your full name"
-                className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all"
+                className="form-input"
               />
             </div>
 
             {/* Phone */}
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">Phone Number</label>
+            <div className="form-group">
+              <label className="form-label">Phone Number</label>
               <PhoneInput
                 phoneCode={phoneCode}
                 phoneNumber={phone}
@@ -431,8 +427,8 @@ return (
             </div>
 
             {/* Country */}
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">Country</label>
+            <div className="form-group">
+              <label className="form-label">Country</label>
               <CountrySelect
                 value={country}
                 onChange={(c: Country) => setCountry(c.code)}
@@ -445,11 +441,12 @@ return (
               fullWidth
               onClick={handleProfileSubmit}
               disabled={loading}
+              className="settings-submit-button"
             >
               {loading ? (
-                <RefreshCw className="w-4 h-4 animate-spin" />
+                <RefreshCw className="button-icon-spin" />
               ) : (
-                <Save className="w-4 h-4" />
+                <Save className="button-icon" />
               )}
               {loading ? "Saving..." : "Save Profile"}
             </NeonButton>
@@ -459,44 +456,44 @@ return (
 
       {/* ─── Tab: Change Email ─── */}
       {activeTab === "email" && (
-        <GlassCard neonBorder="cyan">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-            <Mail className="w-5 h-5 text-[#00d2ff]" />
+        <GlassCard neonBorder="blue">
+          <h2 className="section-title">
+            <Mail className="section-icon" />
             Change Email
           </h2>
 
-          <div className="space-y-6">
+          <div className="settings-form">
             {/* Current Email */}
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">Current Email</label>
-              <div className="w-full px-4 py-3 rounded-lg bg-white/[0.02] border border-white/[0.06] text-gray-400 select-none">
+            <div className="form-group">
+              <label className="form-label">Current Email</label>
+              <div className="form-static">
                 {userData?.email || session?.user?.email || "—"}
               </div>
             </div>
 
             {/* New Email */}
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">New Email</label>
+            <div className="form-group">
+              <label className="form-label">New Email</label>
               <input
                 type="email"
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
                 placeholder="Enter new email address"
-                className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all"
+                className="form-input"
               />
             </div>
 
             {/* Current Password */}
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">Current Password</label>
+            <div className="form-group">
+              <label className="form-label">Current Password</label>
               <input
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="Enter your current password"
-                className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all"
+                className="form-input"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="form-hint">
                 For security, please confirm your current password.
               </p>
             </div>
@@ -507,11 +504,12 @@ return (
               fullWidth
               onClick={handleEmailSubmit}
               disabled={loading || !newEmail || !currentPassword}
+              className="settings-submit-button"
             >
               {loading ? (
-                <RefreshCw className="w-4 h-4 animate-spin" />
+                <RefreshCw className="button-icon-spin" />
               ) : (
-                <Save className="w-4 h-4" />
+                <Save className="button-icon" />
               )}
               {loading ? "Updating..." : "Update Email"}
             </NeonButton>
@@ -521,55 +519,39 @@ return (
 
       {/* ─── Tab: Security PIN ─── */}
       {activeTab === "pin" && (
-        <GlassCard neonBorder="green" glow="green">
-          <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-[#00ff88]" />
+        <GlassCard neonBorder="mint" glow="mint">
+          <h2 className="section-title">
+            <Shield className="section-icon" />
             Security PIN
           </h2>
-          <p className="text-gray-400 text-sm mb-6">
+          <p className="section-subtitle">
             {userData?.hasPin
               ? "Update your 6-digit security PIN."
               : "Set up a 6-digit security PIN to protect your account."}
           </p>
 
-          <div className="space-y-6">
+          <div className="pin-section">
             {/* Step indicator */}
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <div
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
-                  pinStep === 1
-                    ? "bg-[#00d2ff]/10 border-[#00d2ff]/30 text-[#00d2ff]"
-                    : "bg-white/[0.03] border-white/[0.06] text-gray-400"
-                }`}
-              >
-                <span className="w-5 h-5 rounded-full bg-current text-black text-xs flex items-center justify-center font-bold">
-                  1
-                </span>
-                Enter PIN
+            <div className="pin-steps">
+              <div className={`pin-step ${pinStep === 1 ? "active" : ""}`}>
+                <span className="pin-step-number">1</span>
+                <span className="pin-step-label">Enter PIN</span>
               </div>
-              <div className="w-8 h-px bg-white/[0.1]" />
-              <div
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
-                  pinStep === 2
-                    ? "bg-[#00d2ff]/10 border-[#00d2ff]/30 text-[#00d2ff]"
-                    : "bg-white/[0.03] border-white/[0.06] text-gray-400"
-                }`}
-              >
-                <span className="w-5 h-5 rounded-full bg-current text-black text-xs flex items-center justify-center font-bold">
-                  2
-                </span>
-                Confirm PIN
+              <div className="pin-step-divider"></div>
+              <div className={`pin-step ${pinStep === 2 ? "active" : ""}`}>
+                <span className="pin-step-number">2</span>
+                <span className="pin-step-label">Confirm PIN</span>
               </div>
             </div>
 
             {/* PIN Display */}
-            <div className="py-4">
+            <div className="pin-display">
               <PinDots pin={pinStep === 1 ? pin : confirmPin} />
             </div>
 
             {/* Error */}
             {pinError && (
-              <p className="text-center text-red-400 text-sm">{pinError}</p>
+              <p className="pin-error">{pinError}</p>
             )}
 
             {/* Keypad */}
@@ -580,14 +562,14 @@ return (
             />
 
             {/* Navigation */}
-            <div className="flex gap-3">
+            <div className="pin-navigation">
               {pinStep === 2 && (
                 <NeonButton
                   variant="cyan"
                   onClick={handlePinBack}
-                  className="flex-1"
+                  className="pin-back-button"
                 >
-                  <ArrowLeft className="w-4 h-4" />
+                  <ArrowLeft className="button-icon" />
                   Back
                 </NeonButton>
               )}
@@ -597,21 +579,22 @@ return (
                   fullWidth
                   onClick={handlePinNext}
                   disabled={pin.length !== 6}
+                  className="pin-next-button"
                 >
                   Next
-                  <ArrowLeft className="w-4 h-4 rotate-180" />
+                  <ArrowLeft className="button-icon rotate-180" />
                 </NeonButton>
               ) : (
                 <NeonButton
                   variant="gradient"
                   onClick={handlePinSubmit}
                   disabled={loading || confirmPin.length !== 6}
-                  className="flex-1"
+                  className="pin-submit-button"
                 >
                   {loading ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <RefreshCw className="button-icon-spin" />
                   ) : (
-                    <Check className="w-4 h-4" />
+                    <Check className="button-icon" />
                   )}
                   {loading ? "Saving..." : "Save PIN"}
                 </NeonButton>

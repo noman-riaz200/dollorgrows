@@ -92,99 +92,95 @@ export default function CommissionPage() {
   };
 
   const levelColors: Record<number, string> = {
-    1: "text-[#00ff88] bg-[#00ff88]/10 border-[#00ff88]/20",
-    2: "text-[#00d2ff] bg-[#00d2ff]/10 border-[#00d2ff]/20",
-    3: "text-purple-400 bg-purple-500/10 border-purple-500/20",
+    1: "badge mint",
+    2: "badge blue",
+    3: "badge lavender",
   };
 
   return (
-    <div className="space-y-6">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Team Commission</h1>
-        <p className="text-gray-400">View your referral commission earnings across all levels.</p>
+    <div className="commission-page">
+      <div className="page-header">
+        <h1>Team Commission</h1>
+        <p>View your referral commission earnings across all levels.</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <GlassCard neonBorder="green" glow="green">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-[#00ff88]/10 flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-[#00ff88]" />
+      <div className="stats-grid-4">
+        <GlassCard neonBorder="mint" glow="mint">
+          <div className="card-icon-wrapper">
+            <div className="card-icon mint">
+              <TrendingUp />
             </div>
-            <p className="text-sm text-gray-400">Total Earned</p>
+            <p className="card-label">Total Earned</p>
           </div>
-          <p className="text-2xl font-bold text-white">${stats.totalEarned.toLocaleString()}</p>
+          <p className="card-value">${stats.totalEarned.toLocaleString()}</p>
         </GlassCard>
-        <GlassCard neonBorder="green">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-[#00ff88]/10 flex items-center justify-center">
-              <Users className="w-5 h-5 text-[#00ff88]" />
+        <GlassCard neonBorder="mint">
+          <div className="card-icon-wrapper">
+            <div className="card-icon mint">
+              <Users />
             </div>
-            <p className="text-sm text-gray-400">Total Referrals</p>
+            <p className="card-label">Total Referrals</p>
           </div>
-          <p className="text-2xl font-bold text-white">{stats.totalCount}</p>
+          <p className="card-value">{stats.totalCount}</p>
         </GlassCard>
-        <GlassCard neonBorder="cyan">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-[#00d2ff]/10 flex items-center justify-center">
-              <Award className="w-5 h-5 text-[#00d2ff]" />
+        <GlassCard neonBorder="blue">
+          <div className="card-icon-wrapper">
+            <div className="card-icon blue">
+              <Award />
             </div>
-            <p className="text-sm text-gray-400">Level 1</p>
+            <p className="card-label">Level 1</p>
           </div>
-          <p className="text-2xl font-bold text-white">${stats.level1Total.toLocaleString()}</p>
+          <p className="card-value">${stats.level1Total.toLocaleString()}</p>
         </GlassCard>
-        <GlassCard neonBorder="purple">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-              <ArrowUpRight className="w-5 h-5 text-purple-400" />
+        <GlassCard neonBorder="lavender">
+          <div className="card-icon-wrapper">
+            <div className="card-icon lavender">
+              <ArrowUpRight />
             </div>
-            <p className="text-sm text-gray-400">Level 2+3</p>
+            <p className="card-label">Level 2+3</p>
           </div>
-          <p className="text-2xl font-bold text-white">${(stats.level2Total + stats.level3Total).toLocaleString()}</p>
+          <p className="card-value">${(stats.level2Total + stats.level3Total).toLocaleString()}</p>
         </GlassCard>
       </div>
 
       {/* Commission Table */}
       <GlassCard>
-        <h3 className="text-lg font-bold text-white mb-4">Commission History</h3>
+        <h3 className="section-title">Commission History</h3>
         {loading ? (
-          <div className="py-12 text-center">
-            <div className="w-8 h-8 border-2 border-[#00ff88] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-gray-500">Loading commissions...</p>
+          <div className="loading-container">
+            <div className="loading-spinner" />
+            <p className="loading-text">Loading commissions...</p>
           </div>
         ) : commissions.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="data-table-container">
+            <table className="data-table">
               <thead>
-                <tr className="border-b border-white/[0.08]">
-                  <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Level</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Amount</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">From</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                <tr>
+                  <th>Level</th>
+                  <th>Amount</th>
+                  <th>From</th>
+                  <th>Description</th>
+                  <th>Date</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {commissions.map((c) => (
-                  <tr key={c.id} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3 px-4">
-                      <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium border ${levelColors[c.level] || levelColors[1]}`}>
+                  <tr key={c.id}>
+                    <td>
+                      <span className={`badge ${levelColors[c.level] || levelColors[1]}`}>
                         Level {c.level}
                       </span>
                     </td>
-                    <td className="py-3 px-4">
-                      <span className="text-[#00ff88] font-bold">+${c.amount.toLocaleString()}</span>
+                    <td>
+                      <span className="amount-positive">+${c.amount.toLocaleString()}</span>
                     </td>
-                    <td className="py-3 px-4 text-gray-300">{c.fromUser?.name || "Referral"}</td>
-                    <td className="py-3 px-4 text-gray-400 text-xs">{c.description || "Commission"}</td>
-                    <td className="py-3 px-4 text-gray-500 text-xs">{new Date(c.createdAt).toLocaleDateString()}</td>
-                    <td className="py-3 px-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        c.status === "completed" || c.status === "processed"
-                          ? "bg-[#00ff88]/10 text-[#00ff88]"
-                          : "bg-amber-500/10 text-amber-400"
-                      }`}>
+                    <td>{c.fromUser?.name || "Referral"}</td>
+                    <td className="description">{c.description || "Commission"}</td>
+                    <td className="date">{new Date(c.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      <span className={`status-badge ${c.status === "completed" || c.status === "processed" ? "status-success" : "status-pending"}`}>
                         {c.status}
                       </span>
                     </td>
@@ -194,9 +190,9 @@ export default function CommissionPage() {
             </table>
           </div>
         ) : (
-          <div className="py-12 text-center">
-            <TrendingUp className="w-10 h-10 text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-500">No commissions yet. Start referring to earn!</p>
+          <div className="empty-state">
+            <TrendingUp className="empty-icon" />
+            <p className="empty-text">No commissions yet. Start referring to earn!</p>
           </div>
         )}
       </GlassCard>

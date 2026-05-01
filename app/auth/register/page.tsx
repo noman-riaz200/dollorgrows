@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -26,7 +26,6 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [serverError, setServerError] = useState("");
-  const [isDetectingLocation, setIsDetectingLocation] = useState(true);
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
@@ -35,24 +34,6 @@ export default function RegisterPage() {
 
   const phoneCode = watch("phoneCode");
   const countryCode = watch("country");
-
-  useEffect(() => {
-    async function detectLocation() {
-      try {
-        const res = await fetch("/api/auth/geoip");
-        const data = await res.json();
-        if (data.success) {
-          setValue("country", data.countryCode);
-          setValue("phoneCode", data.dialCode);
-        }
-      } catch {
-        // Fallback already set
-      } finally {
-        setIsDetectingLocation(false);
-      }
-    }
-    detectLocation();
-  }, [setValue]);
 
   const onSubmit = async (data: RegisterInput) => {
     setIsLoading(true);
@@ -174,15 +155,12 @@ export default function RegisterPage() {
 
             <div className="form-row">
               <div className="form-group flex-1">
-                <label htmlFor="country">
-                  Country
-                  {isDetectingLocation && <span className="detecting-text"> (Detecting...)</span>}
-                </label>
+                <label htmlFor="country">Country</label>
                 <div className="input-container">
                   <MapPin className="input-icon" size={20} />
                   <select
                     id="country"
-                    disabled={isLoading || isDetectingLocation}
+                    disabled={isLoading}
                     className={`form-input form-select ${errors.country ? 'input-error' : ''}`}
                     value={countryCode}
                     onChange={(e) => {
@@ -212,7 +190,7 @@ export default function RegisterPage() {
                     id="phone"
                     type="tel"
                     placeholder="Phone number"
-                    disabled={isLoading || isDetectingLocation}
+                    disabled={isLoading}
                     className={`form-input phone-input ${errors.phone ? 'input-error' : ''}`}
                     {...register("phone")}
                     onChange={(e) => setValue("phone", e.target.value.replace(/\D/g, ""))}
@@ -500,16 +478,11 @@ export default function RegisterPage() {
           align-items: center;
         }
 
-        .detecting-text, .optional-text {
+        .optional-text {
           font-size: 0.75rem;
           color: var(--text-muted);
           margin-left: 0.5rem;
           font-weight: 500;
-        }
-
-        .detecting-text {
-          color: var(--accent-primary);
-          animation: pulse 2s infinite;
         }
 
         .input-container {
@@ -661,10 +634,7 @@ export default function RegisterPage() {
           to { transform: rotate(360deg); }
         }
 
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
+
 
         .card-footer {
           margin-top: 2rem;

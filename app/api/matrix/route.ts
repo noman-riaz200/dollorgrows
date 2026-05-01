@@ -26,15 +26,24 @@ export async function GET() {
     }
 
     if (missingPositions.length > 0) {
-      await prisma.matrixSlot.createMany({
-        data: missingPositions.map((pos) => ({
-          ownerId: session.user.id,
-          position: pos,
-          isFilled: false,
-          bonusAmount: 0,
-        })),
-        skipDuplicates: true,
-      });
+      // Create missing slots using upsert to avoid duplicates
+      for (const pos of missingPositions) {
+        await prisma.matrixSlot.upsert({
+          where: {
+            ownerId_position: {
+              ownerId: session.user.id,
+              position: pos,
+            },
+          },
+          update: {}, // No update if exists
+          create: {
+            ownerId: session.user.id,
+            position: pos,
+            isFilled: false,
+            bonusAmount: 0,
+          },
+        });
+      }
     }
 
     // Re-fetch after creating missing slots

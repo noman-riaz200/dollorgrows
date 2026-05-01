@@ -45,91 +45,71 @@ export default function TeamsPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Teams</h1>
-        <p className="text-gray-400">Overview of your team structure and performance.</p>
+    <div className="teams-page">
+      <div className="page-header">
+        <h1>Teams</h1>
+        <p>Overview of your team structure and performance.</p>
       </div>
 
       {loading ? (
-        <div className="py-12 text-center">
-          <div className="w-8 h-8 border-2 border-[#00d2ff] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-500">Loading team data...</p>
+        <div className="loading-container text-center">
+          <div className="loading-spinner" />
+          <p className="loading-text">Loading team data...</p>
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <GlassCard neonBorder="cyan" glow="cyan">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-[#00d2ff]/10 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-[#00d2ff]" />
+          <div className="stats-grid-4">
+            <GlassCard neonBorder="blue" glow="blue">
+              <div className="card-icon-wrapper">
+                <div className="card-icon blue">
+                  <Users />
                 </div>
-                <p className="text-sm text-gray-400">Total Downline</p>
+                <p className="card-label">Total Downline</p>
               </div>
-              <p className="text-2xl font-bold text-white">{stats.totalDownline}</p>
+              <p className="card-value">{stats.totalDownline}</p>
             </GlassCard>
-            <GlassCard neonBorder="green" glow="green">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-[#00ff88]/10 flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-[#00ff88]" />
+            <GlassCard neonBorder="mint" glow="mint">
+              <div className="card-icon-wrapper">
+                <div className="card-icon mint">
+                  <TrendingUp />
                 </div>
-                <p className="text-sm text-gray-400">Active Members</p>
+                <p className="card-label">Active Members</p>
               </div>
-              <p className="text-2xl font-bold text-white">{stats.activeDownline}</p>
+              <p className="card-value">{stats.activeDownline}</p>
             </GlassCard>
-            <GlassCard neonBorder="purple">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                  <Award className="w-5 h-5 text-purple-400" />
+            <GlassCard neonBorder="lavender">
+              <div className="card-icon-wrapper">
+                <div className="card-icon lavender">
+                  <Award />
                 </div>
-                <p className="text-sm text-gray-400">Conversion</p>
+                <p className="card-label">Conversion</p>
               </div>
-              <p className="text-2xl font-bold text-white">{stats.conversionRate.toFixed(1)}%</p>
+              <p className="card-value">{stats.conversionRate.toFixed(1)}%</p>
             </GlassCard>
-            <GlassCard neonBorder="amber">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                  <Target className="w-5 h-5 text-amber-400" />
+            <GlassCard neonBorder="none">
+              <div className="card-icon-wrapper">
+                <div className="card-icon amber">
+                  <Target />
                 </div>
-                <p className="text-sm text-gray-400">Levels Deep</p>
+                <p className="card-label">Levels Deep</p>
               </div>
-              <p className="text-2xl font-bold text-white">5</p>
+              <p className="card-value">5</p>
             </GlassCard>
           </div>
 
           <GlassCard>
-            <h3 className="text-lg font-bold text-white mb-4">Level Breakdown</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+            <h3 className="section-title">Level Breakdown</h3>
+            <div className="level-breakdown-grid">
               {levelData.map((l) => {
                 const count = stats.levelCounts[`level_${l.level}`] || 0;
                 return (
                   <div
                     key={l.level}
-                    className={`p-4 rounded-xl border ${
-                      l.color === "green"
-                        ? "bg-[#00ff88]/5 border-[#00ff88]/20"
-                        : l.color === "cyan"
-                        ? "bg-[#00d2ff]/5 border-[#00d2ff]/20"
-                        : l.color === "purple"
-                        ? "bg-purple-500/5 border-purple-500/20"
-                        : l.color === "amber"
-                        ? "bg-amber-500/5 border-amber-500/20"
-                        : "bg-pink-500/5 border-pink-500/20"
-                    }`}
+                    className={`level-breakdown-item ${l.color}`}
                   >
-                    <p className={`text-sm font-medium mb-1 ${
-                      l.color === "green"
-                        ? "text-[#00ff88]"
-                        : l.color === "cyan"
-                        ? "text-[#00d2ff]"
-                        : l.color === "purple"
-                        ? "text-purple-400"
-                        : l.color === "amber"
-                        ? "text-amber-400"
-                        : "text-pink-400"
-                    }`}>{l.label}</p>
-                    <p className="text-3xl font-bold text-white">{count}</p>
-                    <p className="text-xs text-gray-500 mt-1">members</p>
+                    <p className="level-label">{l.label}</p>
+                    <p className="level-count">{count}</p>
+                    <p className="level-subtitle">members</p>
                   </div>
                 );
               })}

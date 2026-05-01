@@ -311,20 +311,16 @@ export default function WalletPage() {
   return (
     <div>
         {/* ─── Header ─── */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-1">Wallet Dashboard</h1>
-            <p className="text-gray-400">Manage your funds, exchange, and track transactions.</p>
+        <div className="wallet-header">
+          <div className="wallet-header-title">
+            <h1>Wallet Dashboard</h1>
+            <p>Manage your funds, exchange, and track transactions.</p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="wallet-header-actions">
             {/* BEP20 Status */}
             {connectedAddress && (
-              <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${
-                isBsc
-                  ? "bg-[#00ff88]/10 border-[#00ff88]/30 text-[#00ff88]"
-                  : "bg-red-500/10 border-red-500/30 text-red-400"
-              }`}>
+              <div className={`network-status ${isBsc ? 'connected' : 'disconnected'}`}>
                 <Network className="w-4 h-4" />
                 <span className="text-sm font-medium">
                   {isBsc ? "BEP20 Connected" : "Wrong Network"}
@@ -335,7 +331,7 @@ export default function WalletPage() {
             {/* Connect Wallet Button */}
             {connectedAddress ? (
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass border border-white/[0.08]">
+                <div className="connected-wallet">
                   <Globe className="w-4 h-4 text-[#00d2ff]" />
                   <span className="text-sm text-white font-medium">
                     {formatAddress(connectedAddress)}
@@ -367,87 +363,85 @@ export default function WalletPage() {
         </div>
 
         {/* ─── Wallet Stats Cards ─── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <GlassCard neonBorder="cyan" glow="cyan">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-[#00d2ff]/10 flex items-center justify-center">
-                <Wallet className="w-6 h-6 text-[#00d2ff]" />
+        <div className="wallet-stats-grid">
+          <div className="wallet-stat-card cyan">
+            <div className="wallet-stat-card-header">
+              <div className="wallet-stat-icon cyan">
+                <Wallet className="w-6 h-6" />
               </div>
-              <span className="text-xs text-gray-500">Available</span>
+              <span className="wallet-stat-label">Available</span>
             </div>
-            <p className="text-2xl font-bold text-white mb-1">${balance.toLocaleString()}</p>
-            <p className="text-gray-400 text-sm">Balance Wallet</p>
-          </GlassCard>
+            <p className="wallet-stat-amount">${balance.toLocaleString()}</p>
+            <p className="wallet-stat-description">Balance Wallet</p>
+          </div>
 
-          <GlassCard neonBorder="green" glow="green">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-[#00ff88]/10 flex items-center justify-center">
-                <PiggyBank className="w-6 h-6 text-[#00ff88]" />
+          <div className="wallet-stat-card green">
+            <div className="wallet-stat-card-header">
+              <div className="wallet-stat-icon green">
+                <PiggyBank className="w-6 h-6" />
               </div>
-              <span className="text-xs text-gray-500">Staked</span>
+              <span className="wallet-stat-label">Staked</span>
             </div>
-            <p className="text-2xl font-bold text-white mb-1">${poolWallet.toLocaleString()}</p>
-            <p className="text-gray-400 text-sm">Pool Wallet</p>
-          </GlassCard>
+            <p className="wallet-stat-amount">${poolWallet.toLocaleString()}</p>
+            <p className="wallet-stat-description">Pool Wallet</p>
+          </div>
 
-          <GlassCard neonBorder="cyan">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-[#00d2ff]/10 flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-[#00d2ff]" />
+          <div className="wallet-stat-card cyan">
+            <div className="wallet-stat-card-header">
+              <div className="wallet-stat-icon cyan">
+                <TrendingUp className="w-6 h-6" />
               </div>
-              <span className="text-xs text-gray-500">Earnings</span>
+              <span className="wallet-stat-label">Earnings</span>
             </div>
-            <p className="text-2xl font-bold text-white mb-1">${poolCommission.toLocaleString()}</p>
-            <p className="text-gray-400 text-sm">Pool Commission</p>
-          </GlassCard>
+            <p className="wallet-stat-amount">${poolCommission.toLocaleString()}</p>
+            <p className="wallet-stat-description">Pool Commission</p>
+          </div>
         </div>
 
         {/* ─── Withdrawal Section: Total Available & Total Donated ─── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <GlassCard className="relative overflow-hidden" neonBorder="green">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#00ff88]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="relative">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-lg bg-[#00ff88]/10 flex items-center justify-center">
-                  <ArrowDownRight className="w-5 h-5 text-[#00ff88]" />
+        <div className="wallet-withdrawal-grid">
+          <div className="wallet-withdrawal-card green">
+            <div className="wallet-withdrawal-content">
+              <div className="wallet-withdrawal-header">
+                <div className="wallet-withdrawal-icon green">
+                  <ArrowDownRight className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400">Total Available</p>
-                  <p className="text-3xl font-bold text-white">${totalAvailable.toLocaleString()}</p>
+                  <p className="wallet-withdrawal-title">Total Available</p>
+                  <p className="wallet-withdrawal-amount">${totalAvailable.toLocaleString()}</p>
                 </div>
               </div>
-              <p className="text-xs text-gray-500">Funds available for withdrawal or exchange</p>
+              <p className="wallet-withdrawal-note">Funds available for withdrawal or exchange</p>
             </div>
-          </GlassCard>
+          </div>
 
-          <GlassCard className="relative overflow-hidden" neonBorder="cyan">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#00d2ff]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="relative">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-lg bg-[#00d2ff]/10 flex items-center justify-center">
-                  <ArrowUpRight className="w-5 h-5 text-[#00d2ff]" />
+          <div className="wallet-withdrawal-card cyan">
+            <div className="wallet-withdrawal-content">
+              <div className="wallet-withdrawal-header">
+                <div className="wallet-withdrawal-icon cyan">
+                  <ArrowUpRight className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400">Total Donated</p>
-                  <p className="text-3xl font-bold text-white">${totalDonated.toLocaleString()}</p>
+                  <p className="wallet-withdrawal-title">Total Donated</p>
+                  <p className="wallet-withdrawal-amount">${totalDonated.toLocaleString()}</p>
                 </div>
               </div>
-              <p className="text-xs text-gray-500">Total amount invested in pools</p>
+              <p className="wallet-withdrawal-note">Total amount invested in pools</p>
             </div>
-          </GlassCard>
+          </div>
         </div>
 
         {/* ─── Quick Actions ─── */}
-        <div className="flex flex-wrap gap-3 mb-8">
-          <NeonButton variant="cyan" onClick={() => setShowDepositModal(true)}>
+        <div className="wallet-actions">
+          <button className="wallet-action-button cyan" onClick={() => setShowDepositModal(true)}>
             <Plus className="w-4 h-4" /> Deposit
-          </NeonButton>
-          <NeonButton variant="green" onClick={() => setShowWithdrawModal(true)}>
+          </button>
+          <button className="wallet-action-button green" onClick={() => setShowWithdrawModal(true)}>
             <Send className="w-4 h-4" /> Withdraw
-          </NeonButton>
-          <NeonButton variant="gradient" onClick={() => setShowExchangeModal(true)}>
+          </button>
+          <button className="wallet-action-button gradient" onClick={() => setShowExchangeModal(true)}>
             <ArrowLeftRight className="w-4 h-4" /> Exchange
-          </NeonButton>
+          </button>
           {connectedAddress && (
             <button
               onClick={autoFillWalletAddress}
@@ -460,51 +454,48 @@ export default function WalletPage() {
         </div>
 
         {/* ─── Transaction History Table ─── */}
-        <GlassCard className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+        <div className="wallet-transaction-card">
+          <div className="wallet-transaction-header">
+            <h3 className="wallet-transaction-title">
               <CreditCard className="w-5 h-5 text-[#00d2ff]" />
               Transaction History
             </h3>
-            <span className="text-sm text-gray-500">{transactions.length} transactions</span>
+            <span className="wallet-transaction-count">{transactions.length} transactions</span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="wallet-transaction-table">
               <thead>
-                <tr className="border-b border-white/[0.06]">
-<th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-2 sm:px-4">Type</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-2 sm:px-4">Amount</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-2 sm:px-4">Description</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-2 sm:px-4">Date</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-2 sm:px-4">Status</th>
+                <tr>
+<th className="text-left">Type</th>
+                  <th className="text-left">Amount</th>
+                  <th className="text-left">Description</th>
+                  <th className="text-left">Date</th>
+                  <th className="text-left">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {transactions.length > 0 ? (
                   transactions.map((tx) => (
-                    <tr
-                      key={tx.id}
-                      className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors"
-                    >
+                    <tr key={tx.id}>
 <td className="py-4 px-2 sm:px-4">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-white/[0.03] flex items-center justify-center">
+                        <div className="transaction-type">
+                          <div className="transaction-type-icon">
                             <TypeIcon type={tx.type} />
                           </div>
-                          <span className="text-sm font-medium text-white capitalize">{tx.type}</span>
+                          <span className="transaction-type-name">{tx.type}</span>
                         </div>
                       </td>
                       <td className="py-4 px-2 sm:px-4">
-                        <span className={`text-sm font-bold ${tx.amount >= 0 ? "text-[#00ff88]" : "text-red-400"}`}>
+                        <span className={`transaction-amount ${tx.amount >= 0 ? "positive" : "negative"}`}>
                           {tx.amount >= 0 ? "+" : ""}${Math.abs(tx.amount).toLocaleString()}
                         </span>
                       </td>
                       <td className="py-4 px-2 sm:px-4">
-                        <span className="text-sm text-gray-400">{tx.description || "-"}</span>
+                        <span className="transaction-description">{tx.description || "-"}</span>
                       </td>
                       <td className="py-4 px-2 sm:px-4">
-                        <span className="text-sm text-gray-500">
+                        <span className="transaction-date">
                           {new Date(tx.createdAt).toLocaleDateString("en-US", {
                             year: "numeric",
                             month: "short",
@@ -532,12 +523,12 @@ export default function WalletPage() {
               </tbody>
             </table>
 </div>
-        </GlassCard>
+        </div>
 
       {/* ─── Deposit Modal ─── */}
       {showDepositModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <GlassCard className="w-full max-w-md relative" neonBorder="cyan">
+          <GlassCard className="w-full max-w-md relative" neonBorder="blue">
             <button
               onClick={() => setShowDepositModal(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
@@ -572,7 +563,7 @@ export default function WalletPage() {
       {/* ─── Withdraw Modal ─── */}
       {showWithdrawModal && (
 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <GlassCard className="w-full max-w-md relative" neonBorder="green">
+          <GlassCard className="w-full max-w-md relative" neonBorder="mint">
             <button
               onClick={() => setShowWithdrawModal(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
@@ -618,7 +609,7 @@ export default function WalletPage() {
       {/* ─── Exchange Modal ─── */}
       {showExchangeModal && (
 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <GlassCard className="w-full max-w-md relative" neonBorder="cyan">
+          <GlassCard className="w-full max-w-md relative" neonBorder="blue">
             <button
               onClick={() => setShowExchangeModal(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"

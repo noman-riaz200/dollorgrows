@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Vanilla CSS Demo</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .demo-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .demo-header p {
+            font-size: 1.125rem;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .demo-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .demo-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .demo-card h3 i {
+            color: #6366f1;
+        }
+        
+        .demo-card p {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .demo-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .demo-feature {
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            color: #475569;
+            font-weight: 500;
+        }
+        
+        .demo-feature.primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+        
+        .demo-feature.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .demo-feature.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .demo-preview {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 3rem;
+        }
+        
+        .demo-preview h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .preview-container {
+            border: 2px dashed #e2e8f0;
+            border-radius: 12px;
+            padding: 2rem;
+            background: #f8fafc;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .preview-content {
+            text-align: center;
+            max-width: 500px;
+        }
+        
+        .preview-content h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+        
+        .preview-content p {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+        }
+        
+        .preview-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #6366f1;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .btn-secondary:hover {
+            border-color: #6366f1;
+            transform: translateY(-2px);
+        }
+        
+        .demo-footer {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 3rem;
+        }
+        
+        .demo-footer a {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .demo-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-container {
+                padding: 1rem;
+            }
+            
+            .demo-header h1 {
+                font-size: 2rem;
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .preview-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .demo-header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .demo-card {
+                padding: 1.5rem;
+            }
+            
+            .preview-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>User Dashboard Design</h1>
+            <p>Modern, responsive dashboard built with pure vanilla CSS. No frameworks, no dependencies.</p>
+        </div>
+        
+        <div class="demo-grid">
+            <div class="demo-card">
+                <h3><i class="fas fa-palette"></i> Modern Design</h3>
+                <p>Clean glassmorphism effects with subtle gradients and vibrant accent colors for financial data visualization.</p>
+                <div class="demo-features">
+                    <span class="demo-feature primary">Glassmorphism</span>
+                    <span class="demo-feature success">Gradients</span>
+                    <span class="demo-feature warning">Vibrant Colors</span>
+                </div>
+            </div>
+            
+            <div class="demo-card">
+                <h3><i class="fas fa-mobile-alt"></i> Fully Responsive</h3>
+                <p>Adapts seamlessly to all screen sizes from desktop to mobile with optimized layouts for each breakpoint.</p>
+                <div class="demo-features">
+                    <span class="demo-feature primary">Mobile-First</span>
+                    <span class="demo-feature success">Flexible Grids</span>
+                    <span class="demo-feature warning">Touch-Friendly</span>
+                </div>
+            </div>
+            
+            <div class="demo-card">
+                <h3><i class="fas fa-bolt"></i> High Performance</h3>
+                <p>Pure vanilla CSS ensures fast loading times, minimal bundle size, and smooth animations without JavaScript overhead.</p>
+                <div class="demo-features">
+                    <span class="demo-feature primary">Lightweight</span>
+                    <span class="demo-feature success">Fast Loading</span>
+                    <span class="demo-feature warning">Optimized</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-preview">
+            <h2>Dashboard Preview</h2>
+            <div class="preview-container">
+                <div class="preview-content">
+                    <h3>Dashboard Components</h3>
+                    <p>The dashboard includes:</p>
+                    <ul style="text-align: left; margin: 1rem 0; color: #64748b; line-height: 1.8;">
+                        <li>Total balance card with gradient background</li>
+                        <li>Stats grid with animated cards</li>
+                        <li>Charts section for data visualization</li>
+                        <li>Activity feed with transaction history</li>
+                        <li>Quick action buttons</li>
+                        <li>Responsive design for all devices</li>
+                    </ul>
+                    <p>All styled with pure vanilla CSS in <code>dashboard.css</code></p>
+                    
+                    <div class="preview-buttons">
+                        <a href="#view-css" class="btn btn-primary">
+                            <i class="fas fa-code"></i> View CSS Code
+                        </a>
+                        <a href="#test-responsive" class="btn btn-secondary">
+                            <i class="fas fa-mobile-alt"></i> Test Responsive Design
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-card">
+            <h3><i class="fas fa-ruler-combined"></i> Responsive Breakpoints</h3>
+            <p>The dashboard uses CSS media queries to adapt to different screen sizes:</p>
+            <div style="margin-top: 1.5rem;">
+                <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 1rem; background: #f1f5f9; border-radius: 10px;">
+                    <div style="width: 60px; height: 40px; background: #10b981; border-radius: 6px; margin-right: 1rem;"></div>
+                    <div>
+                        <strong style="color: #1e293b;">Desktop (1024px+)</strong>
+                        <div style="color: #64748b; font-size: 0.875rem;">3-column grid, full charts</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 1rem; background: #f1f5f9; border-radius: 10px;">
+                    <div style="width: 40px; height: 40px; background: #3b82f6; border-radius: 6px; margin-right: 1rem;"></div>
+                    <div>
+                        <strong style="color: #1e293b;">Tablet (768px-1024px)</strong>
+                        <div style="color: #64748b; font-size: 0.875rem;">2-column grid, stacked charts</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; padding: 1rem; background: #f1f5f9; border-radius: 10px;">
+                    <div style="width: 30px; height: 40px; background: #8b5cf6; border-radius: 6px; margin-right: 1rem;"></div>
+                    <div>
+                        <strong style="color: #1e293b;">Mobile (480px-768px)</strong>
+                        <div style="color: #64748b; font-size: 0.875rem;">1-column, simplified layout</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-footer">
+            <p>Dashboard designed with pure vanilla CSS • No frameworks required • Fully responsive</p>
+            <p style="margin-top: 0.5rem;">Try resizing your browser window to see the responsive design in action!</p>
+            <p style="margin-top: 1rem;">
+                <a href="dashboard.css">View dashboard.css</a> • 
+                <a href="../dashboard/page.tsx">View Next.js Dashboard Page</a>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Simple script to demonstrate interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    if (this.getAttribute('href') === '#view-css') {
+                        e.preventDefault();
+                        alert('The CSS file is located at: app/dashboard/dashboard.css\n\nOpen it in your editor to view the complete vanilla CSS implementation.');
+                    }
+                    
+                    if (this.getAttribute('href') === '#test-responsive') {
+                        e.preventDefault();
+                        alert('Try resizing your browser window!\n\nThe dashboard will adapt to different screen sizes:\n\n• Desktop: 3-column layout\n• Tablet: 2-column layout\n• Mobile: 1-column layout');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -50,55 +50,55 @@ export default function ExchangeHistoryPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Exchange History</h1>
-        <p className="text-gray-400">View your exchange, deposit, and withdrawal history.</p>
+    <div className="exchange-page">
+      <div className="page-header">
+        <h1>Exchange History</h1>
+        <p>View your exchange, deposit, and withdrawal history.</p>
       </div>
 
       <GlassCard>
         {loading ? (
-          <div className="py-12 text-center">
-            <div className="w-8 h-8 border-2 border-[#00d2ff] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-gray-500">Loading history...</p>
+          <div className="loading-container">
+            <div className="loading-spinner" />
+            <p className="loading-text">Loading history...</p>
           </div>
         ) : transactions.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="data-table-container">
+            <table className="data-table">
               <thead>
-                <tr className="border-b border-white/[0.08]">
-                  <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Amount</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                <tr>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Description</th>
+                  <th>Date</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {transactions.map((tx) => (
-                  <tr key={tx.id} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-white/[0.03] flex items-center justify-center">
+                  <tr key={tx.id}>
+                    <td>
+                      <div className="transaction-type">
+                        <div className="transaction-icon">
                           <TypeIcon type={tx.type} />
                         </div>
-                        <span className="text-white font-medium capitalize">{tx.type}</span>
+                        <span className="transaction-label">{tx.type}</span>
                       </div>
                     </td>
-                    <td className="py-3 px-4">
-                      <span className={`font-bold ${tx.amount >= 0 ? "text-[#00ff88]" : "text-red-400"}`}>
+                    <td>
+                      <span className={`amount ${tx.amount >= 0 ? "positive" : "negative"}`}>
                         {tx.amount >= 0 ? "+" : ""}${Math.abs(tx.amount).toLocaleString()}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-gray-400 text-xs">{tx.description || "-"}</td>
-                    <td className="py-3 px-4 text-gray-500 text-xs">{new Date(tx.createdAt).toLocaleDateString()}</td>
-                    <td className="py-3 px-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    <td className="description">{tx.description || "-"}</td>
+                    <td className="date">{new Date(tx.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      <span className={`status-badge ${
                         tx.status === "completed" || tx.status === "confirmed"
-                          ? "bg-[#00ff88]/10 text-[#00ff88]"
+                          ? "status-success"
                           : tx.status === "pending"
-                          ? "bg-amber-500/10 text-amber-400"
-                          : "bg-red-500/10 text-red-400"
+                          ? "status-pending"
+                          : "status-error"
                       }`}>
                         {tx.status}
                       </span>
@@ -109,9 +109,9 @@ export default function ExchangeHistoryPage() {
             </table>
           </div>
         ) : (
-          <div className="py-12 text-center">
-            <ArrowLeftRight className="w-10 h-10 text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-500">No transactions yet</p>
+          <div className="empty-state">
+            <ArrowLeftRight className="empty-icon" />
+            <p className="empty-text">No transactions yet</p>
           </div>
         )}
       </GlassCard>

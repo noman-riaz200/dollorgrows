@@ -42,26 +42,26 @@ export default function PlansPage() {
   };
 
   return (
-    <div>
+    <div className="plans-page">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Investment Plans</h1>
-        <div className="flex items-center gap-2 text-[#00ff88]">
-          <Sparkles className="w-4 h-4" />
-          <p className="text-sm font-medium">Step by step unlock after admin approval</p>
+      <div className="page-header">
+        <h1>Investment Plans</h1>
+        <div className="page-subtitle">
+          <Sparkles className="subtitle-icon" />
+          <p>Step by step unlock after admin approval</p>
         </div>
       </div>
 
       {/* Success Message */}
       {success && (
-        <div className="mb-6 p-4 bg-[#00ff88]/10 border border-[#00ff88]/30 rounded-xl text-[#00ff88] flex items-center gap-2">
-          <Check className="w-5 h-5" />
+        <div className="success-message">
+          <Check className="success-icon" />
           {success}
         </div>
       )}
 
       {/* Plans Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="plans-grid">
         {plans.map((plan, index) => {
           const isFirst = index === 0;
           const isSelected = selectedPlan === plan.id;
@@ -70,57 +70,43 @@ export default function PlansPage() {
             <GlassCard
               key={plan.id}
               hover
-              glow={isFirst ? "green" : "none"}
-              neonBorder={isFirst ? "green" : "none"}
-              className="flex flex-col"
+              glow={isFirst ? "mint" : "none"}
+              neonBorder={isFirst ? "mint" : "none"}
+              className="plan-card"
             >
               {/* Plan Header */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      isFirst
-                        ? "bg-[#00ff88]/10 text-[#00ff88]"
-                        : "bg-white/[0.03] text-gray-400"
-                    }`}
-                  >
-                    <span className="text-sm font-bold">{plan.id}</span>
+              <div className="plan-header">
+                <div className="plan-title-wrapper">
+                  <div className={`plan-number ${isFirst ? "active" : ""}`}>
+                    <span>{plan.id}</span>
                   </div>
-                  <h3 className="text-lg font-bold text-white">{plan.name}</h3>
+                  <h3 className="plan-name">{plan.name}</h3>
                 </div>
                 {isFirst && (
-                  <span className="px-2 py-1 text-xs font-medium bg-[#00ff88]/10 text-[#00ff88] rounded-full border border-[#00ff88]/20">
-                    Active
-                  </span>
+                  <span className="plan-badge active">Active</span>
                 )}
               </div>
 
               {/* Price */}
-              <div className="mb-4">
-                <p className="text-xs text-gray-500 mb-1">Investment Amount</p>
-                <div className="flex items-center gap-2">
-                  <DollarSign className="w-5 h-5 text-[#00d2ff]" />
-                  <span className="text-2xl font-bold text-white">
-                    {plan.price.toLocaleString()}
-                  </span>
+              <div className="plan-price-section">
+                <p className="plan-label">Investment Amount</p>
+                <div className="price-display">
+                  <DollarSign className="price-icon" />
+                  <span className="price-amount">${plan.price.toLocaleString()}</span>
                 </div>
               </div>
 
               {/* Return Details */}
-              <div className="grid grid-cols-2 gap-3 mb-6">
-                <div className="p-3 bg-white/[0.03] rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">Total Return</p>
-                  <p className="text-lg font-bold text-[#00ff88]">
-                    ${plan.returnAmount.toLocaleString()}
-                  </p>
+              <div className="plan-details-grid">
+                <div className="plan-detail-card">
+                  <p className="plan-label">Total Return</p>
+                  <p className="return-amount">${plan.returnAmount.toLocaleString()}</p>
                 </div>
-                <div className="p-3 bg-white/[0.03] rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">ROI</p>
-                  <div className="flex items-center gap-1">
-                    <TrendingUp className="w-4 h-4 text-[#00d2ff]" />
-                    <p className="text-lg font-bold text-[#00d2ff]">
-                      {plan.returnPercent}%
-                    </p>
+                <div className="plan-detail-card">
+                  <p className="plan-label">ROI</p>
+                  <div className="roi-display">
+                    <TrendingUp className="roi-icon" />
+                    <p className="roi-percent">{plan.returnPercent}%</p>
                   </div>
                 </div>
               </div>
@@ -131,11 +117,11 @@ export default function PlansPage() {
                   variant="green"
                   fullWidth
                   onClick={() => handleSelectPlan(plan)}
-                  className="flex items-center justify-center gap-2"
+                  className="plan-select-button"
                 >
                   {isSelected ? (
                     <>
-                      <Check className="w-4 h-4" />
+                      <Check className="button-icon" />
                       Selected
                     </>
                   ) : (
@@ -145,9 +131,9 @@ export default function PlansPage() {
               ) : (
                 <button
                   disabled
-                  className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg border bg-red-500/10 text-red-400 border-red-500/30 cursor-not-allowed opacity-70"
+                  className="plan-locked-button"
                 >
-                  <Lock className="w-4 h-4" />
+                  <Lock className="button-icon" />
                   Locked
                 </button>
               )}
