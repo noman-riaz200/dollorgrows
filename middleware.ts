@@ -3,12 +3,15 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
-
-  // Allow all auth routes to be public
-  if (request.nextUrl.pathname.startsWith("/auth/")) {
+  // Allow all auth routes and next-auth API to be public
+  if (
+    request.nextUrl.pathname.startsWith("/auth/") ||
+    request.nextUrl.pathname.startsWith("/api/auth/")
+  ) {
     return NextResponse.next();
   }
+
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
 
   // Allow public settings endpoint
   if (request.nextUrl.pathname === "/api/settings/public") {

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NeonButton } from "./NeonButton";
 
 type NavLink = { href: string; label: string };
 
@@ -73,15 +72,19 @@ export function Navbar() {
         </ul>
 
         <div className="navbar-actions">
-          <Link href="/auth/signin" className="nav-btn-link" onClick={closeMenu}>
-            <NeonButton variant="green" size="sm">
-              Sign In
-            </NeonButton>
+          <Link
+            href="/auth/signin"
+            className="navbar-btn navbar-btn-signin navbar-btn-sm"
+            onClick={closeMenu}
+          >
+            Sign In
           </Link>
-          <Link href="/auth/register" className="nav-btn-link" onClick={closeMenu}>
-            <NeonButton variant="gradient" size="sm">
-              Sign Up
-            </NeonButton>
+          <Link
+            href="/auth/register"
+            className="navbar-btn navbar-btn-signup navbar-btn-sm"
+            onClick={closeMenu}
+          >
+            Sign Up
           </Link>
         </div>
       </div>

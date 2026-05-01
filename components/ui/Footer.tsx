@@ -60,8 +60,8 @@ export default function Footer() {
               </a>
             </li>
             <li>
-              <a className="footer-link" href="/dashboard">
-                Dashboard
+              <a className="footer-link" href="/admin">
+                Admin
               </a>
             </li>
           </ul>

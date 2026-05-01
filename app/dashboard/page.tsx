@@ -451,6 +451,7 @@ export default function DashboardPage() {
             </div>
           </GlassCard>
         </div>
+      </div>
+
   );
 }
-

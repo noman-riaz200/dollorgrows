@@ -1,15 +1,12 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, TrendingUp, Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { NeonButton } from "@/components/ui/NeonButton";
+import { Loader2, Mail, Lock, Eye, EyeOff, ArrowRight, TrendingUp } from "lucide-react";
 import { loginSchema, LoginInput } from "@/lib/validations/auth";
-import { cn } from "@/lib/utils";
 
 function GoogleIcon({ className }: { className?: string }) {
   return (
@@ -44,7 +41,17 @@ export default function SignInPage() {
       if (result?.error) {
         setServerError("Invalid email or password");
       } else {
-        window.location.href = "/dashboard";
+        try {
+          const res = await fetch("/api/auth/session");
+          const session = await res.json();
+          if (session?.user?.role === "admin") {
+            window.location.href = "/admin";
+          } else {
+            window.location.href = "/dashboard";
+          }
+        } catch (err) {
+          window.location.href = "/dashboard";
+        }
       }
     } catch {
       setServerError("Failed to sign in. Please try again.");
@@ -59,167 +66,494 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      {/* Logo */}
-      <div className="flex items-center justify-center gap-3 mb-8 animate-auth-slide-up">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#00d2ff] to-[#00ff88] flex items-center justify-center glow-cyan-sm animate-pulse">
-          <TrendingUp className="w-7 h-7 text-black" />
-        </div>
-        <span className="text-3xl font-bold text-white tracking-tight">
-          Dollor<span className="text-[#00d2ff] text-glow-cyan">Grows</span>
-        </span>
-      </div>
-
-      <GlassCard padding="lg" glow="cyan" className="animate-auth-fade-in">
-        <h2 className="text-2xl font-bold text-white text-center mb-2 animate-auth-slide-up auth-stagger-1">
-          Welcome Back
-        </h2>
-        <p className="text-gray-400 text-center mb-6 text-sm animate-auth-slide-up auth-stagger-2">
-          Sign in to access your dashboard and investment pools.
-        </p>
-
-        {serverError && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm animate-pulse animate-auth-slide-up auth-stagger-2">
-            {serverError}
+    <div className="signin-page">
+      {/* Background elements */}
+      <div className="bg-shape bg-shape-1"></div>
+      <div className="bg-shape bg-shape-2"></div>
+      
+      <div className="signin-container">
+        {/* Brand Header */}
+        <Link href="/" className="brand-link">
+          <div className="brand-logo">
+            <TrendingUp size={24} color="white" />
           </div>
-        )}
+          <span className="brand-text">DollorGrows</span>
+        </Link>
 
-        {/* Google Sign In */}
-        <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          disabled={isLoading}
-          className={cn(
-            "w-full flex items-center justify-center gap-3 px-4 py-3 mb-6",
-            "bg-white/[0.03] border border-white/[0.08] rounded-lg",
-            "text-white font-medium transition-all duration-300",
-            "hover:bg-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed",
-            "google-btn-glow"
-          )}
-        >
-          <GoogleIcon className="w-5 h-5 text-[#00d2ff]" />
-          <span>Sign in with Google</span>
-        </button>
+        {/* Form Card */}
+        <div className="signin-card">
+          <div className="card-header">
+            <h1 className="card-title">Welcome Back</h1>
+            <p className="card-subtitle">Sign in to your account to continue</p>
+          </div>
 
-        {/* Divider */}
-        <div className="flex items-center gap-4 mb-6 animate-auth-slide-up auth-stagger-3">
-          <div className="flex-1 h-px bg-white/[0.08]" />
-          <span className="text-gray-500 text-xs uppercase tracking-wider">or</span>
-          <div className="flex-1 h-px bg-white/[0.08]" />
-        </div>
+          <button 
+            type="button" 
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+            className="google-btn"
+          >
+            <GoogleIcon className="google-icon" />
+            Continue with Google
+          </button>
 
-        {/* Sign In Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <div className="animate-auth-slide-up auth-stagger-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Email Address
-            </label>
-            <div className="flex items-center px-4 bg-white/[0.03] border border-white/[0.08] rounded-lg focus-within:border-[#00d2ff]/50 input-glow transition-all duration-300">
-              <Mail className="w-5 h-5 text-gray-500 shrink-0" />
-              <input
-                type="email"
-                placeholder="you@example.com"
-                disabled={isLoading}
-                className="flex-1 px-3 py-3 bg-transparent text-white placeholder-gray-500 focus:outline-none text-sm disabled:opacity-50"
-                {...register("email")}
-              />
-            </div>
-            {errors.email && (
-              <p className="mt-1.5 text-red-400 text-xs animate-auth-slide-up">{errors.email.message}</p>
+          <div className="divider">
+            <span>or sign in with email</span>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="signin-form">
+            {serverError && (
+              <div className="error-alert">
+                {serverError}
+              </div>
             )}
-          </div>
 
-          <div className="animate-auth-slide-up auth-stagger-5">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Password
-            </label>
-            <div className="flex items-center px-4 bg-white/[0.03] border border-white/[0.08] rounded-lg focus-within:border-[#00d2ff]/50 input-glow transition-all duration-300">
-              <Lock className="w-5 h-5 text-gray-500 shrink-0" />
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                disabled={isLoading}
-                className="flex-1 px-3 py-3 bg-transparent text-white placeholder-gray-500 focus:outline-none text-sm disabled:opacity-50"
-                {...register("password")}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="text-gray-500 hover:text-gray-300 transition-colors"
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
+            <div className="form-group">
+              <label htmlFor="email">Email Address</label>
+              <div className="input-container">
+                <Mail className="input-icon" size={20} />
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  disabled={isLoading}
+                  className={`form-input ${errors.email ? 'input-error' : ''}`}
+                  {...register("email")}
+                />
+              </div>
+              {errors.email && <span className="error-text">{errors.email.message}</span>}
             </div>
-            {errors.password && (
-              <p className="mt-1.5 text-red-400 text-xs animate-auth-slide-up">{errors.password.message}</p>
-            )}
-          </div>
 
-          <div className="flex items-center justify-between animate-auth-slide-up auth-stagger-6">
-            <label className="flex items-center gap-2 cursor-pointer group">
-              <input
-                type="checkbox"
-                disabled={isLoading}
-                className="w-4 h-4 rounded border-white/[0.15] bg-white/[0.03] text-[#00d2ff] focus:ring-[#00d2ff]/30 focus:ring-offset-0 cursor-pointer"
-                {...register("rememberMe")}
-              />
-              <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">
-                Remember me
-              </span>
-            </label>
-            <Link
-              href="#"
-              className="text-sm text-[#00d2ff] hover:text-[#00ff88] transition-colors link-glow"
-            >
-              Forgot password?
-            </Link>
-          </div>
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <div className="input-container">
+                <Lock className="input-icon" size={20} />
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  disabled={isLoading}
+                  className={`form-input ${errors.password ? 'input-error' : ''}`}
+                  {...register("password")}
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+              {errors.password && <span className="error-text">{errors.password.message}</span>}
+            </div>
 
-          <div className="animate-auth-slide-up auth-stagger-7">
-            <NeonButton fullWidth type="submit" disabled={isLoading} animate className="flex items-center justify-center gap-2">
+            <div className="form-options">
+              <label className="checkbox-label">
+                <input 
+                  type="checkbox" 
+                  disabled={isLoading}
+                  {...register("rememberMe")} 
+                />
+                <span className="checkbox-text">Remember me</span>
+              </label>
+              <Link href="/auth/forgot-password" className="forgot-link">
+                Forgot password?
+              </Link>
+            </div>
+
+            <button type="submit" disabled={isLoading} className="submit-btn">
               {isLoading ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="spinner" size={20} />
                   Signing in...
                 </>
               ) : (
-                "Sign In"
+                <>
+                  Sign In
+                  <ArrowRight size={20} />
+                </>
               )}
-            </NeonButton>
+            </button>
+          </form>
+
+          <div className="card-footer">
+            <p>
+              Don't have an account?{' '}
+              <Link href="/auth/register" className="signup-link">
+                Create Account
+              </Link>
+            </p>
           </div>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-gray-400 animate-auth-slide-up auth-stagger-8">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/auth/register"
-            className="text-[#00d2ff] hover:text-[#00ff88] font-medium transition-colors link-glow"
-          >
-            Create one
-          </Link>
-        </p>
-      </GlassCard>
-
-      {/* Footer Stats */}
-      <div className="mt-8 grid grid-cols-2 gap-4 text-center animate-auth-slide-up auth-stagger-8">
-        <div className="glass rounded-lg p-4">
-          <div className="text-2xl font-bold text-[#00d2ff] text-glow-cyan">15</div>
-          <div className="text-xs text-gray-400">Investment Pools</div>
-        </div>
-        <div className="glass rounded-lg p-4">
-          <div className="text-2xl font-bold text-[#00ff88] text-glow-green">3</div>
-          <div className="text-xs text-gray-400">Referral Levels</div>
-        </div>
-        <div className="glass rounded-lg p-4">
-          <div className="text-2xl font-bold text-[#00d2ff] text-glow-cyan">BSC</div>
-          <div className="text-xs text-gray-400">Blockchain</div>
-        </div>
-        <div className="glass rounded-lg p-4">
-          <div className="text-2xl font-bold text-[#00ff88] text-glow-green">BEP20</div>
-          <div className="text-xs text-gray-400">Token Compatible</div>
         </div>
       </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .signin-page {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: var(--bg-primary);
+          position: relative;
+          overflow: hidden;
+          padding: 2rem 1rem;
+        }
+
+        /* Abstract Background Shapes matching globals.css theme */
+        .bg-shape {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(80px);
+          z-index: 0;
+          opacity: 0.5;
+        }
+
+        .bg-shape-1 {
+          width: 500px;
+          height: 500px;
+          background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
+          top: -150px;
+          right: -100px;
+        }
+
+        .bg-shape-2 {
+          width: 600px;
+          height: 600px;
+          background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+          bottom: -200px;
+          left: -150px;
+        }
+
+        .signin-container {
+          width: 100%;
+          max-width: 440px;
+          position: relative;
+          z-index: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .brand-link {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          text-decoration: none;
+          margin-bottom: 2rem;
+          transition: var(--transition);
+        }
+
+        .brand-link:hover {
+          transform: translateY(-2px);
+        }
+
+        .brand-logo {
+          width: 42px;
+          height: 42px;
+          background: var(--accent-gradient);
+          border-radius: var(--radius-md);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: var(--shadow-glow);
+        }
+
+        .brand-text {
+          font-size: 1.75rem;
+          font-weight: 800;
+          color: var(--text-primary);
+          letter-spacing: -0.5px;
+        }
+
+        .signin-card {
+          width: 100%;
+          background: var(--bg-secondary);
+          border-radius: var(--radius-xl);
+          padding: 2.5rem;
+          box-shadow: var(--shadow-xl);
+          border: 1px solid var(--border-light);
+        }
+
+        .card-header {
+          text-align: center;
+          margin-bottom: 2rem;
+        }
+
+        .card-title {
+          font-size: 1.75rem;
+          font-weight: 700;
+          color: var(--text-primary);
+          margin-bottom: 0.5rem;
+        }
+
+        .card-subtitle {
+          color: var(--text-secondary);
+          font-size: 0.95rem;
+        }
+
+        .google-btn {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.75rem;
+          padding: 0.875rem;
+          background: var(--bg-secondary);
+          border: 1px solid var(--border-medium);
+          border-radius: var(--radius-md);
+          color: var(--text-primary);
+          font-weight: 600;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: var(--transition);
+          box-shadow: var(--shadow-sm);
+        }
+
+        .google-btn:hover:not(:disabled) {
+          background: var(--bg-primary);
+          border-color: var(--accent-primary);
+          transform: translateY(-1px);
+        }
+
+        .google-icon {
+          width: 20px;
+          height: 20px;
+        }
+
+        .divider {
+          display: flex;
+          align-items: center;
+          text-align: center;
+          margin: 2rem 0;
+          color: var(--text-muted);
+          font-size: 0.875rem;
+        }
+
+        .divider::before,
+        .divider::after {
+          content: '';
+          flex: 1;
+          border-bottom: 1px solid var(--border-light);
+        }
+
+        .divider span {
+          padding: 0 1rem;
+        }
+
+        .signin-form {
+          display: flex;
+          flex-direction: column;
+          gap: 1.25rem;
+        }
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .form-group label {
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+
+        .input-container {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+
+        .input-icon {
+          position: absolute;
+          left: 1rem;
+          color: var(--text-muted);
+          pointer-events: none;
+          transition: var(--transition);
+        }
+
+        .form-input {
+          width: 100%;
+          padding: 0.875rem 1rem 0.875rem 3rem;
+          background: var(--bg-primary);
+          border: 1px solid var(--border-medium);
+          border-radius: var(--radius-md);
+          color: var(--text-primary);
+          font-size: 1rem;
+          transition: var(--transition);
+          outline: none;
+        }
+
+        .form-input:focus {
+          border-color: var(--accent-primary);
+          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+          background: var(--bg-secondary);
+        }
+
+        .form-input:focus + .input-icon,
+        .input-container:focus-within .input-icon {
+          color: var(--accent-primary);
+        }
+
+        .form-input.input-error {
+          border-color: #ef4444;
+        }
+
+        .form-input.input-error:focus {
+          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+        }
+
+        .password-toggle {
+          position: absolute;
+          right: 1rem;
+          background: none;
+          border: none;
+          color: var(--text-muted);
+          cursor: pointer;
+          padding: 0.25rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: var(--transition);
+        }
+
+        .password-toggle:hover {
+          color: var(--text-primary);
+        }
+
+        .error-text {
+          color: #ef4444;
+          font-size: 0.8rem;
+          font-weight: 500;
+          margin-top: 0.25rem;
+        }
+
+        .error-alert {
+          background: rgba(239, 68, 68, 0.1);
+          color: #ef4444;
+          padding: 0.875rem;
+          border-radius: var(--radius-md);
+          font-size: 0.9rem;
+          font-weight: 500;
+          text-align: center;
+          border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .form-options {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: 0.25rem;
+        }
+
+        .checkbox-label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+          width: 1rem;
+          height: 1rem;
+          border-radius: 4px;
+          border: 1px solid var(--border-medium);
+          accent-color: var(--accent-primary);
+          cursor: pointer;
+        }
+
+        .checkbox-text {
+          font-size: 0.9rem;
+          color: var(--text-secondary);
+        }
+
+        .forgot-link {
+          font-size: 0.9rem;
+          color: var(--accent-primary);
+          text-decoration: none;
+          font-weight: 500;
+          transition: var(--transition);
+        }
+
+        .forgot-link:hover {
+          color: var(--accent-secondary);
+          text-decoration: underline;
+        }
+
+        .submit-btn {
+          margin-top: 0.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          width: 100%;
+          padding: 1rem;
+          background: var(--accent-gradient);
+          color: white;
+          border: none;
+          border-radius: var(--radius-md);
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: var(--transition);
+          box-shadow: var(--shadow-md);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-glow);
+        }
+
+        .submit-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+
+        .spinner {
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        .card-footer {
+          margin-top: 2rem;
+          text-align: center;
+          font-size: 0.95rem;
+          color: var(--text-secondary);
+        }
+
+        .signup-link {
+          color: var(--accent-primary);
+          text-decoration: none;
+          font-weight: 600;
+          transition: var(--transition);
+        }
+
+        .signup-link:hover {
+          color: var(--accent-secondary);
+          text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+          .signin-card {
+            padding: 2rem 1.5rem;
+            border-radius: var(--radius-lg);
+          }
+          
+          .card-title {
+            font-size: 1.5rem;
+          }
+          
+          .bg-shape {
+            display: none;
+          }
+        }
+      `}} />
     </div>
   );
 }
-

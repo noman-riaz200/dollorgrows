@@ -242,7 +242,6 @@ export default function ReferralsPage() {
           </div>
         </GlassCard>
       </div>
-</div>
   );
 }
 
