@@ -9,7 +9,7 @@ interface StatCardProps {
   change?: string;
   positive?: boolean;
   icon: LucideIcon;
-accent?: "blue" | "mint";
+  accent?: "blue" | "mint" | "cyan" | "green";
   className?: string;
   neonBorder?: "cyan" | "green" | "none";
 }
@@ -37,13 +37,15 @@ accent = "blue",
         <div
           className={cn(
             "w-48px h-48px rounded-3 d-flex align-items-center justify-content-center",
-            accent === "cyan" ? "bg-[#00d2ff]/10" : "bg-[#00ff88]/10"
+            accent === "cyan" ? "bg-[#00d2ff]/10" :
+            accent === "blue" ? "bg-blue-500/10" : "bg-[#00ff88]/10"
           )}
         >
           <Icon
             className={cn(
               "w-6 h-6",
-              accent === "cyan" ? "text-[#00d2ff]" : "text-[#00ff88]"
+              accent === "cyan" ? "text-[#00d2ff]" :
+              accent === "blue" ? "text-blue-400" : "text-[#00ff88]"
             )}
           />
         </div>

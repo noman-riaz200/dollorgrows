@@ -7,9 +7,9 @@ interface GlassCardProps {
   children: ReactNode;
   className?: string;
   hover?: boolean;
-glow?: "blue" | "mint" | "lavender" | "none";
+  glow?: "blue" | "mint" | "lavender" | "cyan" | "none";
   padding?: "sm" | "md" | "lg";
-neonBorder?: "blue" | "mint" | "lavender" | "none";
+  neonBorder?: "blue" | "mint" | "lavender" | "cyan" | "none";
 }
 
 export function GlassCard({
@@ -35,9 +35,11 @@ export function GlassCard({
         glow === "blue" && "glow-blue",
         glow === "mint" && "glow-mint",
         glow === "lavender" && "glow-lavender",
+        glow === "cyan" && "glow-cyan",
         neonBorder === "blue" && "neon-border-blue",
         neonBorder === "mint" && "neon-border-mint",
         neonBorder === "lavender" && "neon-border-lavender",
+        neonBorder === "cyan" && "neon-border-cyan",
         className
       )}
     >
