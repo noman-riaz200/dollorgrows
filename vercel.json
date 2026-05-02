@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "DATABASE_URL": "mysql://2uThyiwAJFJysZ1.root:GEQy2ICGgHgbW5ka@gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/sys?ssl={\"rejectUnauthorized\":true}",
+    "NEXTAUTH_SECRET": "dollorgrows-secret-key-2024-change-in-production",
+    "NEXTAUTH_URL": "https://dollorgrows.vercel.app",
+    "NEXT_PUBLIC_SITE_URL": "https://dollorgrows.vercel.app",
+    "NEXT_PUBLIC_BSC_RPC_URL": "https://bsc-dataseed.binance.org",
+    "NEXT_PUBLIC_LEVEL1_COMMISSION": "10",
+    "NEXT_PUBLIC_LEVEL2_COMMISSION": "5",
+    "NEXT_PUBLIC_LEVEL3_COMMISSION": "3"
+  },
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs"
+}

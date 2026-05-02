@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Mail, Lock, Eye, EyeOff, ArrowRight, TrendingUp } from "lucide-react";
-import { loginSchema, LoginInput } from "@/lib/validations/auth";
+import { z } from "zod";
+import { loginSchema } from "@/lib/validations/auth";
 
 function GoogleIcon({ className }: { className?: string }) {
   return (
@@ -24,12 +25,12 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState("");
 
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({
+  const { register, handleSubmit, formState: { errors } } = useForm<z.output<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: { rememberMe: false },
   });
 
-  const onSubmit = async (data: LoginInput) => {
+  const onSubmit = async (data: z.output<typeof loginSchema>) => {
     setIsLoading(true);
     setServerError("");
     try {
