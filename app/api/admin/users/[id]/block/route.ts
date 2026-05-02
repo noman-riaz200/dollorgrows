@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 // POST /api/admin/users/[id]/block - Toggle block/unblock user
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,7 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = params.id;
+    const { id: userId } = await params;
     const body = await request.json();
     const { status } = body; // "active" | "blocked"
 
