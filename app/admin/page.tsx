@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Shield, RefreshCw, Check, X, ArrowDownLeft, ArrowUpRight, Users, Database } from "lucide-react";
-import Navbar from "@/components/ui/Navbar";
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
