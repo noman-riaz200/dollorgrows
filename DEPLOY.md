@@ -11,13 +11,13 @@
 Host:     gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com
 Port:     4000
 Username: 2uThyiwAJFJysZ1.root
-Password: GEQy2ICGgHgbW5kan
+Password: GEQy2ICGgHgbW5ka
 Database: sys
 ```
 
 **DATABASE_URL (for Vercel):**
 ```
-mysql://2uThyiwAJFJysZ1.root:GEQy2ICGgHgbW5kan@gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/sys
+mysql://2uThyiwAJFJysZ1.root:GEQy2ICGgHgbW5ka@gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/sys?ssl={"rejectUnauthorized":true}
 ```
 
 ## Step 1: Push Changes to GitHub
@@ -40,7 +40,7 @@ In Vercel project settings, add these environment variables:
 
 | Variable | Value |
 |----------|-------|
-| DATABASE_URL | `mysql://2uThyiwAJFJysZ1.root:GEQy2ICGgHgbW5kan@gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/sys` |
+| DATABASE_URL | `mysql://2uThyiwAJFJysZ1.root:GEQy2ICGgHgbW5ka@gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/sys?ssl={"rejectUnauthorized":true}` |
 | NEXTAUTH_SECRET | Generate a secure random string (use: `openssl rand -base64 32`) |
 | NEXTAUTH_URL | `https://dollorgrows.vercel.app` |
 | NEXT_PUBLIC_BSC_RPC_URL | `https://data-seed-prebsc-1-s1.binance.org:8545` |
