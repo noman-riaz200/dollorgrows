@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Shield, RefreshCw, Check, X, ArrowDownLeft, ArrowUpRight, Users, Database, DollarSign, TrendingUp, BarChart3, Wallet, LogOut } from "lucide-react";
+import { Shield, RefreshCw, Check, X, ArrowDownLeft, ArrowUpRight, Users, Database, DollarSign, TrendingUp, BarChart3, Wallet, LogOut, Settings as SettingsIcon } from "lucide-react";
 import "./AdminDashboard.css";
 
 export default function AdminPage() {
@@ -16,6 +16,8 @@ export default function AdminPage() {
   const [deposits, setDeposits] = useState<any[]>([]);
   const [withdrawals, setWithdrawals] = useState<any[]>([]);
   const [stats, setStats] = useState({ u: 0, i: 0, v: 0, p: 0 });
+  const [settings, setSettings] = useState<Record<string, string>>({});
+  const [settingsLoading, setSettingsLoading] = useState(false);
 
   // Redirect if not authenticated or not an admin
   useEffect(() => {
@@ -28,17 +30,19 @@ export default function AdminPage() {
 
   const load = useCallback(async () => {
     try {
-      const [r1, r2, r3, r4] = await Promise.all([
+      const [r1, r2, r3, r4, r5] = await Promise.all([
         fetch("/api/admin/pools"),
         fetch("/api/admin/users"),
         fetch("/api/admin/deposits"),
-        fetch("/api/admin/withdrawals")
+        fetch("/api/admin/withdrawals"),
+        fetch("/api/admin/settings")
       ]);
-      const [d1, d2, d3, d4] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json()]);
+      const [d1, d2, d3, d4, d5] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json(), r5.json()]);
       setPools(d1.pools || []);
       setUsers(d2.users || []);
       setDeposits(d3.deposits || []);
       setWithdrawals(d4.withdrawals || []);
+      setSettings(d5.settings || {});
       setStats({
         u: d2.count || 0,
         i: d2.totalInvestments || 0,
@@ -84,6 +88,22 @@ export default function AdminPage() {
     setWithdrawals(p => p.map(w => w.id === id ? { ...w, status: action === "approve" ? "approved" : "rejected" } : w));
   };
 
+  const updateSetting = async (key: string, value: string) => {
+    setSettingsLoading(true);
+    try {
+      await fetch("/api/admin/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key, value })
+      });
+      setSettings(prev => ({ ...prev, [key]: value }));
+    } catch (error) {
+      console.error("Failed to update setting:", error);
+    } finally {
+      setSettingsLoading(false);
+    }
+  };
+
   const StatusBadge = ({ status }: { status: string }) => {
     const classes: Record<string, string> = {
       confirmed: "badge-success",
@@ -112,7 +132,8 @@ export default function AdminPage() {
     { key: "pools", label: "Pools", icon: <Database size={18} /> },
     { key: "deposits", label: "Deposits", icon: <ArrowDownLeft size={18} />, count: deposits.filter(d => d.status === "pending").length },
     { key: "withdrawals", label: "Withdrawals", icon: <ArrowUpRight size={18} />, count: withdrawals.filter(w => w.status === "pending").length },
-    { key: "users", label: "Users", icon: <Users size={18} /> }
+    { key: "users", label: "Users", icon: <Users size={18} /> },
+    { key: "settings", label: "Settings", icon: <SettingsIcon size={18} /> }
   ];
 
   return (
@@ -361,9 +382,134 @@ export default function AdminPage() {
             </div>
           )}
 
-        </div>
-      </div>
+          {/* SETTINGS TAB */}
+          {tab === "settings" && (
+            <div className="settings-tab">
+              <h3 className="settings-title">Platform Settings</h3>
+              <p className="settings-subtitle">Configure deposit addresses and other platform settings</p>
+              
+              <div className="settings-grid">
+                <div className="setting-card">
+                  <h4>USDT Deposit Addresses</h4>
+                  <p className="setting-description">Addresses where users will send USDT deposits</p>
+                  
+                  <div className="setting-field">
+                    <label>TRC20 Address</label>
+                    <div className="input-group">
+                      <input
+                        type="text"
+                        value={settings.usdt_trc20_address || ""}
+                        onChange={(e) => setSettings(prev => ({ ...prev, usdt_trc20_address: e.target.value }))}
+                        placeholder="T... (TRC20 wallet address)"
+                      />
+                      <button
+                        onClick={() => updateSetting("usdt_trc20_address", settings.usdt_trc20_address || "")}
+                        disabled={settingsLoading}
+                        className="save-btn"
+                      >
+                        {settingsLoading ? "Saving..." : "Save"}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="setting-field">
+                    <label>ERC20 Address</label>
+                    <div className="input-group">
+                      <input
+                        type="text"
+                        value={settings.usdt_erc20_address || ""}
+                        onChange={(e) => setSettings(prev => ({ ...prev, usdt_erc20_address: e.target.value }))}
+                        placeholder="0x... (ERC20 wallet address)"
+                      />
+                      <button
+                        onClick={() => updateSetting("usdt_erc20_address", settings.usdt_erc20_address || "")}
+                        disabled={settingsLoading}
+                        className="save-btn"
+                      >
+                        {settingsLoading ? "Saving..." : "Save"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="setting-card">
+                  <h4>Other Settings</h4>
+                  <p className="setting-description">Platform fee, minimum withdrawal, etc.</p>
+                  
+                  <div className="setting-field">
+                    <label>Platform Fee (%)</label>
+                    <div className="input-group">
+                      <input
+                        type="number"
+                        value={settings.platform_fee_percent || "2"}
+                        onChange={(e) => setSettings(prev => ({ ...prev, platform_fee_percent: e.target.value }))}
+                        placeholder="2"
+                        step="0.1"
+                        min="0"
+                        max="100"
+                      />
+                      <button
+                        onClick={() => updateSetting("platform_fee_percent", settings.platform_fee_percent || "2")}
+                        disabled={settingsLoading}
+                        className="save-btn"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="setting-field">
+                    <label>Minimum Withdrawal ($)</label>
+                    <div className="input-group">
+                      <input
+                        type="number"
+                        value={settings.min_withdrawal || "10"}
+                        onChange={(e) => setSettings(prev => ({ ...prev, min_withdrawal: e.target.value }))}
+                        placeholder="10"
+                        step="1"
+                        min="1"
+                      />
+                      <button
+                        onClick={() => updateSetting("min_withdrawal", settings.min_withdrawal || "10")}
+                        disabled={settingsLoading}
+                        className="save-btn"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="setting-field">
+                    <label>Maintenance Mode</label>
+                    <div className="input-group">
+                      <select
+                        value={settings.maintenance_mode || "false"}
+                        onChange={(e) => setSettings(prev => ({ ...prev, maintenance_mode: e.target.value }))}
+                      >
+                        <option value="false">Disabled</option>
+                        <option value="true">Enabled</option>
+                      </select>
+                      <button
+                        onClick={() => updateSetting("maintenance_mode", settings.maintenance_mode || "false")}
+                        disabled={settingsLoading}
+                        className="save-btn"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="settings-note">
+                <p><strong>Note:</strong> Changes are saved individually. Click "Save" after editing each field.</p>
+              </div>
+            </div>
+          )}
 
-    </main>
-  );
+       </div>
+     </div>
+
+   </main>
+ );
 }

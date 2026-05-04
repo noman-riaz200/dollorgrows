@@ -3,20 +3,19 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { 
-  ArrowLeftRight, 
-  TrendingUp, 
-  Download, 
-  ArrowUpRight, 
+import {
+  ArrowLeftRight,
+  TrendingUp,
+  Download,
+  ArrowUpRight,
   ArrowLeft,
   RefreshCw,
   CheckCircle2,
   AlertCircle,
   Clock
 } from "lucide-react";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { NeonButton } from "@/components/ui/NeonButton";
 import Link from "next/link";
+import "./exchange.css";
 
 interface Transaction {
   id: string;
@@ -125,7 +124,7 @@ export default function ExchangePage() {
 
     if (isSuccess) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-[#00ff88]/10 text-[#00ff88]">
+        <span className="exchange-history-status exchange-status-success">
           <CheckCircle2 className="w-3 h-3" />
           Success
         </span>
@@ -133,7 +132,7 @@ export default function ExchangePage() {
     }
     if (isPending) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400">
+        <span className="exchange-history-status exchange-status-pending">
           <Clock className="w-3 h-3" />
           Pending
         </span>
@@ -141,43 +140,43 @@ export default function ExchangePage() {
     }
     if (isFailed) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-400">
+        <span className="exchange-history-status exchange-status-failed">
           <AlertCircle className="w-3 h-3" />
           Failed
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-500/10 text-gray-400">
+      <span className="exchange-history-status">
         {status}
       </span>
     );
   };
 
   return (
-    <div className="exchange-page p-4 md:p-6">
+    <div className="exchange-page">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-4 mb-4">
-          <Link 
-            href="/dashboard/wallet" 
-            className="p-2 rounded-lg glass border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
+      <div className="exchange-header">
+        <div className="exchange-header-top">
+          <Link
+            href="/dashboard/wallet"
+            className="exchange-back-btn"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">Exchange Between Wallets</h1>
-            <p className="text-gray-400">Transfer internal USDT balance between your wallets</p>
+          <div className="exchange-title">
+            <h1>Exchange Between Wallets</h1>
+            <p>Transfer internal USDT balance between your wallets</p>
           </div>
         </div>
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-400">
-            Balance Wallet: <span className="text-white font-semibold">${balance.toLocaleString()}</span> • 
-            Pool Wallet: <span className="text-white font-semibold">${poolWallet.toLocaleString()}</span>
+        <div className="exchange-header-info">
+          <div className="exchange-balance-info">
+            Balance Wallet: <span>${balance.toLocaleString()}</span> •
+            Pool Wallet: <span>${poolWallet.toLocaleString()}</span>
           </div>
           <button
             onClick={fetchWalletData}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg glass border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all text-sm"
+            className="exchange-refresh-btn"
           >
             <RefreshCw className="w-4 h-4" />
             Refresh
@@ -185,46 +184,46 @@ export default function ExchangePage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="exchange-content-grid">
         {/* Exchange Form */}
-        <GlassCard className="p-6" neonBorder="blue">
-          <h2 className="text-xl font-bold text-white mb-6">Exchange Funds</h2>
+        <div className="exchange-glass-card neon-blue">
+          <h2 className="exchange-form-title">Exchange Funds</h2>
           
-          <div className="space-y-6">
+          <div className="exchange-form">
             {/* From/To Selection */}
-            <div className="grid grid-cols-[1fr,auto,1fr] gap-3 items-end">
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">From</label>
+            <div className="exchange-selection-grid">
+              <div className="exchange-select-group">
+                <label className="exchange-select-label">From</label>
                 <select
                   value={exchangeFrom}
                   onChange={(e) => setExchangeFrom(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-[#00d2ff]/50 transition-all appearance-none"
+                  className="exchange-select"
                 >
-                  <option value="balance" className="bg-[#0a0a0f]">Balance Wallet (USDT)</option>
-                  <option value="pool" className="bg-[#0a0a0f]">Pool Wallet (USDT)</option>
+                  <option value="balance">Balance Wallet (USDT)</option>
+                  <option value="pool">Pool Wallet (USDT)</option>
                 </select>
-                <p className="text-xs text-gray-500 mt-1">
-                  {exchangeFrom === "balance" 
+                <p className="exchange-select-available">
+                  {exchangeFrom === "balance"
                     ? `Available: $${balance.toLocaleString()}`
                     : `Available: $${poolWallet.toLocaleString()}`
                   }
                 </p>
               </div>
-              <div className="pb-3">
-                <ArrowLeftRight className="w-5 h-5 text-[#00d2ff]" />
+              <div className="exchange-arrow-icon">
+                <ArrowLeftRight className="w-5 h-5" />
               </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">To</label>
+              <div className="exchange-select-group">
+                <label className="exchange-select-label">To</label>
                 <select
                   value={exchangeTo}
                   onChange={(e) => setExchangeTo(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-[#00d2ff]/50 transition-all appearance-none"
+                  className="exchange-select"
                 >
-                  <option value="pool" className="bg-[#0a0a0f]">Pool Wallet (USDT)</option>
-                  <option value="balance" className="bg-[#0a0a0f]">Balance Wallet (USDT)</option>
+                  <option value="pool">Pool Wallet (USDT)</option>
+                  <option value="balance">Balance Wallet (USDT)</option>
                 </select>
-                <p className="text-xs text-gray-500 mt-1">
-                  {exchangeTo === "balance" 
+                <p className="exchange-select-available">
+                  {exchangeTo === "balance"
                     ? `Will receive: $${balance.toLocaleString()}`
                     : `Will receive: $${poolWallet.toLocaleString()}`
                   }
@@ -233,57 +232,55 @@ export default function ExchangePage() {
             </div>
 
             {/* Amount Input */}
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">Amount (USDT)</label>
+            <div className="exchange-amount-group">
+              <label className="exchange-select-label">Amount (USDT)</label>
               <input
                 type="number"
                 value={exchangeAmount}
                 onChange={(e) => setExchangeAmount(e.target.value)}
                 placeholder="Enter USDT amount"
-                className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all"
+                className="exchange-amount-input"
               />
-              <div className="flex gap-2 mt-2">
+              <div className="exchange-quick-amounts">
                 <button
                   type="button"
                   onClick={() => setExchangeAmount("50")}
-                  className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
+                  className="exchange-quick-btn"
                 >
                   $50
                 </button>
                 <button
                   type="button"
                   onClick={() => setExchangeAmount("100")}
-                  className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
+                  className="exchange-quick-btn"
                 >
                   $100
                 </button>
                 <button
                   type="button"
                   onClick={() => setExchangeAmount("500")}
-                  className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
+                  className="exchange-quick-btn"
                 >
                   $500
                 </button>
                 <button
                   type="button"
                   onClick={() => setExchangeAmount("1000")}
-                  className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
+                  className="exchange-quick-btn"
                 >
                   $1000
                 </button>
               </div>
             </div>
 
-            <NeonButton
-              variant="gradient"
-              fullWidth
+            <button
               onClick={handleExchange}
               disabled={loading || !exchangeAmount || exchangeFrom === exchangeTo}
-              className="py-4"
+              className={`exchange-submit-btn ${loading ? 'loading' : ''}`}
             >
               {loading ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <RefreshCw className="w-4 h-4 exchange-spinner" />
                   Processing...
                 </>
               ) : (
@@ -292,74 +289,69 @@ export default function ExchangePage() {
                   Confirm Exchange
                 </>
               )}
-            </NeonButton>
+            </button>
           </div>
-        </GlassCard>
+        </div>
 
-        {/* Exchange History */}
-        <div className="space-y-6">
-          <GlassCard className="p-6" neonBorder="cyan">
-            <h3 className="text-lg font-bold text-white mb-4">How Exchange Works</h3>
-            <ol className="space-y-4">
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#00d2ff]/20 flex items-center justify-center text-[#00d2ff] text-sm font-bold">
-                  1
-                </div>
-                <div>
-                  <p className="text-white font-medium">Select source & target wallets</p>
-                  <p className="text-gray-400 text-sm">Choose which wallet to transfer from and to</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#00d2ff]/20 flex items-center justify-center text-[#00d2ff] text-sm font-bold">
-                  2
-                </div>
-                <div>
-                  <p className="text-white font-medium">Enter amount</p>
-                  <p className="text-gray-400 text-sm">Specify the USDT amount you wish to exchange</p>
+        {/* Right Column */}
+        <div className="exchange-right-column">
+          {/* How Exchange Works */}
+          <div className="exchange-glass-card neon-cyan">
+            <h3 className="exchange-guide-title">How Exchange Works</h3>
+            
+            <ol className="exchange-guide-list">
+              <li className="exchange-guide-item">
+                <div className="exchange-guide-number">1</div>
+                <div className="exchange-guide-content">
+                  <h4>Select source & target wallets</h4>
+                  <p>Choose which wallet to transfer from and to</p>
                 </div>
               </li>
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#00d2ff]/20 flex items-center justify-center text-[#00d2ff] text-sm font-bold">
-                  3
-                </div>
-                <div>
-                  <p className="text-white font-medium">Confirm exchange</p>
-                  <p className="text-gray-400 text-sm">Click “Confirm Exchange” to instantly transfer</p>
+              <li className="exchange-guide-item">
+                <div className="exchange-guide-number">2</div>
+                <div className="exchange-guide-content">
+                  <h4>Enter amount</h4>
+                  <p>Specify the USDT amount you wish to exchange</p>
                 </div>
               </li>
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#00d2ff]/20 flex items-center justify-center text-[#00d2ff] text-sm font-bold">
-                  4
+              <li className="exchange-guide-item">
+                <div className="exchange-guide-number">3</div>
+                <div className="exchange-guide-content">
+                  <h4>Confirm exchange</h4>
+                  <p>Click "Confirm Exchange" to instantly transfer</p>
                 </div>
-                <div>
-                  <p className="text-white font-medium">Track history</p>
-                  <p className="text-gray-400 text-sm">Monitor your exchange transactions below</p>
+              </li>
+              <li className="exchange-guide-item">
+                <div className="exchange-guide-number">4</div>
+                <div className="exchange-guide-content">
+                  <h4>Track history</h4>
+                  <p>Monitor your exchange transactions below</p>
                 </div>
               </li>
             </ol>
-          </GlassCard>
+          </div>
 
-          <GlassCard className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-white">Recent Exchange History</h3>
-              <span className="text-sm text-gray-400">{transactions.filter(t => t.type === "exchange").length} exchanges</span>
+          {/* Exchange History */}
+          <div className="exchange-glass-card">
+            <div className="exchange-history-title">
+              <h3>Recent Exchange History</h3>
+              <span className="exchange-history-count">{transactions.filter(t => t.type === "exchange").length} exchanges</span>
             </div>
             
             {transactions.filter(t => t.type === "exchange").length > 0 ? (
-              <div className="space-y-3">
+              <div className="exchange-history-list">
                 {transactions
                   .filter(t => t.type === "exchange")
                   .slice(0, 5)
                   .map((tx) => (
-                    <div key={tx.id} className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-[#00d2ff]/10">
-                          <ArrowLeftRight className="w-4 h-4 text-[#00d2ff]" />
+                    <div key={tx.id} className="exchange-history-item">
+                      <div className="exchange-history-info">
+                        <div className="exchange-history-icon">
+                          <ArrowLeftRight className="w-4 h-4" />
                         </div>
-                        <div>
-                          <p className="text-white font-medium">${tx.amount.toLocaleString()}</p>
-                          <p className="text-xs text-gray-400">
+                        <div className="exchange-history-details">
+                          <h4>${tx.amount.toLocaleString()}</h4>
+                          <p>
                             {new Date(tx.createdAt).toLocaleDateString()} • {tx.description || "Exchange"}
                           </p>
                         </div>
@@ -369,15 +361,15 @@ export default function ExchangePage() {
                   ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <div className="w-12 h-12 rounded-full bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mx-auto mb-3">
-                  <ArrowLeftRight className="w-6 h-6 text-gray-600" />
+              <div className="exchange-empty-state">
+                <div className="exchange-empty-icon">
+                  <ArrowLeftRight className="w-6 h-6" />
                 </div>
-                <p className="text-gray-500">No exchange history yet</p>
-                <p className="text-sm text-gray-600 mt-1">Your exchanges will appear here</p>
+                <p className="exchange-empty-title">No exchange history yet</p>
+                <p className="exchange-empty-subtitle">Your exchanges will appear here</p>
               </div>
             )}
-          </GlassCard>
+          </div>
         </div>
       </div>
     </div>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exchange Page CSS Test</title>
+    <link rel="stylesheet" href="exchange.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background: #0a0a0f;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .test-container {
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        .test-title {
+            text-align: center;
+            color: #00d2ff;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .test-card {
+            padding: 1.5rem;
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .test-card h3 {
+            color: #ffffff;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+        
+        .test-card p {
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 class="test-title">Exchange Page CSS Test</h1>
+        
+        <!-- Test the exchange page container -->
+        <div class="exchange-page">
+            <div class="exchange-header">
+                <div class="exchange-header-top">
+                    <button class="exchange-back-btn">
+                        ←
+                    </button>
+                    <div class="exchange-title">
+                        <h1>Exchange Between Wallets</h1>
+                        <p>Transfer internal USDT balance between your wallets</p>
+                    </div>
+                </div>
+                
+                <div class="exchange-header-info">
+                    <div class="exchange-balance-info">
+                        Balance Wallet: <span>$1,250.00</span> • 
+                        Pool Wallet: <span>$5,430.00</span>
+                    </div>
+                    <button class="exchange-refresh-btn">
+                        ↻ Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <div class="exchange-content-grid">
+                <!-- Exchange Form Card -->
+                <div class="exchange-glass-card neon-blue">
+                    <h2 class="exchange-form-title">Exchange Funds</h2>
+                    
+                    <div class="exchange-form">
+                        <!-- From/To Selection -->
+                        <div class="exchange-selection-grid">
+                            <div class="exchange-select-group">
+                                <label class="exchange-select-label">From</label>
+                                <select class="exchange-select">
+                                    <option value="balance">Balance Wallet (USDT)</option>
+                                    <option value="pool">Pool Wallet (USDT)</option>
+                                </select>
+                                <p class="exchange-select-available">Available: $1,250.00</p>
+                            </div>
+                            
+                            <div class="exchange-arrow-icon">
+                                ↔
+                            </div>
+                            
+                            <div class="exchange-select-group">
+                                <label class="exchange-select-label">To</label>
+                                <select class="exchange-select">
+                                    <option value="pool">Pool Wallet (USDT)</option>
+                                    <option value="balance">Balance Wallet (USDT)</option>
+                                </select>
+                                <p class="exchange-select-available">Will receive: $5,430.00</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Amount Input -->
+                        <div class="exchange-amount-group">
+                            <label class="exchange-select-label">Amount (USDT)</label>
+                            <input type="number" class="exchange-amount-input" placeholder="Enter USDT amount" value="100">
+                            
+                            <div class="exchange-quick-amounts">
+                                <button class="exchange-quick-btn">$50</button>
+                                <button class="exchange-quick-btn">$100</button>
+                                <button class="exchange-quick-btn">$500</button>
+                                <button class="exchange-quick-btn">$1000</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <button class="exchange-submit-btn">
+                            ↔ Confirm Exchange
+                        </button>
+                        
+                        <!-- Loading State -->
+                        <button class="exchange-submit-btn loading" style="margin-top: 10px;">
+                            ↻ Processing...
+                        </button>
+                        
+                        <!-- Disabled State -->
+                        <button class="exchange-submit-btn" disabled style="margin-top: 10px;">
+                            ↔ Confirm Exchange (Disabled)
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="exchange-right-column">
+                    <!-- How Exchange Works -->
+                    <div class="exchange-glass-card neon-cyan">
+                        <h3 class="exchange-guide-title">How Exchange Works</h3>
+                        
+                        <ol class="exchange-guide-list">
+                            <li class="exchange-guide-item">
+                                <div class="exchange-guide-number">1</div>
+                                <div class="exchange-guide-content">
+                                    <h4>Select source & target wallets</h4>
+                                    <p>Choose which wallet to transfer from and to</p>
+                                </div>
+                            </li>
+                            <li class="exchange-guide-item">
+                                <div class="exchange-guide-number">2</div>
+                                <div class="exchange-guide-content">
+                                    <h4>Enter amount</h4>
+                                    <p>Specify the USDT amount you wish to exchange</p>
+                                </div>
+                            </li>
+                            <li class="exchange-guide-item">
+                                <div class="exchange-guide-number">3</div>
+                                <div class="exchange-guide-content">
+                                    <h4>Confirm exchange</h4>
+                                    <p>Click "Confirm Exchange" to instantly transfer</p>
+                                </div>
+                            </li>
+                            <li class="exchange-guide-item">
+                                <div class="exchange-guide-number">4</div>
+                                <div class="exchange-guide-content">
+                                    <h4>Track history</h4>
+                                    <p>Monitor your exchange transactions below</p>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                    
+                    <!-- Exchange History -->
+                    <div class="exchange-glass-card">
+                        <div class="exchange-history-title">
+                            <h3>Recent Exchange History</h3>
+                            <span class="exchange-history-count">3 exchanges</span>
+                        </div>
+                        
+                        <div class="exchange-history-list">
+                            <div class="exchange-history-item">
+                                <div class="exchange-history-info">
+                                    <div class="exchange-history-icon">↔</div>
+                                    <div class="exchange-history-details">
+                                        <h4>$500.00</h4>
+                                        <p>2024-01-15 • Balance → Pool</p>
+                                    </div>
+                                </div>
+                                <span class="exchange-history-status exchange-status-success">Success</span>
+                            </div>
+                            
+                            <div class="exchange-history-item">
+                                <div class="exchange-history-info">
+                                    <div class="exchange-history-icon">↔</div>
+                                    <div class="exchange-history-details">
+                                        <h4>$250.00</h4>
+                                        <p>2024-01-10 • Pool → Balance</p>
+                                    </div>
+                                </div>
+                                <span class="exchange-history-status exchange-status-pending">Pending</span>
+                            </div>
+                            
+                            <div class="exchange-history-item">
+                                <div class="exchange-history-info">
+                                    <div class="exchange-history-icon">↔</div>
+                                    <div class="exchange-history-details">
+                                        <h4>$1,000.00</h4>
+                                        <p>2024-01-05 • Balance → Pool</p>
+                                    </div>
+                                </div>
+                                <span class="exchange-history-status exchange-status-failed">Failed</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Empty State Example -->
+                        <div class="exchange-empty-state" style="display: none;">
+                            <div class="exchange-empty-icon">↔</div>
+                            <p class="exchange-empty-title">No exchange history yet</p>
+                            <p class="exchange-empty-subtitle">Your exchanges will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-grid">
+            <div class="test-card">
+                <h3>CSS Features Tested</h3>
+                <p>• Glassmorphism effects with backdrop-filter</p>
+                <p>• Neon glow animations and gradients</p>
+                <p>• Responsive grid layouts</p>
+                <p>• Interactive button states (hover, active, disabled)</p>
+                <p>• Custom form styling</p>
+                <p>• Status badges with colors</p>
+            </div>
+            
+            <div class="test-card">
+                <h3>Color Palette</h3>
+                <p><span class="neon-text">Primary: #00d2ff (Cyan)</span></p>
+                <p><span class="neon-text-green">Secondary: #00ff88 (Green)</span></p>
+                <p>Background: #0a0a0f (Dark)</p>
+                <p>Glass: rgba(255, 255, 255, 0.03)</p>
+            </div>
+            
+            <div class="test-card">
+                <h3>Responsive Design</h3>
+                <p>• Mobile-first approach</p>
+                <p>• Flexbox and CSS Grid</p>
+                <p>• Media queries for tablet/desktop</p>
+                <p>• Adaptive spacing and typography</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add some interactivity for testing
+        document.querySelectorAll('.exchange-quick-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const amount = this.textContent.replace('$', '');
+                document.querySelector('.exchange-amount-input').value = amount;
+            });
+        });
+        
+        document.querySelector('.exchange-refresh-btn').addEventListener('click', function() {
+            this.textContent = '↻ Refreshing...';
+            setTimeout(() => {
+                this.textContent = '↻ Refresh';
+            }, 1000);
+        });
+        
+        document.querySelector('.exchange-submit-btn:not(.loading):not([disabled])').addEventListener('click', function() {
+            const originalText = this.innerHTML;
+            this.innerHTML = '↻ Processing...';
+            this.classList.add('loading');
+            
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.classList.remove('loading');
+                alert('Exchange simulated successfully!');
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

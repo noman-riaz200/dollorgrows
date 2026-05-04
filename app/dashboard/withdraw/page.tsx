@@ -13,9 +13,8 @@ import {
   Clock,
   ExternalLink
 } from "lucide-react";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { NeonButton } from "@/components/ui/NeonButton";
 import Link from "next/link";
+import "./withdraw.css";
 
 interface Transaction {
   id: string;
@@ -144,7 +143,7 @@ export default function WithdrawPage() {
 
     if (isSuccess) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-[#00ff88]/10 text-[#00ff88]">
+        <span className="withdraw-status-badge withdraw-status-success">
           <CheckCircle2 className="w-3 h-3" />
           Success
         </span>
@@ -152,7 +151,7 @@ export default function WithdrawPage() {
     }
     if (isPending) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400">
+        <span className="withdraw-status-badge withdraw-status-pending">
           <Clock className="w-3 h-3" />
           Pending
         </span>
@@ -160,42 +159,42 @@ export default function WithdrawPage() {
     }
     if (isFailed) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-400">
+        <span className="withdraw-status-badge withdraw-status-failed">
           <AlertCircle className="w-3 h-3" />
           Failed
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-500/10 text-gray-400">
+      <span className="withdraw-status-badge withdraw-status-default">
         {status}
       </span>
     );
   };
 
   return (
-    <div className="withdraw-page p-4 md:p-6">
+    <div className="withdraw-page">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-4 mb-4">
-          <Link 
-            href="/dashboard/wallet" 
-            className="p-2 rounded-lg glass border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
+      <div className="withdraw-header">
+        <div className="withdraw-header-top">
+          <Link
+            href="/dashboard/wallet"
+            className="withdraw-back-btn"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">Withdraw USDT</h1>
-            <p className="text-gray-400">Withdraw funds to your external wallet</p>
+          <div className="withdraw-title">
+            <h1>Withdraw USDT</h1>
+            <p>Withdraw funds to your external wallet</p>
           </div>
         </div>
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-400">
-            Available Balance: <span className="text-white font-semibold">${balance.toLocaleString()}</span>
+        <div className="withdraw-header-bottom">
+          <div className="withdraw-balance">
+            Available Balance: <span>${balance.toLocaleString()}</span>
           </div>
           <button
             onClick={fetchWalletData}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg glass border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all text-sm"
+            className="withdraw-refresh-btn"
           >
             <RefreshCw className="w-4 h-4" />
             Refresh
@@ -203,21 +202,21 @@ export default function WithdrawPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="withdraw-grid">
         {/* Withdraw Form */}
-        <GlassCard className="p-6" neonBorder="mint">
-          <h2 className="text-xl font-bold text-white mb-6">Withdraw Funds</h2>
+        <div className="withdraw-glass-card neon-green">
+          <h2 className="withdraw-card-title">Withdraw Funds</h2>
           
-          <div className="space-y-6">
+          <div className="withdraw-form-space">
             {/* Wallet Address Input */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <label className="block text-sm text-gray-400">USDT Wallet Address</label>
+            <div className="withdraw-form-group">
+              <div className="withdraw-address-header">
+                <label className="withdraw-label">USDT Wallet Address</label>
                 {connectedAddress ? (
                   <button
                     type="button"
                     onClick={autoFillWalletAddress}
-                    className="flex items-center gap-1 text-xs text-[#00ff88] hover:text-[#00cc88] transition-colors"
+                    className="withdraw-auto-fill-btn"
                   >
                     <ExternalLink className="w-3 h-3" />
                     Auto-fill
@@ -227,7 +226,7 @@ export default function WithdrawPage() {
                     type="button"
                     onClick={connectWallet}
                     disabled={isConnecting}
-                    className="flex items-center gap-1 text-xs text-[#00d2ff] hover:text-[#00a2ff] transition-colors"
+                    className="withdraw-connect-btn"
                   >
                     {isConnecting ? (
                       <RefreshCw className="w-3 h-3 animate-spin" />
@@ -243,69 +242,67 @@ export default function WithdrawPage() {
                 value={walletAddress}
                 onChange={(e) => setWalletAddress(e.target.value)}
                 placeholder="Enter TRC20 or ERC20 wallet address for USDT"
-                className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00ff88]/50 transition-all font-mono text-sm"
+                className="withdraw-input"
               />
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="withdraw-input-note">
                 Ensure the address supports USDT on the network you intend to receive.
               </p>
             </div>
 
             {/* Amount Input */}
-            <div>
-              <label className="block text-sm text-gray-400 mb-3">Amount (USDT)</label>
-              <div className="relative">
+            <div className="withdraw-form-group">
+              <label className="withdraw-label">Amount (USDT)</label>
+              <div className="withdraw-amount-wrapper">
                 <input
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="Enter USDT amount"
-                  className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00ff88]/50 transition-all"
+                  className="withdraw-input"
                 />
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                <div className="withdraw-amount-suffix">
                   USDT
                 </div>
               </div>
-              <div className="flex gap-2 mt-2">
+              <div className="withdraw-quick-amounts">
                 <button
                   type="button"
                   onClick={() => setAmount("50")}
-                  className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00ff88]/30 transition-all"
+                  className="withdraw-quick-btn"
                 >
                   $50
                 </button>
                 <button
                   type="button"
                   onClick={() => setAmount("100")}
-                  className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00ff88]/30 transition-all"
+                  className="withdraw-quick-btn"
                 >
                   $100
                 </button>
                 <button
                   type="button"
                   onClick={() => setAmount("500")}
-                  className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00ff88]/30 transition-all"
+                  className="withdraw-quick-btn"
                 >
                   $500
                 </button>
                 <button
                   type="button"
                   onClick={() => setAmount("1000")}
-                  className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00ff88]/30 transition-all"
+                  className="withdraw-quick-btn"
                 >
                   $1000
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="withdraw-input-note">
                 Available: ${balance.toLocaleString()} (USDT equivalent)
               </p>
             </div>
 
-            <NeonButton
-              variant="green"
-              fullWidth
+            <button
+              className="withdraw-submit-btn"
               onClick={handleWithdraw}
               disabled={loading || !amount || !walletAddress}
-              className="py-4"
             >
               {loading ? (
                 <>
@@ -318,78 +315,68 @@ export default function WithdrawPage() {
                   Request USDT Withdrawal
                 </>
               )}
-            </NeonButton>
+            </button>
           </div>
-        </GlassCard>
+        </div>
 
         {/* Instructions & Recent Withdrawals */}
-        <div className="space-y-6">
+        <div className="withdraw-side-column">
           {/* Instructions */}
-          <GlassCard className="p-6" neonBorder="cyan">
-            <h3 className="text-lg font-bold text-white mb-4">How to Withdraw</h3>
-            <ol className="space-y-4">
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#00ff88]/20 flex items-center justify-center text-[#00ff88] text-sm font-bold">
-                  1
-                </div>
-                <div>
-                  <p className="text-white font-medium">Enter your wallet address</p>
-                  <p className="text-gray-400 text-sm">Provide a valid USDT wallet address (TRC20 or ERC20)</p>
+          <div className="withdraw-glass-card neon-cyan">
+            <h3 className="withdraw-card-title">How to Withdraw</h3>
+            <ol className="withdraw-instructions-list">
+              <li className="withdraw-instruction-item">
+                <div className="withdraw-instruction-number">1</div>
+                <div className="withdraw-instruction-content">
+                  <h4>Enter your wallet address</h4>
+                  <p>Provide a valid USDT wallet address (TRC20 or ERC20)</p>
                 </div>
               </li>
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#00ff88]/20 flex items-center justify-center text-[#00ff88] text-sm font-bold">
-                  2
-                </div>
-                <div>
-                  <p className="text-white font-medium">Specify amount</p>
-                  <p className="text-gray-400 text-sm">Enter the amount you wish to withdraw (minimum $10)</p>
+              <li className="withdraw-instruction-item">
+                <div className="withdraw-instruction-number">2</div>
+                <div className="withdraw-instruction-content">
+                  <h4>Specify amount</h4>
+                  <p>Enter the amount you wish to withdraw (minimum $10)</p>
                 </div>
               </li>
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#00ff88]/20 flex items-center justify-center text-[#00ff88] text-sm font-bold">
-                  3
-                </div>
-                <div>
-                  <p className="text-white font-medium">Submit request</p>
-                  <p className="text-gray-400 text-sm">Click “Request USDT Withdrawal” to submit for admin approval</p>
+              <li className="withdraw-instruction-item">
+                <div className="withdraw-instruction-number">3</div>
+                <div className="withdraw-instruction-content">
+                  <h4>Submit request</h4>
+                  <p>Click “Request USDT Withdrawal” to submit for admin approval</p>
                 </div>
               </li>
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#00ff88]/20 flex items-center justify-center text-[#00ff88] text-sm font-bold">
-                  4
-                </div>
-                <div>
-                  <p className="text-white font-medium">Wait for processing</p>
-                  <p className="text-gray-400 text-sm">Withdrawals are processed manually within 24–48 hours</p>
+              <li className="withdraw-instruction-item">
+                <div className="withdraw-instruction-number">4</div>
+                <div className="withdraw-instruction-content">
+                  <h4>Wait for processing</h4>
+                  <p>Withdrawals are processed manually within 24–48 hours</p>
                 </div>
               </li>
             </ol>
-          </GlassCard>
+          </div>
 
           {/* Recent Withdrawals */}
-          <GlassCard className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-white">Recent Withdrawals</h3>
-              <span className="text-sm text-gray-400">{transactions.filter(t => t.type === "withdrawal").length} transactions</span>
+          <div className="withdraw-glass-card">
+            <div className="withdraw-history-header">
+              <h3 className="withdraw-history-title">Recent Withdrawals</h3>
+              <span className="withdraw-history-count">{transactions.filter(t => t.type === "withdrawal").length} transactions</span>
             </div>
             
             {transactions.filter(t => t.type === "withdrawal").length > 0 ? (
-              <div className="space-y-3">
+              <div className="withdraw-history-list">
                 {transactions
                   .filter(t => t.type === "withdrawal")
                   .slice(0, 5)
                   .map((tx) => (
-                    <div key={tx.id} className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-red-500/10">
-                          <Send className="w-4 h-4 text-red-400" />
+                    <div key={tx.id} className="withdraw-history-item">
+                      <div className="withdraw-history-left">
+                        <div className="withdraw-history-icon">
+                          <Send className="w-4 h-4" />
                         </div>
-                        <div>
-                          <p className="text-white font-medium">${tx.amount.toLocaleString()}</p>
-                          <p className="text-xs text-gray-400">
-                            {new Date(tx.createdAt).toLocaleDateString()} • {tx.network?.toUpperCase() || "USDT"}
-                          </p>
+                        <div className="withdraw-history-details">
+                          <h4>${tx.amount.toLocaleString()}</h4>
+                          <p>{new Date(tx.createdAt).toLocaleDateString()} • {tx.network?.toUpperCase() || "USDT"}</p>
                         </div>
                       </div>
                       <StatusBadge status={tx.status} />
@@ -397,15 +384,15 @@ export default function WithdrawPage() {
                   ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <div className="w-12 h-12 rounded-full bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mx-auto mb-3">
-                  <Send className="w-6 h-6 text-gray-600" />
+              <div className="withdraw-empty-state">
+                <div className="withdraw-empty-icon">
+                  <Send className="w-6 h-6" />
                 </div>
-                <p className="text-gray-500">No withdrawal history yet</p>
-                <p className="text-sm text-gray-600 mt-1">Your withdrawals will appear here</p>
+                <p className="withdraw-empty-title">No withdrawal history yet</p>
+                <p className="withdraw-empty-desc">Your withdrawals will appear here</p>
               </div>
             )}
-          </GlassCard>
+          </div>
         </div>
       </div>
     </div>

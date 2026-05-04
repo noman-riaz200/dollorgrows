@@ -14,9 +14,8 @@ import {
   AlertCircle,
   Clock
 } from "lucide-react";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { NeonButton } from "@/components/ui/NeonButton";
 import Link from "next/link";
+import "./deposit.css";
 
 interface DepositAddresses {
   trc20: string;
@@ -119,7 +118,7 @@ export default function DepositPage() {
 
     if (isSuccess) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-[#00ff88]/10 text-[#00ff88]">
+        <span className="deposit-status-badge deposit-status-success">
           <CheckCircle2 className="w-3 h-3" />
           Success
         </span>
@@ -127,7 +126,7 @@ export default function DepositPage() {
     }
     if (isPending) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400">
+        <span className="deposit-status-badge deposit-status-pending">
           <Clock className="w-3 h-3" />
           Pending
         </span>
@@ -135,42 +134,42 @@ export default function DepositPage() {
     }
     if (isFailed) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-400">
+        <span className="deposit-status-badge deposit-status-failed">
           <AlertCircle className="w-3 h-3" />
           Failed
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-500/10 text-gray-400">
+      <span className="deposit-status-badge deposit-status-default">
         {status}
       </span>
     );
   };
 
   return (
-    <div className="deposit-page p-4 md:p-6">
+    <div className="deposit-page">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-4 mb-4">
+      <div className="deposit-header">
+        <div className="deposit-header-top">
           <Link 
             href="/dashboard/wallet" 
-            className="p-2 rounded-lg glass border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
+            className="deposit-back-btn"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">Deposit USDT</h1>
-            <p className="text-gray-400">Add funds to your wallet via USDT</p>
+          <div className="deposit-title">
+            <h1>Deposit USDT</h1>
+            <p>Add funds to your wallet via USDT</p>
           </div>
         </div>
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-400">
-            Current Balance: <span className="text-white font-semibold">${balance.toLocaleString()}</span>
+        <div className="deposit-header-bottom">
+          <div className="deposit-balance">
+            Current Balance: <span>${balance.toLocaleString()}</span>
           </div>
           <button
             onClick={fetchWalletData}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg glass border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all text-sm"
+            className="deposit-refresh-btn"
           >
             <RefreshCw className="w-4 h-4" />
             Refresh
@@ -178,105 +177,103 @@ export default function DepositPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="deposit-grid">
         {/* Deposit Form */}
-        <GlassCard className="p-6" neonBorder="blue">
-          <h2 className="text-xl font-bold text-white mb-6">Make a Deposit</h2>
+        <div className="deposit-glass-card neon-blue">
+          <h2 className="deposit-card-title">Make a Deposit</h2>
           
-          <div className="space-y-6">
+          <div className="deposit-form-space">
             {/* Network Selection */}
-            <div>
-              <label className="block text-sm text-gray-400 mb-3">Select Network</label>
-              <div className="flex gap-3">
+            <div className="deposit-form-group">
+              <label className="deposit-label">Select Network</label>
+              <div className="deposit-network-buttons">
                 <button
                   type="button"
                   onClick={() => setDepositNetwork("trc20")}
-                  className={`flex-1 py-4 rounded-lg border transition-all ${depositNetwork === "trc20" ? "bg-[#00d2ff]/10 border-[#00d2ff]/50 text-white" : "bg-white/[0.03] border-white/[0.08] text-gray-400 hover:border-[#00d2ff]/30"}`}
+                  className={`deposit-network-btn ${depositNetwork === "trc20" ? "active" : ""}`}
                 >
-                  <div className="font-medium">TRC20 (Tron)</div>
-                  <div className="text-xs mt-1">Fast & Low Fee</div>
+                  <div className="deposit-network-name">TRC20 (Tron)</div>
+                  <div className="deposit-network-desc">Fast & Low Fee</div>
                 </button>
                 <button
                   type="button"
                   onClick={() => setDepositNetwork("erc20")}
-                  className={`flex-1 py-4 rounded-lg border transition-all ${depositNetwork === "erc20" ? "bg-[#00d2ff]/10 border-[#00d2ff]/50 text-white" : "bg-white/[0.03] border-white/[0.08] text-gray-400 hover:border-[#00d2ff]/30"}`}
+                  className={`deposit-network-btn ${depositNetwork === "erc20" ? "active" : ""}`}
                 >
-                  <div className="font-medium">ERC20 (Ethereum)</div>
-                  <div className="text-xs mt-1">Widely Supported</div>
+                  <div className="deposit-network-name">ERC20 (Ethereum)</div>
+                  <div className="deposit-network-desc">Widely Supported</div>
                 </button>
               </div>
             </div>
 
             {/* Deposit Address Display */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <label className="block text-sm text-gray-400">Deposit Address</label>
+            <div className="deposit-form-group">
+              <div className="deposit-address-header">
+                <label className="deposit-label">Deposit Address</label>
                 <button
                   type="button"
                   onClick={() => copyToClipboard(depositAddresses[depositNetwork] || "")}
-                  className="flex items-center gap-1 text-xs text-[#00d2ff] hover:text-[#00a2ff] transition-colors"
+                  className="deposit-copy-btn"
                 >
                   <Copy className="w-3 h-3" />
                   Copy Address
                 </button>
               </div>
-              <div className="relative">
+              <div className="deposit-address-wrapper">
                 <input
                   type="text"
                   readOnly
                   value={depositAddresses[depositNetwork] || "Loading deposit address..."}
-                  className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all pr-12 font-mono text-sm"
+                  className="deposit-address-input"
                 />
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <div className="w-2 h-2 rounded-full bg-[#00d2ff] animate-pulse"></div>
-                </div>
+                <div className="deposit-address-pulse"></div>
               </div>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="deposit-address-note">
                 Send only USDT ({depositNetwork.toUpperCase()}) to this address. Sending other tokens may result in permanent loss.
               </p>
             </div>
 
             {/* Amount Input */}
-            <div>
-              <label className="block text-sm text-gray-400 mb-3">Amount (USDT)</label>
-              <div className="relative">
+            <div className="deposit-form-group">
+              <label className="deposit-label">Amount (USDT)</label>
+              <div className="deposit-amount-wrapper">
                 <input
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="Enter USDT amount"
-                  className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all"
+                  className="deposit-amount-input"
                 />
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                <div className="deposit-amount-suffix">
                   USDT
                 </div>
               </div>
-              <div className="flex gap-2 mt-2">
+              <div className="deposit-quick-amounts">
                 <button
                   type="button"
                   onClick={() => setAmount("50")}
-                  className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
+                  className="deposit-quick-btn"
                 >
                   $50
                 </button>
                 <button
                   type="button"
                   onClick={() => setAmount("100")}
-                  className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
+                  className="deposit-quick-btn"
                 >
                   $100
                 </button>
                 <button
                   type="button"
                   onClick={() => setAmount("500")}
-                  className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
+                  className="deposit-quick-btn"
                 >
                   $500
                 </button>
                 <button
                   type="button"
                   onClick={() => setAmount("1000")}
-                  className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
+                  className="deposit-quick-btn"
                 >
                   $1000
                 </button>
@@ -284,26 +281,24 @@ export default function DepositPage() {
             </div>
 
             {/* Transaction Hash Input */}
-            <div>
-              <label className="block text-sm text-gray-400 mb-3">Transaction ID (TxHash)</label>
+            <div className="deposit-form-group">
+              <label className="deposit-label">Transaction ID (TxHash)</label>
               <input
                 type="text"
                 value={txHash}
                 onChange={(e) => setTxHash(e.target.value)}
                 placeholder="Enter transaction hash from your wallet"
-                className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all font-mono text-sm"
+                className="deposit-txhash-input"
               />
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="deposit-address-note">
                 After sending USDT, paste the transaction hash here for verification.
               </p>
             </div>
 
-            <NeonButton
-              variant="gradient"
-              fullWidth
+            <button
+              className={`deposit-submit-btn ${loading ? "loading" : ""}`}
               onClick={handleDeposit}
               disabled={loading || !amount || !txHash}
-              className="py-4"
             >
               {loading ? (
                 <>
@@ -316,76 +311,68 @@ export default function DepositPage() {
                   Submit Deposit Request
                 </>
               )}
-            </NeonButton>
+            </button>
           </div>
-        </GlassCard>
+        </div>
 
         {/* Deposit History & Instructions */}
-        <div className="space-y-6">
+        <div className="deposit-side-column">
           {/* Instructions */}
-          <GlassCard className="p-6" neonBorder="cyan">
-            <h3 className="text-lg font-bold text-white mb-4">How to Deposit</h3>
-            <ol className="space-y-4">
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#00d2ff]/20 flex items-center justify-center text-[#00d2ff] text-sm font-bold">
-                  1
-                </div>
-                <div>
-                  <p className="text-white font-medium">Copy the deposit address</p>
-                  <p className="text-gray-400 text-sm">Use the copy button above to copy the {depositNetwork.toUpperCase()} address</p>
+          <div className="deposit-glass-card neon-cyan">
+            <h3 className="deposit-card-title">How to Deposit</h3>
+            <ol className="deposit-instructions-list">
+              <li className="deposit-instruction-item">
+                <div className="deposit-instruction-number">1</div>
+                <div className="deposit-instruction-content">
+                  <h4>Copy the deposit address</h4>
+                  <p>Use the copy button above to copy the {depositNetwork.toUpperCase()} address</p>
                 </div>
               </li>
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#00d2ff]/20 flex items-center justify-center text-[#00d2ff] text-sm font-bold">
-                  2
-                </div>
-                <div>
-                  <p className="text-white font-medium">Send USDT to the address</p>
-                  <p className="text-gray-400 text-sm">From your wallet (MetaMask, Trust Wallet, etc.), send USDT to the copied address</p>
+              <li className="deposit-instruction-item">
+                <div className="deposit-instruction-number">2</div>
+                <div className="deposit-instruction-content">
+                  <h4>Send USDT to the address</h4>
+                  <p>From your wallet (MetaMask, Trust Wallet, etc.), send USDT to the copied address</p>
                 </div>
               </li>
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#00d2ff]/20 flex items-center justify-center text-[#00d2ff] text-sm font-bold">
-                  3
-                </div>
-                <div>
-                  <p className="text-white font-medium">Wait for confirmation</p>
-                  <p className="text-gray-400 text-sm">Wait for the transaction to be confirmed on the blockchain (usually 1-5 minutes)</p>
+              <li className="deposit-instruction-item">
+                <div className="deposit-instruction-number">3</div>
+                <div className="deposit-instruction-content">
+                  <h4>Wait for confirmation</h4>
+                  <p>Wait for the transaction to be confirmed on the blockchain (usually 1-5 minutes)</p>
                 </div>
               </li>
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#00d2ff]/20 flex items-center justify-center text-[#00d2ff] text-sm font-bold">
-                  4
-                </div>
-                <div>
-                  <p className="text-white font-medium">Enter TxHash & Submit</p>
-                  <p className="text-gray-400 text-sm">Paste the transaction hash and submit for admin approval</p>
+              <li className="deposit-instruction-item">
+                <div className="deposit-instruction-number">4</div>
+                <div className="deposit-instruction-content">
+                  <h4>Enter TxHash & Submit</h4>
+                  <p>Paste the transaction hash and submit for admin approval</p>
                 </div>
               </li>
             </ol>
-          </GlassCard>
+          </div>
 
           {/* Recent Deposits */}
-          <GlassCard className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-white">Recent Deposits</h3>
-              <span className="text-sm text-gray-400">{transactions.filter(t => t.type === "deposit").length} transactions</span>
+          <div className="deposit-glass-card">
+            <div className="deposit-history-header">
+              <h3 className="deposit-history-title">Recent Deposits</h3>
+              <span className="deposit-history-count">{transactions.filter(t => t.type === "deposit").length} transactions</span>
             </div>
             
             {transactions.filter(t => t.type === "deposit").length > 0 ? (
-              <div className="space-y-3">
+              <div className="deposit-history-list">
                 {transactions
                   .filter(t => t.type === "deposit")
                   .slice(0, 5)
                   .map((tx) => (
-                    <div key={tx.id} className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-[#00d2ff]/10">
-                          <Download className="w-4 h-4 text-[#00d2ff]" />
+                    <div key={tx.id} className="deposit-history-item">
+                      <div className="deposit-history-left">
+                        <div className="deposit-history-icon">
+                          <Download className="w-4 h-4" />
                         </div>
-                        <div>
-                          <p className="text-white font-medium">${tx.amount.toLocaleString()}</p>
-                          <p className="text-xs text-gray-400">
+                        <div className="deposit-history-details">
+                          <h4>${tx.amount.toLocaleString()}</h4>
+                          <p>
                             {new Date(tx.createdAt).toLocaleDateString()} • {tx.network?.toUpperCase() || "USDT"}
                           </p>
                         </div>
@@ -395,15 +382,15 @@ export default function DepositPage() {
                   ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <div className="w-12 h-12 rounded-full bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mx-auto mb-3">
-                  <Download className="w-6 h-6 text-gray-600" />
+              <div className="deposit-empty-state">
+                <div className="deposit-empty-icon">
+                  <Download className="w-6 h-6" />
                 </div>
-                <p className="text-gray-500">No deposit history yet</p>
-                <p className="text-sm text-gray-600 mt-1">Your deposits will appear here</p>
+                <p className="deposit-empty-title">No deposit history yet</p>
+                <p className="deposit-empty-desc">Your deposits will appear here</p>
               </div>
             )}
-          </GlassCard>
+          </div>
         </div>
       </div>
     </div>
