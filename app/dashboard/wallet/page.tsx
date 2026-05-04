@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import Link from "next/link";
 import {
   Wallet,
   Send,
@@ -36,6 +37,7 @@ interface Transaction {
   description: string;
   createdAt: string;
   txHash?: string;
+  network?: string;
 }
 
 interface WalletData {
@@ -53,6 +55,11 @@ interface WalletData {
   };
 }
 
+interface DepositAddresses {
+  trc20: string;
+  erc20: string;
+}
+
 /* ─── Component ─── */
 export default function WalletPage() {
   const { data: session } = useSession();
@@ -65,6 +72,10 @@ export default function WalletPage() {
   const [totalDonated, setTotalDonated] = useState(0);
   const [totalWithdrawn, setTotalWithdrawn] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [depositAddresses, setDepositAddresses] = useState<DepositAddresses>({
+    trc20: "",
+    erc20: "",
+  });
 
   /* Modals */
   const [showDepositModal, setShowDepositModal] = useState(false);
@@ -77,6 +88,8 @@ export default function WalletPage() {
   const [exchangeFrom, setExchangeFrom] = useState("balance");
   const [exchangeTo, setExchangeTo] = useState("pool");
   const [exchangeAmount, setExchangeAmount] = useState("");
+  const [depositNetwork, setDepositNetwork] = useState<"trc20" | "erc20">("trc20");
+  const [txHash, setTxHash] = useState("");
 
   /* Loading */
   const [loading, setLoading] = useState(false);
@@ -101,6 +114,9 @@ export default function WalletPage() {
       const txRes = await fetch("/api/wallet/deposit");
       const txData = await txRes.json();
       setTransactions(txData.transactions || []);
+      if (txData.addresses) {
+        setDepositAddresses(txData.addresses);
+      }
     } catch (error) {
       console.error("Failed to fetch wallet data:", error);
       toast.error("Failed to load wallet data");
@@ -113,10 +129,21 @@ export default function WalletPage() {
 
   /* ─── MetaMask Connect ─── */
   const connectWallet = async () => {
-    if (!window.ethereum) {
-      toast.error("MetaMask not detected. Please install MetaMask.");
+    // Check if we're in a browser environment
+    if (typeof window === 'undefined') {
+      toast.error("Wallet connection is only available in the browser.");
       return;
     }
+    
+    // Check for Ethereum provider
+    if (!window.ethereum) {
+      toast.error(
+        "MetaMask not detected. Please install MetaMask or another Ethereum wallet. Visit https://metamask.io/download/",
+        { duration: 5000 }
+      );
+      return;
+    }
+    
     setIsConnecting(true);
     try {
       const accounts = (await window.ethereum.request({
@@ -131,7 +158,12 @@ export default function WalletPage() {
         toast.success("Wallet connected successfully");
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to connect wallet");
+      // Handle user rejection
+      if (err.code === 4001 || err?.message?.includes('rejected') || err?.message?.includes('denied')) {
+        toast.error("Connection rejected by user");
+      } else {
+        toast.error(err.message || "Failed to connect wallet");
+      }
     } finally {
       setIsConnecting(false);
     }
@@ -154,20 +186,32 @@ export default function WalletPage() {
 
   /* ─── Handlers ─── */
   const handleDeposit = async () => {
-    if (!amount || parseFloat(amount) <= 0) return;
+    if (!amount || parseFloat(amount) <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+    if (!txHash || txHash.trim().length < 10) {
+      toast.error("Please enter a valid transaction ID (TxHash)");
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/wallet/deposit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: parseFloat(amount) }),
+        body: JSON.stringify({
+          amount: parseFloat(amount),
+          txHash: txHash.trim(),
+          network: depositNetwork
+        }),
       });
       const data = await res.json();
       if (res.ok) {
         setShowDepositModal(false);
         setAmount("");
+        setTxHash("");
         fetchWalletData();
-        toast.success("Deposit successful");
+        toast.success("Deposit submitted for admin approval");
       } else {
         toast.error(data.error || "Deposit failed");
       }
@@ -433,15 +477,15 @@ export default function WalletPage() {
 
         {/* ─── Quick Actions ─── */}
         <div className="wallet-actions">
-          <button className="wallet-action-button cyan" onClick={() => setShowDepositModal(true)}>
+          <Link href="/dashboard/deposit" className="wallet-action-button cyan">
             <Plus className="w-4 h-4" /> Deposit
-          </button>
-          <button className="wallet-action-button green" onClick={() => setShowWithdrawModal(true)}>
+          </Link>
+          <Link href="/dashboard/withdraw" className="wallet-action-button green">
             <Send className="w-4 h-4" /> Withdraw
-          </button>
-          <button className="wallet-action-button gradient" onClick={() => setShowExchangeModal(true)}>
+          </Link>
+          <Link href="/dashboard/exchange" className="wallet-action-button gradient">
             <ArrowLeftRight className="w-4 h-4" /> Exchange
-          </button>
+          </Link>
           {connectedAddress && (
             <button
               onClick={autoFillWalletAddress}
@@ -535,25 +579,91 @@ export default function WalletPage() {
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-xl font-bold text-white mb-6">Deposit Funds</h3>
+            <h3 className="text-xl font-bold text-white mb-6">Deposit USDT</h3>
             <div className="space-y-4">
+              {/* Network Selection */}
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Amount (USD)</label>
+                <label className="block text-sm text-gray-400 mb-2">Select Network</label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setDepositNetwork("trc20")}
+                    className={`flex-1 py-3 rounded-lg border transition-all ${depositNetwork === "trc20" ? "bg-[#00d2ff]/10 border-[#00d2ff]/50 text-white" : "bg-white/[0.03] border-white/[0.08] text-gray-400 hover:border-[#00d2ff]/30"}`}
+                  >
+                    TRC20 (Tron)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDepositNetwork("erc20")}
+                    className={`flex-1 py-3 rounded-lg border transition-all ${depositNetwork === "erc20" ? "bg-[#00d2ff]/10 border-[#00d2ff]/50 text-white" : "bg-white/[0.03] border-white/[0.08] text-gray-400 hover:border-[#00d2ff]/30"}`}
+                  >
+                    ERC20 (Ethereum)
+                  </button>
+                </div>
+              </div>
+
+              {/* Deposit Address Display */}
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Deposit Address</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    readOnly
+                    value={depositAddresses[depositNetwork] || "Loading..."}
+                    className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(depositAddresses[depositNetwork] || "");
+                      toast.success("Address copied to clipboard");
+                    }}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Send only USDT ({depositNetwork.toUpperCase()}) to this address. Sending other tokens may result in permanent loss.
+                </p>
+              </div>
+
+              {/* Amount Input */}
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Amount (USDT)</label>
                 <input
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  placeholder="Enter amount"
+                  placeholder="Enter USDT amount"
                   className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all"
                 />
               </div>
+
+              {/* Transaction Hash Input */}
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Transaction ID (TxHash)</label>
+                <input
+                  type="text"
+                  value={txHash}
+                  onChange={(e) => setTxHash(e.target.value)}
+                  placeholder="Enter transaction hash from your wallet"
+                  className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  After sending USDT, paste the transaction hash here for verification.
+                </p>
+              </div>
+
               <NeonButton
                 variant="gradient"
                 fullWidth
                 onClick={handleDeposit}
-                disabled={loading || !amount}
+                disabled={loading || !amount || !txHash}
               >
-                {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : "Confirm Deposit"}
+                {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : "Submit Deposit Request"}
               </NeonButton>
             </div>
           </GlassCard>
@@ -570,28 +680,31 @@ export default function WalletPage() {
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-xl font-bold text-white mb-6">Withdraw Funds</h3>
+            <h3 className="text-xl font-bold text-white mb-6">Withdraw USDT</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Wallet Address</label>
+                <label className="block text-sm text-gray-400 mb-2">USDT Wallet Address</label>
                 <input
                   type="text"
                   value={walletAddress}
                   onChange={(e) => setWalletAddress(e.target.value)}
-                  placeholder="Enter BEP20 wallet address"
+                  placeholder="Enter TRC20 or ERC20 wallet address for USDT"
                   className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00ff88]/50 transition-all"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Ensure the address supports USDT on the network you intend to receive.
+                </p>
               </div>
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Amount (USD)</label>
+                <label className="block text-sm text-gray-400 mb-2">Amount (USDT)</label>
                 <input
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  placeholder="Enter amount"
+                  placeholder="Enter USDT amount"
                   className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00ff88]/50 transition-all"
                 />
-                <p className="text-xs text-gray-500 mt-1">Available: ${balance.toLocaleString()}</p>
+                <p className="text-xs text-gray-500 mt-1">Available: ${balance.toLocaleString()} (USDT equivalent)</p>
               </div>
               <NeonButton
                 variant="green"
@@ -599,7 +712,7 @@ export default function WalletPage() {
                 onClick={handleWithdraw}
                 disabled={loading || !amount || !walletAddress}
               >
-                {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : "Confirm Withdrawal"}
+                {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : "Request USDT Withdrawal"}
               </NeonButton>
             </div>
           </GlassCard>
@@ -626,8 +739,8 @@ export default function WalletPage() {
                     onChange={(e) => setExchangeFrom(e.target.value)}
                     className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-[#00d2ff]/50 transition-all appearance-none"
                   >
-                    <option value="balance" className="bg-[#0a0a0f]">Balance Wallet</option>
-                    <option value="pool" className="bg-[#0a0a0f]">Pool Wallet</option>
+                    <option value="balance" className="bg-[#0a0a0f]">Balance Wallet (USDT)</option>
+                    <option value="pool" className="bg-[#0a0a0f]">Pool Wallet (USDT)</option>
                   </select>
                 </div>
                 <div className="pb-3">
@@ -640,20 +753,23 @@ export default function WalletPage() {
                     onChange={(e) => setExchangeTo(e.target.value)}
                     className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-[#00d2ff]/50 transition-all appearance-none"
                   >
-                    <option value="pool" className="bg-[#0a0a0f]">Pool Wallet</option>
-                    <option value="balance" className="bg-[#0a0a0f]">Balance Wallet</option>
+                    <option value="pool" className="bg-[#0a0a0f]">Pool Wallet (USDT)</option>
+                    <option value="balance" className="bg-[#0a0a0f]">Balance Wallet (USDT)</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Amount (USD)</label>
+                <label className="block text-sm text-gray-400 mb-2">Amount (USDT)</label>
                 <input
                   type="number"
                   value={exchangeAmount}
                   onChange={(e) => setExchangeAmount(e.target.value)}
-                  placeholder="Enter amount"
+                  placeholder="Enter USDT amount"
                   className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Exchange internal USDT balance between your wallets
+                </p>
               </div>
               <NeonButton
                 variant="gradient"

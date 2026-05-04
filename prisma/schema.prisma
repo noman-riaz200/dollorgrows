@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,183 +8,163 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String
-  email         String    @unique
-  password      String
-  securityPin   String    @map("security_pin")
-  referralCode  String    @unique @default(cuid()) @map("referral_code")
-  sponsorId     String?   @map("sponsor_id")
-  sponsor       User?     @relation("ReferralTree", fields: [sponsorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  referrals     User[]    @relation("ReferralTree")
-
-  // Contact Info
-  phone         String?
-  country       String?
-  phoneCode     String?   @map("phone_code")
-
-  // Profile
-  avatar        String?
-
-  // Role
-  role          String   @default("user") // user, admin
-
-  // Status
-  status        String   @default("active") // active, blocked
-
-  // Timestamps
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-  lastLogin     DateTime? @map("last_login")
-
-  // Relations
-  wallet             Wallet?
+  id                 String              @id @default(cuid())
+  name               String
+  email              String              @unique
+  password           String
+  securityPin        String              @map("security_pin")
+  referralCode       String              @unique @default(cuid()) @map("referral_code")
+  sponsorId          String?             @map("sponsor_id")
+  phone              String?
+  country            String?
+  phoneCode          String?             @map("phone_code")
+  avatar             String?
+  role               String              @default("user")
+  status             String              @default("active")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+  lastLogin          DateTime?           @map("last_login")
+  commissionsEarned  Commission[]        @relation("CommissionEarner")
+  commissionsPaid    Commission[]        @relation("CommissionReceiver")
   investments        Investment[]
-  commissionsEarned  Commission[] @relation("CommissionEarner")
-  commissionsPaid    Commission[] @relation("CommissionReceiver")
+  matrixBonusesSent  MatrixBonus[]       @relation("BonusFrom")
+  matrixBonusesRecv  MatrixBonus[]       @relation("BonusTo")
+  matrixFilledSlots  MatrixSlot[]        @relation("MatrixFiller")
+  matrixSlots        MatrixSlot[]        @relation("MatrixOwner")
   transactions       Transaction[]
+  sponsor            User?               @relation("ReferralTree", fields: [sponsorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  referrals          User[]              @relation("ReferralTree")
+  wallet             Wallet?
   withdrawalRequests WithdrawalRequest[]
-  matrixSlots        MatrixSlot[] @relation("MatrixOwner")
-  matrixFilledSlots  MatrixSlot[] @relation("MatrixFiller")
-  matrixBonusesSent  MatrixBonus[] @relation("BonusFrom")
-  matrixBonusesRecv  MatrixBonus[] @relation("BonusTo")
 
+  @@index([sponsorId], map: "users_sponsor_id_fkey")
   @@map("users")
 }
 
 model Wallet {
-  id              String   @id @default(cuid())
-  userId          String   @unique @map("user_id")
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  balanceWallet   Float    @default(0) @map("balance_wallet")
-  poolWallet      Float    @default(0) @map("pool_wallet")
-  poolCommission  Float    @default(0) @map("pool_commission")
-
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id             String   @id @default(cuid())
+  userId         String   @unique @map("user_id")
+  balanceWallet  Float    @default(0) @map("balance_wallet")
+  poolWallet     Float    @default(0) @map("pool_wallet")
+  poolCommission Float    @default(0) @map("pool_commission")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("wallets")
 }
 
 model Pool {
-  id                String   @id @default(cuid())
+  id                String       @id @default(cuid())
   name              String
   description       String?
-  minimumInvestment Float    @default(0) @map("minimum_investment")
-  maximumInvestment Float?   @map("maximum_investment")
-  dailyReturn       Float    @map("daily_return") // Percentage
-  durationDays      Int      @default(30) @map("duration_days")
-  isActive          Boolean  @default(true) @map("is_active")
-  totalCapacity     Float?   @map("total_capacity")
-  totalInvested     Float    @default(0) @map("total_invested")
-
-  // Commission tiers for this pool
-  level1Commission  Float    @default(10) @map("level1_commission")
-  level2Commission  Float    @default(5) @map("level2_commission")
-  level3Commission  Float    @default(3) @map("level3_commission")
-
-  // Bonus structure
-  bonusPercent      Float    @default(30) @map("bonus_percent")
-
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
-
+  minimumInvestment Float        @default(0) @map("minimum_investment")
+  maximumInvestment Float?       @map("maximum_investment")
+  dailyReturn       Float        @map("daily_return")
+  durationDays      Int          @default(30) @map("duration_days")
+  isActive          Boolean      @default(true) @map("is_active")
+  totalCapacity     Float?       @map("total_capacity")
+  totalInvested     Float        @default(0) @map("total_invested")
+  level1Commission  Float        @default(10) @map("level1_commission")
+  level2Commission  Float        @default(5) @map("level2_commission")
+  level3Commission  Float        @default(3) @map("level3_commission")
+  bonusPercent      Float        @default(30) @map("bonus_percent")
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
   investments       Investment[]
 
   @@map("pools")
 }
 
 model Investment {
-  id        String   @id @default(cuid())
-  userId    String   @map("user_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  poolId    String   @map("pool_id")
-  pool      Pool     @relation(fields: [poolId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  amount    Float
-  status    String   @default("active") // active, completed, withdrawn
-
-  startDate DateTime @default(now()) @map("start_date")
-  endDate   DateTime @map("end_date")
-  isActive  Boolean  @default(true) @map("is_active")
-
-  lastClaimDate DateTime? @map("last_claim_date")
-  totalClaimed  Float    @default(0) @map("total_claimed")
-
+  id            String       @id @default(cuid())
+  userId        String       @map("user_id")
+  poolId        String       @map("pool_id")
+  amount        Float
+  status        String       @default("active")
+  startDate     DateTime     @default(now()) @map("start_date")
+  endDate       DateTime     @map("end_date")
+  isActive      Boolean      @default(true) @map("is_active")
+  lastClaimDate DateTime?    @map("last_claim_date")
+  totalClaimed  Float        @default(0) @map("total_claimed")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
   commissions   Commission[] @relation("InvestmentCommissions")
-
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  pool          Pool         @relation(fields: [poolId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([userId, poolId])
+  @@index([poolId], map: "investments_pool_id_fkey")
   @@map("investments")
 }
 
 model Commission {
-  id           String   @id @default(cuid())
-  fromUserId   String   @map("from_user_id")
-  fromUser     User     @relation("CommissionEarner", fields: [fromUserId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  toUserId     String   @map("to_user_id")
-  toUser       User     @relation("CommissionReceiver", fields: [toUserId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  investmentId String?  @map("investment_id")
-  investment   Investment? @relation("InvestmentCommissions", fields: [investmentId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  id           String      @id @default(cuid())
+  fromUserId   String      @map("from_user_id")
+  toUserId     String      @map("to_user_id")
+  investmentId String?     @map("investment_id")
   amount       Float
   level        Int
-  percentage   Float    @default(0)
-  status       String   @default("pending") // pending, processed, paid
+  percentage   Float       @default(0)
+  status       String      @default("pending")
   description  String?
+  createdAt    DateTime    @default(now()) @map("created_at")
+  processedAt  DateTime?   @map("processed_at")
+  fromUser     User        @relation("CommissionEarner", fields: [fromUserId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  investment   Investment? @relation("InvestmentCommissions", fields: [investmentId], references: [id], onUpdate: NoAction)
+  toUser       User        @relation("CommissionReceiver", fields: [toUserId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  createdAt    DateTime @default(now()) @map("created_at")
-  processedAt  DateTime? @map("processed_at")
-
+  @@index([fromUserId], map: "commissions_from_user_id_fkey")
+  @@index([investmentId], map: "commissions_investment_id_fkey")
+  @@index([toUserId], map: "commissions_to_user_id_fkey")
   @@map("commissions")
 }
 
 model Transaction {
   id             String   @id @default(cuid())
   userId         String   @map("user_id")
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  type           String   // deposit, withdrawal, commission, referral_bonus, investment
+  type           String
   amount         Float
   txHash         String?  @unique @map("tx_hash")
-  status         String   @default("pending") // pending, confirmed, failed, rejected
+  status         String   @default("pending")
   description    String?
-  network        String?  // trc20, erc20, bep20
+  network        String?
   depositAddress String?  @map("deposit_address")
-
   createdAt      DateTime @default(now()) @map("created_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
+  @@index([userId], map: "transactions_user_id_fkey")
   @@map("transactions")
 }
 
 model WithdrawalRequest {
-  id            String   @id @default(cuid())
-  userId        String   @map("user_id")
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  amount        Float    @default(0)
-  walletAddress String   @map("wallet_address")
-  status        String   @default("pending") // pending, approved, rejected, completed
-  txHash        String?  @map("tx_hash")
+  id            String    @id @default(cuid())
+  userId        String    @map("user_id")
+  amount        Float     @default(0)
+  walletAddress String    @map("wallet_address")
+  status        String    @default("pending")
+  txHash        String?   @map("tx_hash")
   notes         String?
-
-  createdAt     DateTime @default(now()) @map("created_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
   processedAt   DateTime? @map("processed_at")
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
+  @@index([userId], map: "withdrawal_requests_user_id_fkey")
   @@map("withdrawal_requests")
 }
 
 model MatrixSlot {
-  id           String   @id @default(cuid())
-  ownerId      String   @map("owner_id")
-  owner        User     @relation("MatrixOwner", fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  position     Int
-  filledById   String?  @map("filled_by_id")
-  filledBy     User?    @relation("MatrixFiller", fields: [filledById], references: [id], onDelete: SetNull, onUpdate: NoAction)
-  filledAt     DateTime? @map("filled_at")
-  isFilled     Boolean  @default(false) @map("is_filled")
-  bonusAmount  Float    @default(0) @map("bonus_amount")
-
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id          String    @id @default(cuid())
+  ownerId     String    @map("owner_id")
+  position    Int
+  filledById  String?   @map("filled_by_id")
+  filledAt    DateTime? @map("filled_at")
+  isFilled    Boolean   @default(false) @map("is_filled")
+  bonusAmount Float     @default(0) @map("bonus_amount")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  filledBy    User?     @relation("MatrixFiller", fields: [filledById], references: [id], onUpdate: NoAction)
+  owner       User      @relation("MatrixOwner", fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([ownerId, position])
   @@index([ownerId])
@@ -198,17 +175,16 @@ model MatrixSlot {
 model MatrixBonus {
   id           String   @id @default(cuid())
   fromUserId   String   @map("from_user_id")
-  fromUser     User     @relation("BonusFrom", fields: [fromUserId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   toUserId     String   @map("to_user_id")
-  toUser       User     @relation("BonusTo", fields: [toUserId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   investmentId String   @map("investment_id")
   poolId       String   @map("pool_id")
   amount       Float
   bonusPercent Float    @map("bonus_percent")
   slotPosition Int      @map("slot_position")
   status       String   @default("processed") @map("status")
-
   createdAt    DateTime @default(now()) @map("created_at")
+  fromUser     User     @relation("BonusFrom", fields: [fromUserId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  toUser       User     @relation("BonusTo", fields: [toUserId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([toUserId])
   @@index([fromUserId])
@@ -216,23 +192,23 @@ model MatrixBonus {
 }
 
 model Settings {
-  id                String   @id @default(cuid())
-  key               String   @unique
-  value             String
-  description       String?
-  updatedAt         DateTime @updatedAt @map("updated_at")
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("settings")
 }
 
 model Notification {
-  id          String   @id @default(cuid())
-  userId      String   @map("user_id")
-  title       String
-  message     String
-  type        String   @default("info") // info, success, warning, error
-  isRead      Boolean  @default(false) @map("is_read")
-  createdAt   DateTime @default(now()) @map("created_at")
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  title     String
+  message   String
+  type      String   @default("info")
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@index([userId])
   @@index([isRead])
@@ -240,18 +216,16 @@ model Notification {
 }
 
 model DailyProfit {
-  id            String   @id @default(cuid())
-  userId        String   @map("user_id")
-  investmentId  String   @map("investment_id")
-  amount        Float
-  profitDate    DateTime @map("profit_date")
-  isClaimed     Boolean  @default(false) @map("is_claimed")
-  claimedAt     DateTime? @map("claimed_at")
-
-  createdAt     DateTime @default(now()) @map("created_at")
+  id           String    @id @default(cuid())
+  userId       String    @map("user_id")
+  investmentId String    @map("investment_id")
+  amount       Float
+  profitDate   DateTime  @map("profit_date")
+  isClaimed    Boolean   @default(false) @map("is_claimed")
+  claimedAt    DateTime? @map("claimed_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
 
   @@index([userId])
   @@index([investmentId])
   @@map("daily_profits")
 }
-

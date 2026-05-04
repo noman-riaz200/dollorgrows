@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { 
-  ArrowLeftRight, 
-  TrendingUp, 
+  Plus, 
+  X, 
   Download, 
-  ArrowUpRight, 
+  RefreshCw, 
   ArrowLeft,
-  RefreshCw,
+  Copy,
   CheckCircle2,
   AlertCircle,
   Clock
@@ -18,6 +18,11 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { NeonButton } from "@/components/ui/NeonButton";
 import Link from "next/link";
 
+interface DepositAddresses {
+  trc20: string;
+  erc20: string;
+}
+
 interface Transaction {
   id: string;
   type: string;
@@ -25,40 +30,36 @@ interface Transaction {
   status: string;
   description: string;
   createdAt: string;
+  txHash?: string;
+  network?: string;
 }
 
-interface WalletData {
-  wallet: {
-    balanceWallet: number;
-    poolWallet: number;
-    poolCommission: number;
-  };
-}
-
-export default function ExchangePage() {
+export default function DepositPage() {
   const { data: session } = useSession();
 
-  const [exchangeFrom, setExchangeFrom] = useState("balance");
-  const [exchangeTo, setExchangeTo] = useState("pool");
-  const [exchangeAmount, setExchangeAmount] = useState("");
+  const [depositAddresses, setDepositAddresses] = useState<DepositAddresses>({
+    trc20: "",
+    erc20: "",
+  });
+  const [depositNetwork, setDepositNetwork] = useState<"trc20" | "erc20">("trc20");
+  const [amount, setAmount] = useState("");
+  const [txHash, setTxHash] = useState("");
   const [loading, setLoading] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [balance, setBalance] = useState(0);
-  const [poolWallet, setPoolWallet] = useState(0);
 
   const fetchWalletData = useCallback(async () => {
     try {
       const res = await fetch("/api/wallet");
-      const data: WalletData = await res.json();
-      setBalance(data.wallet.balanceWallet);
-      setPoolWallet(data.wallet.poolWallet);
+      const data = await res.json();
+      setBalance(data.wallet?.balanceWallet || 0);
 
       const txRes = await fetch("/api/wallet/deposit");
       const txData = await txRes.json();
-      const filtered = (txData.transactions || []).filter((t: Transaction) =>
-        t.type === "exchange" || t.type === "deposit" || t.type === "withdrawal"
-      );
-      setTransactions(filtered);
+      setTransactions(txData.transactions || []);
+      if (txData.addresses) {
+        setDepositAddresses(txData.addresses);
+      }
     } catch (error) {
       console.error("Failed to fetch wallet data:", error);
       toast.error("Failed to load wallet data");
@@ -69,52 +70,45 @@ export default function ExchangePage() {
     if (session) fetchWalletData();
   }, [session, fetchWalletData]);
 
-  const handleExchange = async () => {
-    if (!exchangeAmount || parseFloat(exchangeAmount) <= 0) {
+  const handleDeposit = async () => {
+    if (!amount || parseFloat(amount) <= 0) {
       toast.error("Please enter a valid amount");
       return;
     }
-    if (exchangeFrom === exchangeTo) {
-      toast.error("Source and target wallets must be different");
+    if (!txHash || txHash.trim().length < 10) {
+      toast.error("Please enter a valid transaction ID (TxHash)");
       return;
     }
     setLoading(true);
     try {
-      const res = await fetch("/api/wallet/exchange", {
+      const res = await fetch("/api/wallet/deposit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          fromType: exchangeFrom,
-          toType: exchangeTo,
-          amount: parseFloat(exchangeAmount),
+          amount: parseFloat(amount),
+          txHash: txHash.trim(),
+          network: depositNetwork
         }),
       });
       const data = await res.json();
       if (res.ok) {
-        setExchangeAmount("");
+        setAmount("");
+        setTxHash("");
         fetchWalletData();
-        toast.success("Exchange completed successfully");
+        toast.success("Deposit submitted for admin approval");
       } else {
-        toast.error(data.error || "Exchange failed");
+        toast.error(data.error || "Deposit failed");
       }
     } catch {
-      toast.error("Failed to process exchange");
+      toast.error("Failed to process deposit");
     } finally {
       setLoading(false);
     }
   };
 
-  const TypeIcon = ({ type }: { type: string }) => {
-    switch (type) {
-      case "deposit":
-        return <Download className="w-4 h-4 text-[#00ff88]" />;
-      case "withdrawal":
-        return <ArrowUpRight className="w-4 h-4 text-red-400" />;
-      case "exchange":
-        return <ArrowLeftRight className="w-4 h-4 text-[#00d2ff]" />;
-      default:
-        return <TrendingUp className="w-4 h-4 text-gray-400" />;
-    }
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Address copied to clipboard");
   };
 
   const StatusBadge = ({ status }: { status: string }) => {
@@ -155,7 +149,7 @@ export default function ExchangePage() {
   };
 
   return (
-    <div className="exchange-page p-4 md:p-6">
+    <div className="deposit-page p-4 md:p-6">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-4">
@@ -166,14 +160,13 @@ export default function ExchangePage() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">Exchange Between Wallets</h1>
-            <p className="text-gray-400">Transfer internal USDT balance between your wallets</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-white">Deposit USDT</h1>
+            <p className="text-gray-400">Add funds to your wallet via USDT</p>
           </div>
         </div>
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-400">
-            Balance Wallet: <span className="text-white font-semibold">${balance.toLocaleString()}</span> • 
-            Pool Wallet: <span className="text-white font-semibold">${poolWallet.toLocaleString()}</span>
+            Current Balance: <span className="text-white font-semibold">${balance.toLocaleString()}</span>
           </div>
           <button
             onClick={fetchWalletData}
@@ -186,87 +179,103 @@ export default function ExchangePage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Exchange Form */}
+        {/* Deposit Form */}
         <GlassCard className="p-6" neonBorder="blue">
-          <h2 className="text-xl font-bold text-white mb-6">Exchange Funds</h2>
+          <h2 className="text-xl font-bold text-white mb-6">Make a Deposit</h2>
           
           <div className="space-y-6">
-            {/* From/To Selection */}
-            <div className="grid grid-cols-[1fr,auto,1fr] gap-3 items-end">
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">From</label>
-                <select
-                  value={exchangeFrom}
-                  onChange={(e) => setExchangeFrom(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-[#00d2ff]/50 transition-all appearance-none"
+            {/* Network Selection */}
+            <div>
+              <label className="block text-sm text-gray-400 mb-3">Select Network</label>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setDepositNetwork("trc20")}
+                  className={`flex-1 py-4 rounded-lg border transition-all ${depositNetwork === "trc20" ? "bg-[#00d2ff]/10 border-[#00d2ff]/50 text-white" : "bg-white/[0.03] border-white/[0.08] text-gray-400 hover:border-[#00d2ff]/30"}`}
                 >
-                  <option value="balance" className="bg-[#0a0a0f]">Balance Wallet (USDT)</option>
-                  <option value="pool" className="bg-[#0a0a0f]">Pool Wallet (USDT)</option>
-                </select>
-                <p className="text-xs text-gray-500 mt-1">
-                  {exchangeFrom === "balance" 
-                    ? `Available: $${balance.toLocaleString()}`
-                    : `Available: $${poolWallet.toLocaleString()}`
-                  }
-                </p>
-              </div>
-              <div className="pb-3">
-                <ArrowLeftRight className="w-5 h-5 text-[#00d2ff]" />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">To</label>
-                <select
-                  value={exchangeTo}
-                  onChange={(e) => setExchangeTo(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-[#00d2ff]/50 transition-all appearance-none"
+                  <div className="font-medium">TRC20 (Tron)</div>
+                  <div className="text-xs mt-1">Fast & Low Fee</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDepositNetwork("erc20")}
+                  className={`flex-1 py-4 rounded-lg border transition-all ${depositNetwork === "erc20" ? "bg-[#00d2ff]/10 border-[#00d2ff]/50 text-white" : "bg-white/[0.03] border-white/[0.08] text-gray-400 hover:border-[#00d2ff]/30"}`}
                 >
-                  <option value="pool" className="bg-[#0a0a0f]">Pool Wallet (USDT)</option>
-                  <option value="balance" className="bg-[#0a0a0f]">Balance Wallet (USDT)</option>
-                </select>
-                <p className="text-xs text-gray-500 mt-1">
-                  {exchangeTo === "balance" 
-                    ? `Will receive: $${balance.toLocaleString()}`
-                    : `Will receive: $${poolWallet.toLocaleString()}`
-                  }
-                </p>
+                  <div className="font-medium">ERC20 (Ethereum)</div>
+                  <div className="text-xs mt-1">Widely Supported</div>
+                </button>
               </div>
+            </div>
+
+            {/* Deposit Address Display */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-sm text-gray-400">Deposit Address</label>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(depositAddresses[depositNetwork] || "")}
+                  className="flex items-center gap-1 text-xs text-[#00d2ff] hover:text-[#00a2ff] transition-colors"
+                >
+                  <Copy className="w-3 h-3" />
+                  Copy Address
+                </button>
+              </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  readOnly
+                  value={depositAddresses[depositNetwork] || "Loading deposit address..."}
+                  className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all pr-12 font-mono text-sm"
+                />
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="w-2 h-2 rounded-full bg-[#00d2ff] animate-pulse"></div>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Send only USDT ({depositNetwork.toUpperCase()}) to this address. Sending other tokens may result in permanent loss.
+              </p>
             </div>
 
             {/* Amount Input */}
             <div>
-              <label className="block text-sm text-gray-400 mb-2">Amount (USDT)</label>
-              <input
-                type="number"
-                value={exchangeAmount}
-                onChange={(e) => setExchangeAmount(e.target.value)}
-                placeholder="Enter USDT amount"
-                className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all"
-              />
+              <label className="block text-sm text-gray-400 mb-3">Amount (USDT)</label>
+              <div className="relative">
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="Enter USDT amount"
+                  className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all"
+                />
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                  USDT
+                </div>
+              </div>
               <div className="flex gap-2 mt-2">
                 <button
                   type="button"
-                  onClick={() => setExchangeAmount("50")}
+                  onClick={() => setAmount("50")}
                   className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
                 >
                   $50
                 </button>
                 <button
                   type="button"
-                  onClick={() => setExchangeAmount("100")}
+                  onClick={() => setAmount("100")}
                   className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
                 >
                   $100
                 </button>
                 <button
                   type="button"
-                  onClick={() => setExchangeAmount("500")}
+                  onClick={() => setAmount("500")}
                   className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
                 >
                   $500
                 </button>
                 <button
                   type="button"
-                  onClick={() => setExchangeAmount("1000")}
+                  onClick={() => setAmount("1000")}
                   className="px-3 py-1 text-xs rounded-lg bg-white/[0.03] border border-white/[0.08] text-gray-400 hover:text-white hover:border-[#00d2ff]/30 transition-all"
                 >
                   $1000
@@ -274,11 +283,26 @@ export default function ExchangePage() {
               </div>
             </div>
 
+            {/* Transaction Hash Input */}
+            <div>
+              <label className="block text-sm text-gray-400 mb-3">Transaction ID (TxHash)</label>
+              <input
+                type="text"
+                value={txHash}
+                onChange={(e) => setTxHash(e.target.value)}
+                placeholder="Enter transaction hash from your wallet"
+                className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#00d2ff]/50 transition-all font-mono text-sm"
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                After sending USDT, paste the transaction hash here for verification.
+              </p>
+            </div>
+
             <NeonButton
               variant="gradient"
               fullWidth
-              onClick={handleExchange}
-              disabled={loading || !exchangeAmount || exchangeFrom === exchangeTo}
+              onClick={handleDeposit}
+              disabled={loading || !amount || !txHash}
               className="py-4"
             >
               {loading ? (
@@ -288,26 +312,27 @@ export default function ExchangePage() {
                 </>
               ) : (
                 <>
-                  <ArrowLeftRight className="w-4 h-4" />
-                  Confirm Exchange
+                  <Plus className="w-4 h-4" />
+                  Submit Deposit Request
                 </>
               )}
             </NeonButton>
           </div>
         </GlassCard>
 
-        {/* Exchange History */}
+        {/* Deposit History & Instructions */}
         <div className="space-y-6">
+          {/* Instructions */}
           <GlassCard className="p-6" neonBorder="cyan">
-            <h3 className="text-lg font-bold text-white mb-4">How Exchange Works</h3>
+            <h3 className="text-lg font-bold text-white mb-4">How to Deposit</h3>
             <ol className="space-y-4">
               <li className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#00d2ff]/20 flex items-center justify-center text-[#00d2ff] text-sm font-bold">
                   1
                 </div>
                 <div>
-                  <p className="text-white font-medium">Select source & target wallets</p>
-                  <p className="text-gray-400 text-sm">Choose which wallet to transfer from and to</p>
+                  <p className="text-white font-medium">Copy the deposit address</p>
+                  <p className="text-gray-400 text-sm">Use the copy button above to copy the {depositNetwork.toUpperCase()} address</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
@@ -315,8 +340,8 @@ export default function ExchangePage() {
                   2
                 </div>
                 <div>
-                  <p className="text-white font-medium">Enter amount</p>
-                  <p className="text-gray-400 text-sm">Specify the USDT amount you wish to exchange</p>
+                  <p className="text-white font-medium">Send USDT to the address</p>
+                  <p className="text-gray-400 text-sm">From your wallet (MetaMask, Trust Wallet, etc.), send USDT to the copied address</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
@@ -324,8 +349,8 @@ export default function ExchangePage() {
                   3
                 </div>
                 <div>
-                  <p className="text-white font-medium">Confirm exchange</p>
-                  <p className="text-gray-400 text-sm">Click “Confirm Exchange” to instantly transfer</p>
+                  <p className="text-white font-medium">Wait for confirmation</p>
+                  <p className="text-gray-400 text-sm">Wait for the transaction to be confirmed on the blockchain (usually 1-5 minutes)</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
@@ -333,34 +358,35 @@ export default function ExchangePage() {
                   4
                 </div>
                 <div>
-                  <p className="text-white font-medium">Track history</p>
-                  <p className="text-gray-400 text-sm">Monitor your exchange transactions below</p>
+                  <p className="text-white font-medium">Enter TxHash & Submit</p>
+                  <p className="text-gray-400 text-sm">Paste the transaction hash and submit for admin approval</p>
                 </div>
               </li>
             </ol>
           </GlassCard>
 
+          {/* Recent Deposits */}
           <GlassCard className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-white">Recent Exchange History</h3>
-              <span className="text-sm text-gray-400">{transactions.filter(t => t.type === "exchange").length} exchanges</span>
+              <h3 className="text-lg font-bold text-white">Recent Deposits</h3>
+              <span className="text-sm text-gray-400">{transactions.filter(t => t.type === "deposit").length} transactions</span>
             </div>
             
-            {transactions.filter(t => t.type === "exchange").length > 0 ? (
+            {transactions.filter(t => t.type === "deposit").length > 0 ? (
               <div className="space-y-3">
                 {transactions
-                  .filter(t => t.type === "exchange")
+                  .filter(t => t.type === "deposit")
                   .slice(0, 5)
                   .map((tx) => (
                     <div key={tx.id} className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
                       <div className="flex items-center gap-3">
                         <div className="p-2 rounded-lg bg-[#00d2ff]/10">
-                          <ArrowLeftRight className="w-4 h-4 text-[#00d2ff]" />
+                          <Download className="w-4 h-4 text-[#00d2ff]" />
                         </div>
                         <div>
                           <p className="text-white font-medium">${tx.amount.toLocaleString()}</p>
                           <p className="text-xs text-gray-400">
-                            {new Date(tx.createdAt).toLocaleDateString()} • {tx.description || "Exchange"}
+                            {new Date(tx.createdAt).toLocaleDateString()} • {tx.network?.toUpperCase() || "USDT"}
                           </p>
                         </div>
                       </div>
@@ -371,10 +397,10 @@ export default function ExchangePage() {
             ) : (
               <div className="text-center py-8">
                 <div className="w-12 h-12 rounded-full bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mx-auto mb-3">
-                  <ArrowLeftRight className="w-6 h-6 text-gray-600" />
+                  <Download className="w-6 h-6 text-gray-600" />
                 </div>
-                <p className="text-gray-500">No exchange history yet</p>
-                <p className="text-sm text-gray-600 mt-1">Your exchanges will appear here</p>
+                <p className="text-gray-500">No deposit history yet</p>
+                <p className="text-sm text-gray-600 mt-1">Your deposits will appear here</p>
               </div>
             )}
           </GlassCard>

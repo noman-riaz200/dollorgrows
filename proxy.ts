@@ -1,0 +1,77 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
+
+export default async function proxy(request: NextRequest) {
+  const response = NextResponse.next();
+  
+  // Add caching headers for static assets
+  const pathname = request.nextUrl.pathname;
+  
+  // Cache static assets aggressively
+  if (
+    pathname.match(/\.(ico|png|jpg|jpeg|gif|svg|webp|avif|css|js|woff|woff2|ttf|eot)$/) ||
+    pathname.startsWith('/_next/static/') ||
+    pathname.startsWith('/_next/image/')
+  ) {
+    response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+  }
+  
+  // Cache Next.js generated pages
+  else if (pathname.startsWith('/_next/data/')) {
+    response.headers.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+  }
+  
+  // Cache API responses (except auth)
+  else if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth/')) {
+    response.headers.set('Cache-Control', 'private, max-age=60, stale-while-revalidate=300');
+  }
+
+  // Security headers
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  // Allow all auth routes and next-auth API to be public
+  if (
+    request.nextUrl.pathname.startsWith("/auth/") ||
+    request.nextUrl.pathname.startsWith("/api/auth/")
+  ) {
+    return response;
+  }
+
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+
+  // Allow public settings endpoint
+  if (request.nextUrl.pathname === "/api/settings/public") {
+    return response;
+  }
+
+  // Block admin routes for non-admins
+  if (request.nextUrl.pathname.startsWith("/admin")) {
+    if (!token || token.role !== "admin") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+  }
+
+  // Check if user is blocked
+  if (token?.status === "blocked") {
+    if (request.nextUrl.pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Account blocked. Contact support." }, { status: 403 });
+    }
+    return NextResponse.redirect(new URL("/auth/signin?error=blocked", request.url));
+  }
+
+  return response;
+}
+
+export const config = {
+  matcher: [
+    "/dashboard/:path*",
+    "/api/:path*",
+    "/admin/:path*",
+    "/auth/:path*",
+    "/((?!_next/static|_next/image|favicon.ico|public/).*)"
+  ],
+};

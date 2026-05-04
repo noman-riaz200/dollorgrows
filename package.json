@@ -10,7 +10,10 @@
     "db:seed": "npx tsx prisma/seed.ts",
     "db:push": "npx prisma db push --accept-data-loss",
     "db:studio": "npx prisma studio",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "optimize": "node scripts/optimize-images.js",
+    "analyze": "ANALYZE=true next build",
+    "build:prod": "npm run optimize && npm run build"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -50,6 +53,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "sharp": "^0.34.5",
     "tsx": "^4.21.0",
     "typescript": "^5"
   }

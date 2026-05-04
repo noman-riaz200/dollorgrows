@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Shield, RefreshCw, Check, X, ArrowDownLeft, ArrowUpRight, Users, Database } from "lucide-react";
+import { Shield, RefreshCw, Check, X, ArrowDownLeft, ArrowUpRight, Users, Database, DollarSign, TrendingUp, BarChart3, Wallet, LogOut } from "lucide-react";
+import "./AdminDashboard.css";
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
@@ -129,26 +130,46 @@ export default function AdminPage() {
               <p className="admin-subtitle">Manage pools, users, deposits, and withdrawals</p>
             </div>
           </div>
-          <button onClick={load} className="refresh-btn">
-            <RefreshCw size={16} /> Refresh Data
-          </button>
+          <div className="header-actions">
+            <button onClick={load} className="refresh-btn">
+              <RefreshCw size={16} /> Refresh Data
+            </button>
+            <button
+              onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+              className="logout-btn"
+            >
+              <LogOut size={16} /> Logout
+            </button>
+          </div>
         </header>
 
         {/* Stats Grid */}
         <div className="admin-stats-grid">
           <div className="stat-card">
+            <div className="stat-icon-wrapper">
+              <Users size={24} />
+            </div>
             <p className="stat-value">{stats.u}</p>
             <p className="stat-label">Total Users</p>
           </div>
           <div className="stat-card">
+            <div className="stat-icon-wrapper">
+              <Database size={24} />
+            </div>
             <p className="stat-value">{stats.p}</p>
             <p className="stat-label">Active Pools</p>
           </div>
           <div className="stat-card">
+            <div className="stat-icon-wrapper">
+              <TrendingUp size={24} />
+            </div>
             <p className="stat-value">{stats.i}</p>
             <p className="stat-label">Total Investments</p>
           </div>
           <div className="stat-card">
+            <div className="stat-icon-wrapper">
+              <BarChart3 size={24} />
+            </div>
             <p className="stat-value">${stats.v.toLocaleString()}</p>
             <p className="stat-label">Total Volume</p>
           </div>
