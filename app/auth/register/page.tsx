@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, TrendingUp, Mail, Lock, Eye, EyeOff, User, Gift, MapPin, ArrowRight, Phone } from "lucide-react";
@@ -26,24 +27,43 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [serverError, setServerError] = useState("");
+  const searchParams = useSearchParams();
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { phoneCode: "+1", country: "US" },
+    defaultValues: {
+      phoneCode: "+1",
+      country: "US",
+      referralCode: searchParams.get("ref") || "",
+    },
   });
 
   const phoneCode = watch("phoneCode");
   const countryCode = watch("country");
 
+  // Set referral code from URL query parameter on component mount
+  useEffect(() => {
+    const refCode = searchParams.get("ref");
+    if (refCode) {
+      setValue("referralCode", refCode);
+    }
+  }, [searchParams, setValue]);
+
   const onSubmit = async (data: RegisterInput) => {
     setIsLoading(true);
     setServerError("");
+
+    // Normalize referral code to lowercase for consistency
+    const normalizedData = {
+      ...data,
+      referralCode: data.referralCode ? data.referralCode.trim().toLowerCase() : "",
+    };
 
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(normalizedData),
       });
 
       const result = await res.json();

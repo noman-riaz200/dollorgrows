@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Users, TrendingUp, Award, Target } from "lucide-react";
+import { Users, TrendingUp, Award, Target, CheckCircle, XCircle, DollarSign } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 
 interface TeamStats {
@@ -11,6 +11,25 @@ interface TeamStats {
   conversionRate: number;
 }
 
+interface DownlineUser {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  country: string;
+  avatar?: string;
+  status: string;
+  joinedDate: string;
+  lastLogin: string;
+  level: number;
+  active: boolean;
+  activeInvestmentsCount: number;
+  walletBalance: number;
+  poolWallet: number;
+  poolCommission: number;
+  conversionCommission: number;
+}
+
 export default function TeamsPage() {
   const [stats, setStats] = useState<TeamStats>({
     totalDownline: 0,
@@ -18,10 +37,13 @@ export default function TeamsPage() {
     levelCounts: {},
     conversionRate: 0,
   });
+  const [downline, setDownline] = useState<DownlineUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [downlineLoading, setDownlineLoading] = useState(true);
 
   useEffect(() => {
     loadTeamStats();
+    loadDownline();
   }, []);
 
   const loadTeamStats = async () => {
@@ -33,6 +55,18 @@ export default function TeamsPage() {
       console.error("Failed to load team stats:", e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadDownline = async () => {
+    try {
+      const res = await fetch("/api/team/downline");
+      const data = await res.json();
+      setDownline(data.downline || []);
+    } catch (e) {
+      console.error("Failed to load downline:", e);
+    } finally {
+      setDownlineLoading(false);
     }
   };
 
@@ -114,6 +148,89 @@ export default function TeamsPage() {
                 );
               })}
             </div>
+          </GlassCard>
+
+          <GlassCard>
+            <h3 className="section-title">Downline Members</h3>
+            <p className="section-subtitle">All users in your downline up to Level 5</p>
+            {downlineLoading ? (
+              <div className="loading-container text-center">
+                <div className="loading-spinner" />
+                <p className="loading-text">Loading downline members...</p>
+              </div>
+            ) : downline.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-400">No downline members found.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="downline-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Level</th>
+                      <th>Active Status</th>
+                      <th>Conversion Commission</th>
+                      <th>Joined Date</th>
+                      <th>Country</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {downline.map((user) => (
+                      <tr key={user.id}>
+                        <td>
+                          <div className="user-cell">
+                            {user.avatar ? (
+                              <img src={user.avatar} alt={user.name} className="user-avatar" />
+                            ) : (
+                              <div className="avatar-placeholder">{user.name.charAt(0)}</div>
+                            )}
+                            <div className="user-info">
+                              <p className="user-name">{user.name}</p>
+                              <p className="user-email">{user.email}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span className={`level-badge level-${user.level}`}>
+                            {user.level === 1 ? "Direct" : `Level ${user.level}`}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="active-status">
+                            {user.active ? (
+                              <>
+                                <CheckCircle className="icon-active" />
+                                <span>Active</span>
+                              </>
+                            ) : (
+                              <>
+                                <XCircle className="icon-inactive" />
+                                <span>Inactive</span>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="commission-cell">
+                            <DollarSign className="icon-commission" />
+                            <span className="commission-amount">
+                              ${user.conversionCommission.toFixed(2)}
+                            </span>
+                          </div>
+                        </td>
+                        <td>
+                          {new Date(user.joinedDate).toLocaleDateString()}
+                        </td>
+                        <td>
+                          {user.country}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </GlassCard>
         </>
       )}

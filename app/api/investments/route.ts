@@ -51,9 +51,9 @@ export async function POST(request: Request) {
       where: { userId: session.user.id },
     });
 
-    if (!wallet || wallet.balanceWallet < amount) {
+    if (!wallet || wallet.poolWallet < amount) {
       return NextResponse.json(
-        { error: "Insufficient balance" },
+        { error: "Pool Wallet has insufficient funds. Please deposit funds into your Pool Wallet first." },
         { status: 400 }
       );
     }
@@ -66,8 +66,7 @@ export async function POST(request: Request) {
       await tx.wallet.update({
         where: { userId: session.user.id },
         data: {
-          balanceWallet: { decrement: amount },
-          poolWallet: { increment: amount },
+          poolWallet: { decrement: amount },
         },
       });
 

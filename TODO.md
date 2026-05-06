@@ -1,35 +1,15 @@
-# TODO - Beautiful UI Redesign & Performance Optimization
+## TODO: Enhance "Insufficient Pool Wallet" Design with Vanilla CSS
 
-## Phase 1: Global CSS Redesign ✅
-- [x] Create new color theme with CSS variables
-- [x] Implement glassmorphism effects
-- [x] Add animation keyframes
-- [x] Build responsive grid system
-- [x] Custom scrollbar styling
+### Progress Tracking
+- [x] **Step 1: Create TODO.md** - Done
+- [x] **Step 2: Create app/dashboard/plans.css** - Added comprehensive vanilla CSS for Insufficient Pool Wallet (glassmorphism, neon glows, pulse/shake/shimmer animations, responsive, a11y)
+- [ ] **Step 3: Update classNames in app/dashboard/plans/page.tsx**
+- [ ] **Step 4: Test changes** (`npm run dev`, visit /dashboard/plans with low pool balance)
+- [ ] **Step 5: Complete task** (attempt_completion)
 
-## Phase 1.5: Performance Optimization ✅
-- [x] Conditional providers (auth/theme/toaster) for landing page
-- [x] Font optimization & preloading
-- [x] Next.js config: CSS optimization, compression
-- [x] Remove blocking renders
+### Details
+- Theme: Glassmorphism/neon matching dashboard (red/orange gradients, pulse/shake anims)
+- Files: dashboard.css (new rules), plans/page.tsx (class replacements)
 
-## Phase 2: Component Updates
-- [ ] Navbar - Frosted glass effect
-- [ ] Hero - Animated gradient background
-- [ ] Our Services - Glass cards with hover effects
-- [ ] How It Works - Timeline style
-- [ ] FAQs - Smooth accordion
-- [ ] Get in Touch - Dark themed form
-- [ ] Footer - Modern grid layout
-
-## Phase 3: Testing
-- [ ] Test responsive breakpoints
-- [ ] Verify all animations work
-- [ ] Check mobile hamburger menu
-
-## Implementation Order:
-1. globals.css - ✅ Complete redesign (Mobile Responsive Vanilla CSS)
-2. Performance fixes - ✅ Landing page <2s load
-3. Verify components use correct class names
-4. Test in browser
+Current Status: Approved by user. Proceeding to implement.
 

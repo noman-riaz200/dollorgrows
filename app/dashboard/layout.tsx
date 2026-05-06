@@ -23,6 +23,7 @@ import { useState } from "react";
 import { ReactNode } from "react";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import "./dashboard.css";
+import "./plans.css";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -44,17 +45,21 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <div className="dashboard-layout">
       <AnimatedBackground />
-      
+
       {/* Sidebar Overlay for Mobile */}
-      <div 
-        className={`sidebar-overlay ${sidebarOpen ? 'active' : ''}`}
+      <div
+        className={`sidebar-overlay ${sidebarOpen ? "active" : ""}`}
         onClick={() => setSidebarOpen(false)}
       />
-      
+
       {/* Sidebar */}
-      <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <aside className={`dashboard-sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
-          <Link href="/dashboard" className="sidebar-logo" onClick={() => setSidebarOpen(false)}>
+          <Link
+            href="/dashboard"
+            className="sidebar-logo"
+            onClick={() => setSidebarOpen(false)}
+          >
             <div className="logo-icon">
               <LayoutDashboard />
             </div>
@@ -62,14 +67,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               dollor<span>grows</span>
             </span>
           </Link>
-          <button 
-            className="sidebar-close"
-            onClick={() => setSidebarOpen(false)}
-          >
+          <button className="sidebar-close" onClick={() => setSidebarOpen(false)}>
             <X />
           </button>
         </div>
-        
+
         <nav className="sidebar-nav">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
@@ -78,7 +80,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 key={item.href}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
-                className={`nav-item ${isActive ? 'active' : ''}`}
+                className={`nav-item ${isActive ? "active" : ""}`}
               >
                 <item.icon className="nav-icon" />
                 <span className="nav-label">{item.label}</span>
@@ -86,7 +88,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             );
           })}
         </nav>
-        
+
         <div className="sidebar-footer">
           <button
             onClick={() => signOut({ callbackUrl: "/auth/signin" })}
@@ -97,19 +99,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </button>
         </div>
       </aside>
-      
+
       {/* Main Content */}
       <main className="dashboard-main">
         {/* Topbar */}
         <header className="dashboard-topbar">
           <div className="topbar-left">
-            <button 
-              className="menu-toggle"
-              onClick={() => setSidebarOpen(true)}
-            >
+            <button className="menu-toggle" onClick={() => setSidebarOpen(true)}>
               <Menu />
             </button>
-            
+
             <div className="search-container">
               <Search className="search-icon" />
               <input
@@ -121,13 +120,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               />
             </div>
           </div>
-          
+
           <div className="topbar-right">
             <div className="pin-badge">
               <ShieldCheck />
               <span>PIN Secured</span>
             </div>
-            
+
             <div className="user-profile">
               <div className="user-avatar">
                 <span>{session?.user?.name?.[0]?.toUpperCase() || "M"}</span>
@@ -140,12 +139,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </div>
           </div>
         </header>
-        
+
         {/* Content Area */}
-        <div className="dashboard-content">
-          {children}
-        </div>
+        <div className="dashboard-content">{children}</div>
       </main>
     </div>
   );
 }
+

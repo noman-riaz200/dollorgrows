@@ -23,6 +23,14 @@ interface CommissionStats {
   totalCount: number;
 }
 
+interface CommissionSummary {
+  fromUser: { id: string; name: string; email: string };
+  totalCommission: number;
+  levelBreakdown: Record<number, number>;
+  commissionCount: number;
+  lastCommissionDate: string;
+}
+
 export default function CommissionPage() {
   const [commissions, setCommissions] = useState<Commission[]>([]);
   const [stats, setStats] = useState<CommissionStats>({
@@ -32,10 +40,13 @@ export default function CommissionPage() {
     level3Total: 0,
     totalCount: 0,
   });
+  const [summary, setSummary] = useState<CommissionSummary[]>([]);
+  const [summaryLoading, setSummaryLoading] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadCommissions();
+    loadSummary();
   }, []);
 
   const loadCommissions = async () => {
@@ -91,6 +102,22 @@ export default function CommissionPage() {
     }
   };
 
+  const loadSummary = async () => {
+    try {
+      setSummaryLoading(true);
+      const res = await fetch("/api/team/commission-summary");
+      if (!res.ok) {
+        throw new Error("Failed to fetch commission summary");
+      }
+      const data = await res.json();
+      setSummary(data.summary || []);
+    } catch (error) {
+      console.error("Failed to load commission summary:", error);
+    } finally {
+      setSummaryLoading(false);
+    }
+  };
+
   const levelColors: Record<number, string> = {
     1: "badge mint",
     2: "badge blue",
@@ -143,6 +170,65 @@ export default function CommissionPage() {
           <p className="card-value">${(stats.level2Total + stats.level3Total).toLocaleString()}</p>
         </GlassCard>
       </div>
+
+      {/* Commission per Referred User */}
+      <GlassCard>
+        <h3 className="section-title">Commission per Referred User</h3>
+        {summaryLoading ? (
+          <div className="loading-container">
+            <div className="loading-spinner" />
+            <p className="loading-text">Loading commission summary...</p>
+          </div>
+        ) : summary.length > 0 ? (
+          <div className="data-table-container">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Referred User</th>
+                  <th>Total Commission</th>
+                  <th>Level 1</th>
+                  <th>Level 2</th>
+                  <th>Level 3</th>
+                  <th>Commission Count</th>
+                  <th>Last Commission</th>
+                </tr>
+              </thead>
+              <tbody>
+                {summary.map((item) => (
+                  <tr key={item.fromUser.id}>
+                    <td>
+                      <div className="user-info-container">
+                        <div className="user-avatar">
+                          <span className="user-avatar-initial">
+                            {item.fromUser.name[0]?.toUpperCase() || "U"}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="user-name">{item.fromUser.name}</span>
+                          <span className="user-email">{item.fromUser.email}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="amount-positive">+${item.totalCommission.toLocaleString()}</span>
+                    </td>
+                    <td>${item.levelBreakdown[1]?.toLocaleString() || "0"}</td>
+                    <td>${item.levelBreakdown[2]?.toLocaleString() || "0"}</td>
+                    <td>${item.levelBreakdown[3]?.toLocaleString() || "0"}</td>
+                    <td>{item.commissionCount}</td>
+                    <td className="date">{new Date(item.lastCommissionDate).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="empty-state">
+            <Users className="empty-icon" />
+            <p className="empty-text">No commission earned from referred users yet.</p>
+          </div>
+        )}
+      </GlassCard>
 
       {/* Commission Table */}
       <GlassCard>

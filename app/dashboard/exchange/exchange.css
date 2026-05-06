@@ -205,8 +205,8 @@
   width: 100%;
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #1a1a2e;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: #ffffff;
   font-size: 0.875rem;
   transition: all 0.2s ease;
@@ -218,10 +218,37 @@
   padding-right: 2.5rem;
 }
 
+.exchange-select:hover {
+  border-color: rgba(0, 210, 255, 0.4);
+}
+
 .exchange-select:focus {
   outline: none;
-  border-color: rgba(0, 210, 255, 0.5);
-  box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.1);
+  border-color: #00d2ff;
+  box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.3);
+}
+
+/* Dropdown options styling */
+.exchange-select option {
+  background-color: #0a0a0f;
+  color: #ffffff;
+  padding: 0.5rem;
+}
+
+.exchange-select option:hover,
+.exchange-select option:focus,
+.exchange-select option:checked {
+  background-color: rgba(0, 210, 255, 0.2);
+  color: #00d2ff;
+}
+
+/* Differentiate options with subtle colors */
+.exchange-select option[value="balance"] {
+  color: #00ff88; /* Green for Balance Wallet */
+}
+
+.exchange-select option[value="pool"] {
+  color: #00d2ff; /* Cyan for Pool Wallet */
 }
 
 .exchange-select-available {

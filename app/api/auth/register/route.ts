@@ -41,8 +41,10 @@ export async function POST(req: NextRequest) {
     // Validate referral code if provided
     let sponsorId: string | undefined;
     if (referralCode) {
+      // Normalize referral code to lowercase for case-insensitive matching
+      const normalizedReferralCode = referralCode.trim().toLowerCase();
       const sponsor = await prisma.user.findUnique({
-        where: { referralCode },
+        where: { referralCode: normalizedReferralCode },
       });
       if (!sponsor) {
         return NextResponse.json(

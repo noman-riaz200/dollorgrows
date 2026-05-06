@@ -41,12 +41,12 @@ interface Transaction {
 }
 
 interface WalletData {
-  wallet: {
+  wallet?: {
     balanceWallet: number;
     poolWallet: number;
     poolCommission: number;
   };
-  stats: {
+  stats?: {
     totalAvailable: number;
     totalDonated: number;
     totalWithdrawn: number;
@@ -103,13 +103,30 @@ export default function WalletPage() {
   const fetchWalletData = useCallback(async () => {
     try {
       const res = await fetch("/api/wallet");
+      if (!res.ok) {
+        throw new Error(`API error: ${res.status}`);
+      }
       const data: WalletData = await res.json();
-      setBalance(data.wallet.balanceWallet);
-      setPoolWallet(data.wallet.poolWallet);
-      setPoolCommission(data.wallet.poolCommission);
-      setTotalAvailable(data.stats.totalAvailable);
-      setTotalDonated(data.stats.totalDonated);
-      setTotalWithdrawn(data.stats.totalWithdrawn);
+      
+      if (!data?.wallet) {
+        console.warn("No wallet data received, setting defaults");
+        setBalance(0);
+        setPoolWallet(0);
+        setPoolCommission(0);
+        setTotalAvailable(0);
+        setTotalDonated(0);
+        setTotalWithdrawn(0);
+      } else {
+        setBalance(data.wallet.balanceWallet ?? 0);
+        setPoolWallet(data.wallet.poolWallet ?? 0);
+        setPoolCommission(data.wallet.poolCommission ?? 0);
+      }
+      
+      if (data?.stats) {
+        setTotalAvailable(data.stats.totalAvailable ?? 0);
+        setTotalDonated(data.stats.totalDonated ?? 0);
+        setTotalWithdrawn(data.stats.totalWithdrawn ?? 0);
+      }
 
       const txRes = await fetch("/api/wallet/deposit");
       const txData = await txRes.json();
