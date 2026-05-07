@@ -65,10 +65,14 @@ export default function PlansPage() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    console.log('poolBalance updated:', poolBalance, typeof poolBalance);
+  }, [poolBalance]);
+
 
   const handleSelectPlan = async (plan: Plan) => {
     // Use epsilon to avoid floating point precision issues
-    if (poolBalance + 0.001 < plan.price) {
+    if (Number(poolBalance) + 0.01 < Number(plan.price)) {
       setError(`Pool Wallet has insufficient funds. Required: $${plan.price}, Available: $${poolBalance}. Please deposit funds into your Pool Wallet first.`);
       setTimeout(() => setError(""), 5000);
       return;
@@ -155,10 +159,15 @@ export default function PlansPage() {
       {/* Plans Grid */}
       <div className="plans-grid">
         {plans.map((plan, index) => {
-          const isActivePlan = index === 0;
-          const sufficientFunds = poolBalance + 0.001 >= plan.price;
-          const isPurchasable = isActivePlan && sufficientFunds && !isPurchasing;
+          // A plan is purchasable if user has sufficient pool balance and no purchase is in progress
+          const sufficientFunds = Number(poolBalance) + 0.01 >= Number(plan.price);
+          const isPurchasable = sufficientFunds && !isPurchasing;
           const isSelected = selectedPlan === plan.id;
+
+          // For debugging
+          if (index === 0) {
+            console.log('Debug plan:', plan.name, 'price:', plan.price, 'poolBalance:', poolBalance, 'sufficientFunds:', sufficientFunds, 'isPurchasable:', isPurchasable);
+          }
 
           return (
             <GlassCard
@@ -171,13 +180,13 @@ export default function PlansPage() {
               {/* Plan Header */}
               <div className="plan-header">
                 <div className="plan-title-wrapper">
-                  <div className={`plan-number ${isActivePlan ? "active" : ""}`}>
+                  <div className={`plan-number ${sufficientFunds ? "active" : ""}`}>
                     <span>{plan.id}</span>
                   </div>
                   <h3 className="plan-name">{plan.name}</h3>
                 </div>
-                {isActivePlan ? (
-                  <span className="plan-badge active">Active</span>
+                {sufficientFunds ? (
+                  <span className="plan-badge active">Available</span>
                 ) : (
                   <span className="plan-badge">Locked</span>
                 )}
@@ -228,21 +237,13 @@ export default function PlansPage() {
                     "Select Plan"
                   )}
                 </NeonButton>
-              ) : index === 0 ? (
-                <button
-                  disabled
-className="plan-insufficient-button insufficient-wallet-button"
-                >
-                  <AlertCircle className="button-icon" />
-                  Insufficient Pool Wallet
-                </button>
               ) : (
                 <button
                   disabled
-                  className="plan-locked-button"
+                  className="plan-insufficient-button insufficient-wallet-button"
                 >
-                  <Lock className="button-icon" />
-                  Locked
+                  <AlertCircle className="button-icon" />
+                  Insufficient Pool Wallet
                 </button>
               )}
             </GlassCard>

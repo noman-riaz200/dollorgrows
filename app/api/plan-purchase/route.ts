@@ -13,8 +13,13 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { planId, amount } = body;
 
-    if (!planId || !amount || amount <= 0) {
-      return NextResponse.json({ error: "Invalid plan ID or amount" }, { status: 400 });
+    // Validate input
+    if (!planId || planId < 1 || planId > 15) {
+      return NextResponse.json({ error: "Invalid plan ID. Please select a valid plan." }, { status: 400 });
+    }
+    const planAmount = Number(amount);
+    if (!planAmount || planAmount <= 0 || isNaN(planAmount)) {
+      return NextResponse.json({ error: "Invalid plan amount" }, { status: 400 });
     }
 
     // Fetch wallet and check poolWallet balance
@@ -22,9 +27,20 @@ export async function POST(request: Request) {
       where: { userId: session.user.id },
     });
 
-    if (!wallet || wallet.poolWallet < amount) {
+    if (!wallet) {
       return NextResponse.json(
-        { error: "Pool Wallet has insufficient funds. Please deposit funds into your Pool Wallet first." },
+        { error: "Wallet not found. Please contact support." },
+        { status: 404 }
+      );
+    }
+
+    const walletBalance = Number(wallet.poolWallet);
+    if (walletBalance < planAmount) {
+      return NextResponse.json(
+        {
+          error: "Insufficient pool balance",
+          details: `Required: $${planAmount.toFixed(2)}, Available: $${walletBalance.toFixed(2)}`
+        },
         { status: 400 }
       );
     }
@@ -50,13 +66,13 @@ export async function POST(request: Request) {
       // Deduct from poolWallet only
       await tx.wallet.update({
         where: { userId: session.user.id },
-        data: { poolWallet: { decrement: amount } },
+        data: { poolWallet: { decrement: planAmount } },
       });
 
       // Update pool totalInvested
       await tx.pool.update({
         where: { id: defaultPool.id },
-        data: { totalInvested: { increment: amount } },
+        data: { totalInvested: { increment: planAmount } },
       });
 
       // Create investment record
@@ -64,7 +80,7 @@ export async function POST(request: Request) {
         data: {
           userId: session.user.id,
           poolId: defaultPool.id,
-          amount,
+          amount: planAmount,
           startDate: new Date(),
           endDate: new Date(Date.now() + defaultPool.durationDays * 24 * 60 * 60 * 1000),
           isActive: true,
@@ -77,7 +93,7 @@ export async function POST(request: Request) {
         data: {
           userId: session.user.id,
           type: "plan_purchase",
-          amount,
+          amount: planAmount,
           description: `Plan "${planName}" purchase`,
           status: "completed",
         },
@@ -88,7 +104,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `Plan "${planName}" selected successfully! Deducted $${amount.toLocaleString()} from Pool Wallet.`,
+      message: `Plan "${planName}" selected successfully! Deducted $${planAmount.toLocaleString()} from Pool Wallet.`,
       investment: result,
     });
   } catch (error) {
