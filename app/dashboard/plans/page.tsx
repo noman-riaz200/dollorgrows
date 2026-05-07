@@ -50,13 +50,24 @@ export default function PlansPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const walletRes = await fetch("/api/wallet");
+        const [walletRes, investmentsRes] = await Promise.all([
+          fetch("/api/wallet"),
+          fetch("/api/investments"),
+        ]);
         const walletData: WalletData = await walletRes.json();
         const poolWallet = Number(walletData.wallet?.poolWallet || 0);
         setPoolBalance(poolWallet);
         console.log("Fetched pool wallet:", poolWallet);
+
+        if (investmentsRes.ok) {
+          const { investments } = await investmentsRes.json();
+          setUserInvestments(investments || []);
+          console.log("Fetched investments:", investments);
+        } else {
+          console.error("Failed to fetch investments");
+        }
       } catch (err) {
-        console.error("Failed to fetch wallet:", err);
+        console.error("Failed to fetch wallet or investments:", err);
       } finally {
         setLoading(false);
       }
@@ -105,6 +116,13 @@ export default function PlansPage() {
     } finally {
       setIsPurchasing(false);
     }
+  };
+
+  // Check if a plan is already active (user has an active investment with matching amount)
+  const isPlanActive = (plan: Plan): boolean => {
+    return userInvestments.some(
+      (inv) => Math.abs(inv.amount - plan.price) < 0.01 && inv.status === "active" && inv.isActive
+    );
   };
 
 
@@ -161,12 +179,13 @@ export default function PlansPage() {
         {plans.map((plan, index) => {
           // A plan is purchasable if user has sufficient pool balance and no purchase is in progress
           const sufficientFunds = Number(poolBalance) + 0.01 >= Number(plan.price);
-          const isPurchasable = sufficientFunds && !isPurchasing;
+          const planActive = isPlanActive(plan);
+          const isPurchasable = sufficientFunds && !isPurchasing && !planActive;
           const isSelected = selectedPlan === plan.id;
 
           // For debugging
           if (index === 0) {
-            console.log('Debug plan:', plan.name, 'price:', plan.price, 'poolBalance:', poolBalance, 'sufficientFunds:', sufficientFunds, 'isPurchasable:', isPurchasable);
+            console.log('Debug plan:', plan.name, 'price:', plan.price, 'poolBalance:', poolBalance, 'sufficientFunds:', sufficientFunds, 'planActive:', planActive, 'isPurchasable:', isPurchasable);
           }
 
           return (
@@ -218,7 +237,17 @@ export default function PlansPage() {
               </div>
 
               {/* Action Button */}
-              {isPurchasable ? (
+              {planActive ? (
+                <NeonButton
+                  variant="green"
+                  fullWidth
+                  disabled
+                  className="plan-select-button"
+                >
+                  <Check className="button-icon" />
+                  You Selected This Plan
+                </NeonButton>
+              ) : isPurchasable ? (
                 <NeonButton
                   variant="green"
                   fullWidth
