@@ -1,0 +1,487 @@
+/* Admin Dashboard Styles */
+.adminDashboard {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Admin Stats Grid */
+.adminStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.adminStatCard {
+  background-color: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--border);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.adminStatCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.adminStatHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.adminStatIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.adminStatIcon.purple {
+  background-color: #8b5cf6;
+}
+
+.adminStatIcon.blue {
+  background-color: #3b82f6;
+}
+
+.adminStatIcon.green {
+  background-color: #10b981;
+}
+
+.adminStatIcon.orange {
+  background-color: #f59e0b;
+}
+
+.adminStatTitle {
+  font-size: 0.875rem;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-xs);
+}
+
+.adminStatValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1;
+  margin-bottom: var(--spacing-xs);
+}
+
+.adminStatSubtitle {
+  font-size: 0.875rem;
+  color: var(--text-light);
+}
+
+/* Data Grid */
+.dataGridContainer {
+  background-color: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--border);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.dataGridHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--border);
+}
+
+.dataGridActions {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.dataGrid {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dataGrid th {
+  text-align: left;
+  padding: var(--spacing-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-light);
+  border-bottom: 2px solid var(--border);
+  background-color: var(--background);
+}
+
+.dataGrid td {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.dataGrid tr:hover {
+  background-color: var(--background);
+}
+
+.dataGrid tr:last-child td {
+  border-bottom: none;
+}
+
+/* User Status */
+.userStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.userStatus.active {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.userStatus.inactive {
+  background-color: rgba(148, 163, 184, 0.1);
+  color: #64748b;
+}
+
+.userStatus.suspended {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.userStatus.pending {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.actionButton {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.actionButton:hover {
+  background-color: var(--background);
+  color: var(--primary);
+}
+
+.actionButton.edit:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.actionButton.delete:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.actionButton.view:hover {
+  border-color: #10b981;
+  color: #10b981;
+}
+
+/* Analytics Grid */
+.analyticsGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-2xl);
+}
+
+@media (max-width: 1023px) {
+  .analyticsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Chart Container */
+.chartContainer {
+  background-color: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--border);
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chartHeader {
+  margin-bottom: var(--spacing-lg);
+}
+
+.chartPlaceholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--background);
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--border);
+  color: var(--text-light);
+  font-size: 0.875rem;
+}
+
+/* System Health */
+.systemHealthList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.healthItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  background-color: var(--background);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.healthInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.healthIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.healthIcon.success {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.healthIcon.warning {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.healthIcon.error {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.healthDetails {
+  flex: 1;
+}
+
+.healthTitle {
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  color: var(--primary);
+}
+
+.healthDescription {
+  font-size: 0.875rem;
+  color: var(--text-light);
+}
+
+.healthStatus {
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.healthStatus.online {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.healthStatus.degraded {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.healthStatus.offline {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border);
+}
+
+.paginationInfo {
+  font-size: 0.875rem;
+  color: var(--text-light);
+}
+
+.paginationControls {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.paginationButton {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--border);
+  background-color: var(--card-bg);
+  color: var(--text);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all var(--transition-fast);
+}
+
+.paginationButton:hover:not(:disabled) {
+  background-color: var(--background);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.paginationButton.active {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+/* Filter Bar */
+.filterBar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background-color: var(--background);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.filterLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--primary);
+}
+
+.filterSelect {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--card-bg);
+  color: var(--text);
+  font-size: 0.875rem;
+  min-width: 150px;
+}
+
+.filterInput {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--card-bg);
+  color: var(--text);
+  font-size: 0.875rem;
+  min-width: 200px;
+}
+
+/* Quick Actions */
+.quickActions {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.quickActionCard {
+  background-color: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--border);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.quickActionCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+}
+
+.quickActionIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--spacing-md);
+  color: white;
+}
+
+.quickActionIcon.blue {
+  background-color: #3b82f6;
+}
+
+.quickActionIcon.green {
+  background-color: #10b981;
+}
+
+.quickActionIcon.purple {
+  background-color: #8b5cf6;
+}
+
+.quickActionIcon.orange {
+  background-color: #f59e0b;
+}
+
+.quickActionTitle {
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  color: var(--primary);
+}
+
+.quickActionDescription {
+  font-size: 0.875rem;
+  color: var(--text-light);
+}

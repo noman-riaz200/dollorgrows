@@ -35,7 +35,7 @@ import {
 import { StatCard } from "@/components/ui/StatCard";
 import { NeonButton } from "@/components/ui/NeonButton";
 import { MatrixGrid } from "@/components/ui/MatrixGrid";
-import "./dashboard.css";
+import styles from "./dashboard.module.css";
 
 const COLORS = ["#00d2ff", "#00ff88", "#8b5cf6", "#f59e0b", "#ef4444"] as const;
 
@@ -172,10 +172,10 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="dashboard-container">
+    <div className={styles.dashboardOverview}>
       {/* Header */}
-      <div className="dashboard-header">
-        <h1>
+      <div className={styles.sectionHeader}>
+        <h1 className={styles.sectionTitle}>
           Welcome back,{" "}
           <span className="user-highlight">
             {session?.user?.name || "User"}
@@ -188,27 +188,35 @@ export default function DashboardPage() {
       </div>
 
       {/* Total Balance Card */}
-      <div className="total-balance-card">
-        <div className="balance-content">
-          <div className="balance-left">
-            <div className="balance-icon">
-              <DollarSign size={32} />
-            </div>
-            <div className="balance-text">
-              <h3>Total Balance</h3>
-              <h2>${totalBalance.toLocaleString()}</h2>
-            </div>
+      <div className={styles.balanceSummary}>
+        <div className={styles.balanceHeader}>
+          <h2 className={styles.balanceTitle}>Balance Summary</h2>
+          <span className="balance-updated">Updated just now</span>
+        </div>
+        <div className={styles.balanceAmount}>${totalBalance.toLocaleString()}</div>
+        <div className={styles.balanceBreakdown}>
+          <div className={styles.balanceItem}>
+            <span className={styles.balanceLabel}>Total Invested</span>
+            <span className={styles.balanceValue}>${stats.totalInvested.toLocaleString()}</span>
           </div>
-          <div className="balance-actions">
-            <Link href="/dashboard/wallet">
-              <button className="btn-primary">Top Up</button>
-            </Link>
+          <div className={styles.balanceItem}>
+            <span className={styles.balanceLabel}>Total Earnings</span>
+            <span className={styles.balanceValue}>${stats.totalEarnings.toLocaleString()}</span>
           </div>
+          <div className={styles.balanceItem}>
+            <span className={styles.balanceLabel}>Daily ROI</span>
+            <span className={styles.balanceValue}>{stats.dailyROI.toFixed(2)}%</span>
+          </div>
+        </div>
+        <div className={styles.balanceActions}>
+          <Link href="/dashboard/wallet">
+            <button className={styles.btnPrimary}>Top Up</button>
+          </Link>
         </div>
       </div>
 
       {/* Main Cards: Balance Wallet, Pool Wallet, Pool Commission */}
-      <div className="stats-grid">
+      <div className={styles.statsGrid}>
         <StatCard
           title="Balance Wallet"
           value={`$${stats.balanceWallet.toLocaleString()}`}
@@ -233,7 +241,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Secondary Cards: 6 cards */}
-      <div className="stats-grid">
+      <div className={styles.statsGrid}>
         <StatCard
           title="Total Referrals"
           value={stats.teamSize.toString()}
@@ -279,15 +287,15 @@ export default function DashboardPage() {
       </div>
 
       {/* Matrix + Charts Row */}
-      <div className="charts-section">
+      <div className={styles.chartsSection}>
         {/* Matrix Grid */}
-        <div className="chart-card">
-          <div className="chart-header">
+        <div className={styles.chartCard}>
+          <div className={styles.chartHeader}>
             <h3>
-              <Layers size={20} className="chart-icon" />
+              <Layers size={20} className={styles.chartIcon} />
               BFS Matrix
             </h3>
-            <span className="matrix-stats">
+            <span className={styles.matrixStats}>
               {matrixStats.filled}/{matrixStats.total} filled
             </span>
           </div>
@@ -299,10 +307,10 @@ export default function DashboardPage() {
               bonusAmount: s.bonusAmount,
             }))}
           />
-          <div className="matrix-footer">
-            <div className="matrix-bonus">
-              <span className="matrix-label">Matrix Bonus Earned</span>
-              <span className="matrix-value">
+          <div className={styles.matrixFooter}>
+            <div className={styles.matrixBonus}>
+              <span className={styles.matrixLabel}>Matrix Bonus Earned</span>
+              <span className={styles.matrixValue}>
                 ${matrixStats.totalBonusEarned.toLocaleString()}
               </span>
             </div>
@@ -310,9 +318,9 @@ export default function DashboardPage() {
         </div>
 
         {/* Earnings Chart */}
-        <div className="chart-card">
-          <h3 className="chart-header">Earnings Overview</h3>
-          <div className="chart-container">
+        <div className={styles.chartCard}>
+          <h3 className={styles.chartHeader}>Earnings Overview</h3>
+          <div className={styles.chartContainer}>
             <ResponsiveContainer width="100%" height="100%" minWidth={0} aspect={1.5}>
               <LineChart data={chartData}>
                 <CartesianGrid
@@ -352,11 +360,11 @@ export default function DashboardPage() {
       </div>
 
       {/* Pool Distribution + Activity */}
-      <div className="charts-section">
+      <div className={styles.chartsSection}>
         {/* Pool Distribution */}
-        <div className="chart-card">
-          <h3 className="chart-header">Pool Distribution</h3>
-          <div className="pie-chart-container">
+        <div className={styles.chartCard}>
+          <h3 className={styles.chartHeader}>Pool Distribution</h3>
+          <div className={styles.pieChartContainer}>
             {poolDistribution.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%" minWidth={0} aspect={1}>
                 <RechartsPie>
@@ -389,38 +397,38 @@ export default function DashboardPage() {
                 </RechartsPie>
               </ResponsiveContainer>
             ) : (
-              <p className="no-data">No active investments</p>
+              <p className={styles.noData}>No active investments</p>
             )}
           </div>
         </div>
 
         {/* Recent Activity */}
-        <div className="activity-feed">
-          <div className="activity-header">
+        <div className={styles.activityFeed}>
+          <div className={styles.activityHeader}>
             <h3>
-              <BarChart3 size={20} className="chart-icon" />
+              <BarChart3 size={20} className={styles.chartIcon} />
               Recent Activity
             </h3>
-            <Link href="/dashboard/wallet" className="view-all-link">
+            <Link href="/dashboard/wallet" className={styles.viewAllLink}>
               View All
               <ArrowUpRight size={16} />
             </Link>
           </div>
-          <div className="activity-list">
+          <div className={styles.activityList}>
             {recentActivity.length > 0 ? (
               recentActivity.map((activity) => (
                 <div
                   key={activity.id}
-                  className="activity-item"
+                  className={styles.activityItem}
                 >
                   <div
-                    className={`activity-icon ${
+                    className={`${styles.activityIcon} ${
                       activity.type === "commission" ||
                       activity.type === "referral_bonus"
-                        ? "deposit"
+                        ? styles.deposit
                         : activity.type === "investment"
-                        ? "investment"
-                        : "transfer"
+                        ? styles.investment
+                        : styles.transfer
                     }`}
                   >
                     {activity.type === "commission" ||
@@ -432,20 +440,20 @@ export default function DashboardPage() {
                       <BarChart3 size={18} />
                     )}
                   </div>
-                  <div className="activity-content">
-                    <div className="activity-title">{activity.description}</div>
-                    <div className="activity-description">
+                  <div className={styles.activityContent}>
+                    <div className={styles.activityTitle}>{activity.description}</div>
+                    <div className={styles.activityDescription}>
                       {new Date(activity.createdAt).toLocaleDateString()}
                     </div>
                   </div>
-                  <div className={`activity-amount ${activity.amount > 0 ? "positive" : "negative"}`}>
+                  <div className={`${styles.activityAmount} ${activity.amount > 0 ? styles.positive : styles.negative}`}>
                     {activity.amount > 0 ? "+" : ""}
                     ${activity.amount.toFixed(2)}
                   </div>
                 </div>
               ))
             ) : (
-              <p className="no-activity">No recent activity</p>
+              <p className={styles.noActivity}>No recent activity</p>
             )}
           </div>
         </div>

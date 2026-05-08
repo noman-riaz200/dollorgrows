@@ -1,671 +1,272 @@
-/* ============================================
-   EXCHANGE PAGE VANILLA CSS - MODERN & CLEAN
-   ============================================
-   
-   DESIGN PRINCIPLES:
-   - Modern glassmorphism with subtle gradients
-   - Vibrant accent colors for financial data
-   - Responsive grid layouts
-   - Smooth animations and transitions
-   - Clean typography hierarchy
-   - Neon glow effects for interactive elements
-   
-   COLOR PALETTE:
-   - Primary: #00d2ff (Cyan) - Neon Blue
-   - Secondary: #00ff88 (Green) - Neon Green
-   - Accent: #ff00ff (Magenta) - Neon Pink
-   - Background: #0a0a0f (Dark)
-   - Glass: rgba(255, 255, 255, 0.03)
-   - Text: #ffffff, #94a3b8
-   
-   ============================================ */
+/* Exchange Page Styles - Compatible with new dashboard layout */
 
-/* Exchange Page Container */
-.exchange-page {
-  max-width: 1400px;
+.exchange-container {
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem 1.5rem;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
-  color: #ffffff;
+  padding: 20px;
 }
 
-@media (min-width: 768px) {
-  .exchange-page {
-    padding: 1.5rem 2rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .exchange-page {
-    padding: 2rem 2.5rem;
-  }
-}
-
-/* Header Styles */
 .exchange-header {
-  margin-bottom: 2rem;
-}
-
-.exchange-header-top {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.exchange-back-btn {
-  padding: 0.5rem;
-  border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #94a3b8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.exchange-back-btn:hover {
-  color: #ffffff;
-  border-color: rgba(0, 210, 255, 0.3);
-}
-
-.exchange-title h1 {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.exchange-title p {
-  font-size: 0.875rem;
-  color: #94a3b8;
-  margin-top: 0.25rem;
-}
-
-.exchange-header-info {
-  display: flex;
-  align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.exchange-balance-info {
-  font-size: 0.875rem;
-  color: #94a3b8;
-}
-
-.exchange-balance-info span {
-  color: #ffffff;
-  font-weight: 600;
-  margin: 0 0.25rem;
-}
-
-.exchange-refresh-btn {
-  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #94a3b8;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
-  cursor: pointer;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-.exchange-refresh-btn:hover {
-  color: #ffffff;
-  border-color: rgba(0, 210, 255, 0.3);
+.exchange-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
-/* Main Content Grid */
-.exchange-content-grid {
+.wallet-summary {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
 }
 
-@media (min-width: 1024px) {
-  .exchange-content-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+.wallet-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-/* Glass Card Base */
-.exchange-glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 1.5rem;
-  position: relative;
-  overflow: hidden;
+.wallet-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
-.exchange-glass-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 210, 255, 0.5), transparent);
-}
-
-.exchange-glass-card.neon-blue::before {
-  background: linear-gradient(90deg, transparent, rgba(0, 210, 255, 0.7), transparent);
-}
-
-.exchange-glass-card.neon-cyan::before {
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.7), transparent);
-}
-
-/* Exchange Form */
-.exchange-form-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 1.5rem;
-}
-
-.exchange-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/* From/To Selection */
-.exchange-selection-grid {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 0.75rem;
-  align-items: end;
-}
-
-.exchange-select-group {
-  flex: 1;
-}
-
-.exchange-select-label {
-  display: block;
-  font-size: 0.875rem;
-  color: #94a3b8;
-  margin-bottom: 0.5rem;
-}
-
-.exchange-select {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-  background: #1a1a2e;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #ffffff;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 1rem;
-  padding-right: 2.5rem;
-}
-
-.exchange-select:hover {
-  border-color: rgba(0, 210, 255, 0.4);
-}
-
-.exchange-select:focus {
-  outline: none;
-  border-color: #00d2ff;
-  box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.3);
-}
-
-/* Dropdown options styling */
-.exchange-select option {
-  background-color: #0a0a0f;
-  color: #ffffff;
-  padding: 0.5rem;
-}
-
-.exchange-select option:hover,
-.exchange-select option:focus,
-.exchange-select option:checked {
-  background-color: rgba(0, 210, 255, 0.2);
-  color: #00d2ff;
-}
-
-/* Differentiate options with subtle colors */
-.exchange-select option[value="balance"] {
-  color: #00ff88; /* Green for Balance Wallet */
-}
-
-.exchange-select option[value="pool"] {
-  color: #00d2ff; /* Cyan for Pool Wallet */
-}
-
-.exchange-select-available {
-  font-size: 0.75rem;
-  color: #64748b;
-  margin-top: 0.25rem;
-}
-
-.exchange-arrow-icon {
-  padding-bottom: 0.75rem;
-  color: #00d2ff;
-}
-
-/* Amount Input */
-.exchange-amount-group {
-  margin-top: 0.5rem;
-}
-
-.exchange-amount-input {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+.wallet-card h3 {
   font-size: 1rem;
-  transition: all 0.2s ease;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
 }
 
-.exchange-amount-input:focus {
+.wallet-card .amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.wallet-card .currency {
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+}
+
+.exchange-form-container {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  margin-bottom: 30px;
+}
+
+.exchange-form-container h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.form-group select,
+.form-group input {
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: border-color 0.2s;
+}
+
+.form-group select:focus,
+.form-group input:focus {
   outline: none;
-  border-color: rgba(0, 210, 255, 0.5);
-  box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-.exchange-amount-input::placeholder {
-  color: #64748b;
-}
-
-.exchange-quick-amounts {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.exchange-quick-btn {
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #94a3b8;
-  font-size: 0.75rem;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.exchange-quick-btn:hover {
-  color: #ffffff;
-  border-color: rgba(0, 210, 255, 0.3);
-  background: rgba(0, 210, 255, 0.05);
-}
-
-/* Exchange Button with Neon Glow */
-.exchange-submit-btn {
-  width: 100%;
-  padding: 1rem;
-  border-radius: 0.75rem;
-  background: linear-gradient(135deg, #00d2ff 0%, #00a8ff 100%);
-  border: none;
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-  cursor: pointer;
+.amount-input {
   position: relative;
-  overflow: hidden;
-  z-index: 1;
 }
 
-.exchange-submit-btn::before {
-  content: '';
+.amount-input input {
+  padding-left: 40px;
+}
+
+.currency-symbol {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #00d2ff 0%, #00a8ff 100%);
-  z-index: -1;
-  border-radius: 0.75rem;
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-
-.exchange-submit-btn::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(135deg, #00d2ff, #00ff88, #00d2ff);
-  border-radius: 0.875rem;
-  z-index: -2;
-  opacity: 0;
-  filter: blur(10px);
-  transition: opacity 0.3s ease;
-}
-
-.exchange-submit-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 30px rgba(0, 210, 255, 0.4);
-}
-
-.exchange-submit-btn:hover::after {
-  opacity: 0.7;
-}
-
-.exchange-submit-btn:active {
-  transform: translateY(-1px);
-}
-
-.exchange-submit-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.exchange-submit-btn:disabled::after {
-  opacity: 0;
-}
-
-.exchange-submit-btn.loading {
-  background: linear-gradient(135deg, #00a8ff 0%, #0088cc 100%);
-}
-
-.exchange-submit-btn.loading .exchange-spinner {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Neon Glow Animation for Cards */
-@keyframes neon-pulse {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(0, 210, 255, 0.3),
-                inset 0 0 10px rgba(0, 210, 255, 0.1);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(0, 210, 255, 0.6),
-                inset 0 0 15px rgba(0, 210, 255, 0.2);
-  }
-}
-
-.exchange-glass-card.neon-glow {
-  animation: neon-pulse 3s ease-in-out infinite;
-}
-
-/* Neon Text Effect */
-.neon-text {
-  color: #00d2ff;
-  text-shadow: 0 0 5px rgba(0, 210, 255, 0.7),
-               0 0 10px rgba(0, 210, 255, 0.5),
-               0 0 15px rgba(0, 210, 255, 0.3);
-}
-
-.neon-text-green {
-  color: #00ff88;
-  text-shadow: 0 0 5px rgba(0, 255, 136, 0.7),
-               0 0 10px rgba(0, 255, 136, 0.5),
-               0 0 15px rgba(0, 255, 136, 0.3);
-}
-
-/* How Exchange Works */
-.exchange-guide-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 1rem;
-}
-
-.exchange-guide-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.exchange-guide-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.exchange-guide-number {
-  flex-shrink: 0;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 50%;
-  background: rgba(0, 210, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #00d2ff;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.exchange-guide-content h4 {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #ffffff;
-  margin: 0 0 0.25rem 0;
-}
-
-.exchange-guide-content p {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  margin: 0;
-  line-height: 1.4;
-}
-
-/* Exchange History */
-.exchange-history-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.exchange-history-count {
-  font-size: 0.875rem;
-  color: #94a3b8;
-  font-weight: 400;
-}
-
-.exchange-history-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.exchange-history-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem;
-  border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.2s ease;
-}
-
-.exchange-history-item:hover {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-.exchange-history-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.exchange-history-icon {
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  background: rgba(0, 210, 255, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #00d2ff;
-}
-
-.exchange-history-details h4 {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #ffffff;
-  margin: 0 0 0.125rem 0;
-}
-
-.exchange-history-details p {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  margin: 0;
-}
-
-.exchange-history-status {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-tertiary);
   font-weight: 500;
 }
 
-.exchange-status-success {
-  background: rgba(0, 255, 136, 0.1);
-  color: #00ff88;
+.exchange-button {
+  width: 100%;
+  padding: 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 20px;
 }
 
-.exchange-status-pending {
-  background: rgba(245, 158, 11, 0.1);
-  color: #f59e0b;
+.exchange-button:hover:not(:disabled) {
+  background: var(--primary-dark);
 }
 
-.exchange-status-failed {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+.exchange-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-/* Empty State */
-.exchange-empty-state {
-  text-align: center;
-  padding: 2rem 1rem;
+.transactions-container {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
 }
 
-.exchange-empty-icon {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.transactions-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  margin: 0 auto 0.75rem;
-  color: #64748b;
+  margin-bottom: 24px;
 }
 
-.exchange-empty-title {
+.transactions-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.transactions-table th {
+  text-align: left;
+  padding: 12px 16px;
   font-size: 0.875rem;
-  color: #94a3b8;
-  margin: 0 0 0.25rem 0;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
 }
 
-.exchange-empty-subtitle {
+.transactions-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
   font-size: 0.75rem;
-  color: #64748b;
-  margin: 0;
+  font-weight: 500;
 }
 
-/* Responsive Adjustments */
+.status-completed {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.status-pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+}
+
+.status-failed {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  color: var(--text-tertiary);
+}
+
+.error-message {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  color: #dc2626;
+  margin-bottom: 20px;
+}
+
+.success-message {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  color: #16a34a;
+  margin-bottom: 20px;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .exchange-selection-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-    gap: 1rem;
+  .exchange-container {
+    padding: 16px;
   }
   
-  .exchange-arrow-icon {
-    order: 2;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    transform: rotate(90deg);
-  }
-  
-  .exchange-select-group:first-child {
-    order: 1;
-  }
-  
-  .exchange-select-group:last-child {
-    order: 3;
-  }
-  
-  .exchange-header-info {
+  .exchange-header {
     flex-direction: column;
     align-items: flex-start;
   }
-}
-
-/* Animation for new exchange */
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(0, 210, 255, 0.5);
+  
+  .transactions-table {
+    display: block;
+    overflow-x: auto;
   }
-  50% {
-    box-shadow: 0 0 20px rgba(0, 210, 255, 0.8);
+  
+  .wallet-summary {
+    grid-template-columns: 1fr;
   }
-}
-
-.exchange-new-transaction {
-  animation: pulse-glow 2s ease-in-out;
-}
-
-/* Custom scrollbar for exchange history */
-.exchange-history-scroll {
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.exchange-history-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.exchange-history-scroll::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 3px;
-}
-
-.exchange-history-scroll::-webkit-scrollbar-thumb {
-  background: rgba(0, 210, 255, 0.3);
-  border-radius: 3px;
-}
-
-.exchange-history-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 210, 255, 0.5);
 }

@@ -1,263 +1,151 @@
-/* ============================================
-   PLANS PAGE - INSUFFICIENT POOL WALLET DESIGN
-   Vanilla CSS - Glassmorphism + Neon Effects
-   ============================================ */
+/* Plans Page Styles - Backward Compatibility */
 
-/* Pool Balance Warning Card */
-.pool-balance.insufficient-warning {
-  background: linear-gradient(135deg, rgba(251, 146, 60, 0.15) 0%, rgba(239, 68, 68, 0.1) 50%, rgba(248, 113, 113, 0.15) 100%);
-  border: 2px solid rgba(251, 146, 60, 0.5);
-  box-shadow: 
-    0 12px 40px rgba(251, 146, 60, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25),
-    0 0 30px rgba(251, 146, 60, 0.1);
-  backdrop-filter: blur(20px);
-  position: relative;
-  overflow: hidden;
-  animation: insufficientPulse 2s ease-in-out infinite;
+.plans-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-.pool-balance.insufficient-warning::before {
-  content: '\26A0';
-  position: absolute;
-  top: -10px;
-  right: 20px;
-  background: linear-gradient(135deg, #fb923c, #ef4444);
-  color: white;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 30px;
+}
+
+.plan-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.plan-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.plan-card.featured {
+  border: 2px solid var(--primary);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(99, 102, 241, 0.02) 100%);
+}
+
+.plan-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.plan-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.plan-price {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.plan-price span {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.plan-return {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px 0;
+}
+
+.plan-features li {
+  padding: 8px 0;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 14px;
+  gap: 8px;
+}
+
+.plan-features li::before {
+  content: "✓";
+  color: var(--success);
   font-weight: bold;
-  box-shadow: 0 6px 16px rgba(251, 146, 60, 0.5), 0 0 20px rgba(251, 146, 60, 0.3);
-  animation: shake 0.6s ease-in-out infinite;
-  z-index: 10;
 }
 
-.pool-balance.insufficient-warning .text-mint {
-  color: #fb923c !important;
-  text-shadow: 0 0 12px rgba(251, 146, 60, 0.8);
-}
-
-.pool-balance.insufficient-warning p {
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-/* Enhanced Error Message Banner */
-.pool-insufficient-error {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(251, 146, 60, 0.12) 50%, rgba(248, 113, 113, 0.1) 100%);
-  border: 2px solid rgba(239, 68, 68, 0.4);
-  backdrop-filter: blur(24px);
-  box-shadow: 
-    0 16px 48px rgba(239, 68, 68, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  animation: slideInError 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.pool-insufficient-error::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
+.plan-button {
   width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  animation: shimmer 1.8s linear infinite;
-}
-
-.pool-insufficient-error svg {
-  filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.8));
-  animation: iconPulse 1.5s ease-in-out infinite;
-}
-
-/* Insufficient Wallet Button - Hero Element */
-.plan-insufficient-button.insufficient-wallet-button {
-  background: linear-gradient(135deg, 
-    rgba(251, 146, 60, 0.2) 0%, 
-    rgba(239, 68, 68, 0.15) 50%, 
-    rgba(248, 113, 113, 0.2) 100%);
-  border: 2px solid rgba(251, 146, 60, 0.6);
-  color: #fce7d0;
-  font-weight: 800;
-  font-size: 1rem;
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(16px);
-  box-shadow: 
-    0 8px 32px rgba(251, 146, 60, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    0 0 25px rgba(251, 146, 60, 0.2);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  cursor: not-allowed;
-  min-height: 48px;
-}
-
-.plan-insufficient-button.insufficient-wallet-button:hover {
-  transform: translateY(-2px) scale(1.03);
-  border-color: rgba(239, 68, 68, 0.8);
-  box-shadow: 
-    0 16px 48px rgba(239, 68, 68, 0.4),
-    0 0 40px rgba(251, 146, 60, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-.plan-insufficient-button.insufficient-wallet-button:active {
-  transform: translateY(0) scale(1.01);
-}
-
-.plan-insufficient-button.insufficient-wallet-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 200%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent,
-    rgba(255, 255, 255, 0.4),
-    transparent
-  );
-  transition: left 0.7s ease;
-}
-
-.plan-insufficient-button.insufficient-wallet-button:hover::before {
-  left: 100%;
-}
-
-.plan-insufficient-button.insufficient-wallet-button svg {
-  filter: drop-shadow(0 0 10px rgba(251, 146, 60, 1));
-  animation: iconFloat 2s ease-in-out infinite;
-}
-
-.plan-insufficient-button.insufficient-wallet-button::after {
-  content: attr(data-tooltip) ' \2192';
-  position: absolute;
-  bottom: -40px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, rgba(251, 146, 60, 0.95), rgba(239, 68, 68, 0.9));
+  padding: 14px;
+  background: var(--primary);
   color: white;
-  padding: 0.4rem 1rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.plan-button:hover {
+  background: var(--primary-dark);
+}
+
+.plan-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wallet-balance {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  margin-bottom: 30px;
+}
+
+.wallet-balance h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.balance-amount {
+  font-size: 2rem;
   font-weight: 700;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  box-shadow: 0 8px 24px rgba(251, 146, 60, 0.4);
-  transition: all 0.3s ease;
-  z-index: 20;
-}
-
-.plan-insufficient-button.insufficient-wallet-button:hover::after {
-  opacity: 1;
-  bottom: -32px;
-}
-
-/* Sophisticated Keyframe Animations */
-@keyframes insufficientPulse {
-  0%, 100% {
-    box-shadow: 0 12px 40px rgba(251, 146, 60, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    border-color: rgba(251, 146, 60, 0.5);
-  }
-  50% {
-    box-shadow: 0 16px 48px rgba(239, 68, 68, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    border-color: rgba(239, 68, 68, 0.6);
-  }
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0) rotate(0deg); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px) rotate(-1deg); }
-  20%, 40%, 60%, 80% { transform: translateX(2px) rotate(1deg); }
-}
-
-@keyframes slideInError {
-  from {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.9);
-    filter: blur(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%) skewX(-20deg); }
-  100% { transform: translateX(100%) skewX(-20deg); }
-}
-
-@keyframes iconPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-@keyframes iconFloat {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-2px); }
+  color: var(--primary);
+  margin-bottom: 16px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .pool-balance.insufficient-warning::before {
-    top: -8px;
-    right: 16px;
-    width: 24px;
-    height: 24px;
-    font-size: 12px;
+  .plans-container {
+    padding: 16px;
   }
-
-  .plan-insufficient-button.insufficient-wallet-button {
-    font-size: 0.95rem;
-    min-height: 44px;
+  
+  .plans-grid {
+    grid-template-columns: 1fr;
   }
-
-  .plan-insufficient-button.insufficient-wallet-button::after {
-    font-size: 0.75rem;
-    padding: 0.35rem 0.8rem;
-    bottom: -36px;
-  }
-
-  .pool-insufficient-error {
-    margin-bottom: 1rem;
-    padding: 1rem;
+  
+  .plan-card {
+    padding: 24px;
   }
 }
 
-@media (max-width: 480px) {
-  .pool-balance.insufficient-warning::before {
-    top: -6px;
-    right: 12px;
-    width: 20px;
-    height: 20px;
-    font-size: 10px;
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .pool-balance.insufficient-warning {
-    border-width: 3px;
-  }
-
-  .plan-insufficient-button.insufficient-wallet-button {
-    border-width: 3px;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+@media (min-width: 769px) and (max-width: 1024px) {
+  .plans-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
