@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { signOut } from "next-auth/react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 
 export default function ErrorBoundary({
@@ -36,10 +35,10 @@ export default function ErrorBoundary({
             Try Again
           </button>
           <button
-            onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+            onClick={() => window.location.href = "/auth/signin"}
             className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg font-semibold transition-all"
           >
-            Sign Out
+            Go to Sign In
           </button>
         </div>
       </div>

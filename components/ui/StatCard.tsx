@@ -61,8 +61,8 @@ accent = "blue",
           </span>
         )}
       </div>
-      <p className="fs-4 fs-md-3 fw-bold text-white mb-1">{value}</p>
-      <p className="text-muted small">{title}</p>
+      <p className="fs-4 fs-md-3 fw-bold text-yellow mb-1">{value}</p>
+      <p className="text-white small">{title}</p>
     </div>
   );
 }

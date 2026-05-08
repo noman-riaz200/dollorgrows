@@ -15,97 +15,115 @@ export async function getCurrentUserId(): Promise<string | null> {
  * Fetches all data needed for the dashboard page
  */
 export async function fetchDashboardData(userId: string) {
-  // Get user wallet
-  const wallet = await prisma.wallet.findUnique({
-    where: { userId },
-  });
-
-  // Get team size (referrals count)
-  const teamCount = await prisma.user.count({
-    where: { sponsorId: userId },
-  });
-
-  // Get active referrals (those who invested)
-  const activeReferrals = await prisma.user.count({
-    where: {
-      sponsorId: userId,
-      investments: {
-        some: { isActive: true },
+  // Run all independent queries in parallel
+  const [
+    wallet,
+    teamCount,
+    activeReferrals,
+    recentActivity,
+    poolDistribution,
+    userWithSponsor,
+    pendingUsers,
+    totalWithdrawal,
+    totalExchange,
+  ] = await Promise.all([
+    // 1. Get user wallet
+    prisma.wallet.findUnique({
+      where: { userId },
+    }),
+    
+    // 2. Get team size (referrals count)
+    prisma.user.count({
+      where: { sponsorId: userId },
+    }),
+    
+    // 3. Get active referrals (those who invested)
+    prisma.user.count({
+      where: {
+        sponsorId: userId,
+        investments: {
+          some: { isActive: true },
+        },
       },
-    },
-  });
-
-  // Get recent activity (last 10 transactions)
-  const recentActivity = await prisma.transaction.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    take: 10,
-    select: {
-      id: true,
-      type: true,
-      amount: true,
-      description: true,
-      createdAt: true,
-    },
-  });
-
-  // Get pool distribution
-  const poolDistribution = await prisma.investment.groupBy({
-    by: ["poolId"],
-    where: { userId, isActive: true },
-    _sum: { amount: true },
-    _count: true,
-  });
-
-  // Enhance with pool names
-  const distributionWithNames = await Promise.all(
-    poolDistribution.map(async (item) => {
-      const pool = await prisma.pool.findUnique({
-        where: { id: item.poolId },
+    }),
+    
+    // 4. Get recent activity (last 10 transactions)
+    prisma.transaction.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: {
+        id: true,
+        type: true,
+        amount: true,
+        description: true,
+        createdAt: true,
+      },
+    }),
+    
+    // 5. Get pool distribution with pool names in a single query
+    prisma.investment.groupBy({
+      by: ["poolId"],
+      where: { userId, isActive: true },
+      _sum: { amount: true },
+      _count: true,
+    }).then(async (distribution) => {
+      // Get all pool IDs
+      const poolIds = distribution.map(item => item.poolId).filter(Boolean);
+      if (poolIds.length === 0) return [];
+      
+      // Fetch all pools in a single query
+      const pools = await prisma.pool.findMany({
+        where: { id: { in: poolIds } },
+        select: { id: true, name: true },
       });
-      return {
-        name: pool?.name || "Unknown",
+      
+      // Create a map for quick lookup
+      const poolMap = new Map(pools.map(p => [p.id, p.name]));
+      
+      return distribution.map(item => ({
+        name: poolMap.get(item.poolId) || "Unknown",
         value: Number(item._sum.amount || 0),
-      };
-    })
-  );
-
-  // Get sponsor name
-  const userWithSponsor = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { sponsor: { select: { name: true } } },
-  });
-
-  // Get pending users (referrals with no active investments)
-  const pendingUsers = await prisma.user.count({
-    where: {
-      sponsorId: userId,
-      investments: {
-        none: { isActive: true },
+      }));
+    }),
+    
+    // 6. Get sponsor name
+    prisma.user.findUnique({
+      where: { id: userId },
+      include: { sponsor: { select: { name: true } } },
+    }),
+    
+    // 7. Get pending users (referrals with no active investments)
+    prisma.user.count({
+      where: {
+        sponsorId: userId,
+        investments: {
+          none: { isActive: true },
+        },
       },
-    },
-  });
+    }),
+    
+    // 8. Get total withdrawal amount
+    prisma.withdrawalRequest.aggregate({
+      where: {
+        userId,
+        status: { in: ["approved", "completed"] },
+      },
+      _sum: { amount: true },
+    }),
+    
+    // 9. Get total exchange amount
+    prisma.transaction.aggregate({
+      where: {
+        userId,
+        type: "exchange",
+        status: { in: ["confirmed", "completed"] },
+      },
+      _sum: { amount: true },
+    }),
+  ]);
 
-  // Get total withdrawal amount
-  const totalWithdrawal = await prisma.withdrawalRequest.aggregate({
-    where: {
-      userId,
-      status: { in: ["approved", "completed"] },
-    },
-    _sum: { amount: true },
-  });
-
-  // Get total exchange amount (from transactions with type 'exchange')
-  const totalExchange = await prisma.transaction.aggregate({
-    where: {
-      userId,
-      type: "exchange",
-      status: { in: ["confirmed", "completed"] },
-    },
-    _sum: { amount: true },
-  });
-
-  // Generate chart data (last 30 days)
+  // Generate chart data (last 30 days) - this is mock data, can run in parallel too
   const chartData = await generateChartData(userId);
 
   return {
@@ -126,7 +144,7 @@ export async function fetchDashboardData(userId: string) {
     },
     recentActivity,
     chartData,
-    poolDistribution: distributionWithNames,
+    poolDistribution,
   };
 }
 

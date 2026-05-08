@@ -103,6 +103,7 @@ export default function DashboardPage() {
   const [poolDistribution, setPoolDistribution] = useState<PoolDistItem[]>([]);
   const [matrixSlots, setMatrixSlots] = useState<MatrixSlotData[]>([]);
   const [matrixStats, setMatrixStats] = useState({ filled: 0, total: 15, totalBonusEarned: 0 });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -114,6 +115,7 @@ export default function DashboardPage() {
     if (session) {
       const loadData = async () => {
         try {
+          setIsLoading(true);
           const [dashRes, matrixRes] = await Promise.all([
             fetch("/api/dashboard/stats"),
             fetch("/api/matrix"),
@@ -132,19 +134,39 @@ export default function DashboardPage() {
           }
         } catch (error) {
           console.error("Failed to fetch dashboard data:", error);
+        } finally {
+          setIsLoading(false);
         }
       };
       loadData();
+    } else {
+      setIsLoading(false);
     }
   }, [session]);
 
   const totalBalance =
     stats.balanceWallet + stats.poolWallet + stats.poolCommission;
 
-  if (status === "loading") {
+  if (status === "loading" || isLoading) {
     return (
-      <div className="dashboard-loading">
-        <div className="loading-spinner" />
+      <div className="dashboard-loading skeleton-container">
+        <div className="skeleton-header" />
+        <div className="skeleton-card-large" />
+        <div className="skeleton-grid">
+          <div className="skeleton-card" />
+          <div className="skeleton-card" />
+          <div className="skeleton-card" />
+        </div>
+        <div className="skeleton-grid">
+          <div className="skeleton-card" />
+          <div className="skeleton-card" />
+          <div className="skeleton-card" />
+          <div className="skeleton-card" />
+          <div className="skeleton-card" />
+          <div className="skeleton-card" />
+        </div>
+        <div className="skeleton-chart" />
+        <div className="skeleton-chart" />
       </div>
     );
   }
@@ -291,7 +313,7 @@ export default function DashboardPage() {
         <div className="chart-card">
           <h3 className="chart-header">Earnings Overview</h3>
           <div className="chart-container">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} aspect={1.5}>
               <LineChart data={chartData}>
                 <CartesianGrid
                   strokeDasharray="3 3"
@@ -336,7 +358,7 @@ export default function DashboardPage() {
           <h3 className="chart-header">Pool Distribution</h3>
           <div className="pie-chart-container">
             {poolDistribution.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} aspect={1}>
                 <RechartsPie>
                   <Pie
                     data={poolDistribution}
