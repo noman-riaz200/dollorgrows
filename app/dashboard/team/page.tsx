@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import TeamFlowGraph from "@/components/team/TeamFlowGraph";
+import "../team.css";
 
 interface TeamMember {
   id: string;

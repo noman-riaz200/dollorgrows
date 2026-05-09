@@ -1,0 +1,559 @@
+/* ============================================
+   SETTINGS PAGE STYLES - VANILLA CSS
+   ============================================
+   
+   DESIGN PRINCIPLES:
+   - Modern glassmorphism design
+   - Tab-based navigation with smooth transitions
+   - Form elements with gradient borders
+   - Responsive layout for all screen sizes
+   - Vibrant gradient accents (cyan/purple/magenta theme)
+   - Smooth animations and hover effects
+   - Neon glow effects
+   
+   COLOR PALETTE:
+   - Primary: #00d2ff (cyan)
+   - Secondary: #8b5cf6 (purple)
+   - Accent: #ff00ff (magenta)
+   - Success: #10b981 (emerald)
+   - Danger: #ef4444 (red)
+   - Warning: #f59e0b (amber)
+   
+   ============================================ */
+
+/* Settings Page Container */
+.settings-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+/* Page Header */
+.settings-page .page-header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.settings-page .page-header h1 {
+  font-size: 2.8rem;
+  font-weight: 900;
+  background: linear-gradient(90deg, #00d2ff, #8b5cf6, #ff00ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+  text-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+  letter-spacing: -0.5px;
+}
+
+.settings-page .page-header p {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+/* Tabs Navigation */
+.settings-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid rgba(0, 210, 255, 0.15);
+  padding-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.settings-tab {
+  padding: 0.875rem 1.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 12px 12px 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow: hidden;
+}
+
+.settings-tab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.1), rgba(139, 92, 246, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.settings-tab:hover {
+  color: #00d2ff;
+  transform: translateY(-2px);
+}
+
+.settings-tab:hover::before {
+  opacity: 1;
+}
+
+.settings-tab.active {
+  color: white;
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.25), rgba(139, 92, 246, 0.25));
+  border-bottom: 2px solid #00d2ff;
+  box-shadow: 0 4px 20px rgba(0, 210, 255, 0.2);
+}
+
+.settings-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #00d2ff, #8b5cf6, #ff00ff);
+  border-radius: 1px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.settings-tab svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Tab Content */
+.settings-tab-content {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Glass Cards for Settings Sections */
+.settings-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+  border: 1px solid rgba(0, 210, 255, 0.3);
+  border-radius: 24px;
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 
+    0 12px 40px rgba(0, 210, 255, 0.15),
+    0 0 0 1px rgba(0, 210, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 210, 255, 0.8), 
+    rgba(139, 92, 246, 0.8),
+    rgba(255, 0, 255, 0.8),
+    transparent);
+  z-index: 1;
+}
+
+.settings-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(0, 210, 255, 0.05) 0%, transparent 70%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.settings-card:hover {
+  border-color: rgba(0, 210, 255, 0.5);
+  box-shadow: 
+    0 20px 60px rgba(0, 210, 255, 0.25),
+    0 0 0 1px rgba(0, 210, 255, 0.2);
+  transform: translateY(-4px);
+}
+
+.settings-card:hover::after {
+  opacity: 1;
+}
+
+/* Section Headers */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(0, 210, 255, 0.25);
+}
+
+.section-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #00d2ff, #8b5cf6, #ff00ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 6px 20px rgba(0, 210, 255, 0.4);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  flex: 1;
+  background: linear-gradient(90deg, #fff, #00d2ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.section-subtitle {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  opacity: 0.9;
+}
+
+/* Form Layout */
+.settings-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+}
+
+.form-group {
+  margin-bottom: 2rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: white;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+}
+
+.form-label span {
+  color: #ef4444;
+  margin-left: 0.25rem;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 210, 255, 0.4);
+  border-radius: 14px;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #00d2ff;
+  box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.2), 0 0 20px rgba(0, 210, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.form-textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+/* Avatar Upload */
+.avatar-upload-container {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.avatar-preview {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(0, 210, 255, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.avatar-preview:hover {
+  transform: scale(1.05);
+  border-color: #00d2ff;
+  box-shadow: 0 15px 40px rgba(0, 210, 255, 0.5);
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #00d2ff, #8b5cf6, #ff00ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 3.5rem;
+  font-weight: 700;
+}
+
+.avatar-upload-btn {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #00d2ff, #8b5cf6);
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 6px 20px rgba(0, 210, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar-upload-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #8b5cf6, #00d2ff);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.avatar-upload-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 210, 255, 0.6);
+}
+
+.avatar-upload-btn:hover::before {
+  opacity: 1;
+}
+
+.avatar-upload-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+.avatar-upload-btn svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.avatar-upload-btn:active {
+  transform: translateY(0);
+}
+
+/* PIN Display */
+.pin-dots-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2.5rem 0;
+}
+
+.pin-dot {
+  width: 3.5rem;
+  height: 4rem;
+  border-radius: 1.25rem;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.pin-dot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.2), rgba(139, 92, 246, 0.2));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pin-dot.filled {
+  border-color: #00d2ff;
+  background: rgba(0, 210, 255, 0.15);
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+}
+
+.pin-dot.filled::before {
+  opacity: 1;
+}
+
+.pin-dot.filled .pin-dot-inner {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: #00d2ff;
+  box-shadow: 0 0 10px #00d2ff;
+  position: relative;
+  z-index: 1;
+}
+
+/* Numeric Keypad */
+.numeric-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  max-width: 22rem;
+  margin: 2.5rem auto;
+}
+
+.keypad-btn {
+  height: 4rem;
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.keypad-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.2), rgba(139, 92, 246, 0.2));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.keypad-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(0, 210, 255, 0.4);
+  color: #00d2ff;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 210, 255, 0.2);
+}
+
+.keypad-btn:hover::before {
+  opacity: 1;
+}
+
+.keypad-btn:active {
+  transform: translateY(0);
+  scale: 0.95;
+}
+
+.keypad-btn.backspace,
+.keypad-btn.clear {
+  font-size: 1.1rem;
+}
+
+.keypad-btn.backspace:hover {
+  border-color: rgba(0, 210, 255, 0.4);
+  color: #00d2ff;
+}
+
+.keypad-btn.clear:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  font-size: 1rem;
+}
+
+.btn-primary::before,
+.btn-secondary::before,
+.btn-danger::before {
+  content: '';
+  position: absolute

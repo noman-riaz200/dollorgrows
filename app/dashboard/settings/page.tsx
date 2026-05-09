@@ -19,6 +19,7 @@ import { NeonButton } from "@/components/ui/NeonButton";
 import { CountrySelect } from "@/components/ui/CountrySelect";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { Country } from "@/lib/countries";
+import "../settings.css";
 
 type Tab = "profile" | "email" | "pin";
 

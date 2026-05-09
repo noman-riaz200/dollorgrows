@@ -1,0 +1,596 @@
+/* ============================================
+   TEAM PAGE STYLES - VANILLA CSS
+   ============================================
+   
+   DESIGN PRINCIPLES:
+   - Modern glassmorphism design
+   - Responsive grid layout
+   - Vibrant gradient accents (cyan/purple theme)
+   - Smooth animations
+   - Mobile-first approach
+   
+   COLOR PALETTE:
+   - Primary: #06b6d4 (cyan)
+   - Secondary: #8b5cf6 (purple)
+   - Success: #10b981 (emerald)
+   - Info: #3b82f6 (blue)
+   - Warning: #f59e0b (amber)
+   
+   ============================================ */
+
+/* Team Page Container */
+.team-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  min-height: 100vh;
+}
+
+/* Header Section */
+.page-header {
+  margin-bottom: var(--spacing-2xl);
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: var(--spacing-md);
+  line-height: 1.2;
+}
+
+.page-header p {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Stats Grid */
+.stats-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-2xl);
+}
+
+/* Glass Card with Cyan Glow - Enhanced Glassmorphism */
+.glass-card.cyan-glow {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow:
+    0 8px 32px rgba(6, 182, 212, 0.15),
+    0 0 0 1px rgba(6, 182, 212, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card.cyan-glow:hover {
+  border-color: rgba(6, 182, 212, 0.4);
+  box-shadow:
+    0 12px 48px rgba(6, 182, 212, 0.25),
+    0 0 0 1px rgba(6, 182, 212, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.glass-card.cyan-glow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(6, 182, 212, 0.6),
+    rgba(139, 92, 246, 0.6),
+    transparent);
+  z-index: 1;
+}
+
+.glass-card.cyan-glow::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at center,
+    rgba(6, 182, 212, 0.1) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 0;
+}
+
+.glass-card.cyan-glow:hover::after {
+  opacity: 1;
+}
+
+/* Progress Bar Section */
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.progress-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.progress-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #06b6d4, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+.progress-title h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.progress-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-top: var(--spacing-xs);
+}
+
+.progress-status {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: rgba(6, 182, 212, 0.1);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.status-icon {
+  color: #06b6d4;
+  width: 20px;
+  height: 20px;
+}
+
+.status-text {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Progress Bar with Neon Glow */
+.progress-bar-container {
+  height: 14px;
+  background: rgba(6, 182, 212, 0.1);
+  border-radius: 7px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 0 10px rgba(6, 182, 212, 0.2);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg,
+    #06b6d4,
+    #22d3ee,
+    #8b5cf6,
+    #a78bfa);
+  border-radius: 7px;
+  position: relative;
+  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow:
+    0 0 15px rgba(6, 182, 212, 0.5),
+    0 0 30px rgba(139, 92, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.progress-bar-fill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+  border-radius: 7px;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: -2px;
+  right: -2px;
+  background: linear-gradient(90deg,
+    rgba(6, 182, 212, 0.3),
+    rgba(139, 92, 246, 0.3));
+  border-radius: 9px;
+  filter: blur(4px);
+  opacity: 0.7;
+  z-index: -1;
+  animation: pulse 2s infinite alternate;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  100% { opacity: 0.8; }
+}
+
+/* Referrals List Section */
+.referral-details-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.referral-details-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #06b6d4, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.referral-details-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+}
+
+.referral-count-badge {
+  background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+  color: white;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+/* Table Container */
+.table-container {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(6, 182, 212, 0.1);
+}
+
+.referral-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+.referral-details-table thead {
+  background: rgba(6, 182, 212, 0.1);
+  border-bottom: 2px solid rgba(6, 182, 212, 0.2);
+}
+
+.referral-details-table th {
+  padding: var(--spacing-md);
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.referral-details-table th div {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.referral-details-table th svg {
+  width: 16px;
+  height: 16px;
+  color: #06b6d4;
+}
+
+.referral-details-table tbody tr {
+  border-bottom: 1px solid rgba(6, 182, 212, 0.1);
+  transition: all 0.2s ease;
+}
+
+.referral-details-table tbody tr:hover {
+  background: rgba(6, 182, 212, 0.05);
+}
+
+.referral-details-table td {
+  padding: var(--spacing-md);
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* User Info */
+.user-info-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.user-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Badges */
+.investment-badge {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.referral-count {
+  background: rgba(6, 182, 212, 0.1);
+  color: #06b6d4;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--spacing-lg);
+  border-radius: 50%;
+  background: rgba(6, 182, 212, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #06b6d4;
+}
+
+.empty-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.empty-text {
+  font-size: 1.125rem;
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Loading States */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  min-height: 200px;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(6, 182, 212, 0.1);
+  border-top-color: #06b6d4;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Team Graph Section */
+.team-graph-section {
+  margin-top: 3rem;
+}
+
+.team-graph-section .glass-card {
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* React Flow Container Fix */
+.team-graph-section .react-flow__container {
+  width: 100% !important;
+  height: 600px !important;
+  border-radius: 16px;
+}
+
+.team-graph-section .react-flow__viewport {
+  transform-origin: center center;
+}
+
+/* Graph Controls */
+.team-graph-section .react-flow__controls {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.team-graph-section .react-flow__controls-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.1);
+  color: #06b6d4;
+}
+
+.team-graph-section .react-flow__controls-button:hover {
+  background: rgba(6, 182, 212, 0.2);
+  border-color: rgba(6, 182, 212, 0.3);
+}
+
+.team-graph-section .react-flow__controls-button svg {
+  fill: #06b6d4;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .team-page {
+    padding: var(--spacing-md);
+  }
+  
+  .page-header h1 {
+    font-size: 2rem;
+  }
+  
+  .stats-grid-4 {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+  }
+  
+  .progress-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .progress-status {
+    align-self: stretch;
+    justify-content: center;
+  }
+  
+  .referral-details-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+  
+  .referral-count-badge {
+    align-self: flex-start;
+  }
+  
+  .glass-card.cyan-glow {
+    padding: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .page-header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .progress-title h3 {
+    font-size: 1.25rem;
+  }
+  
+  .referral-details-title {
+    font-size: 1.25rem;
+  }
+}
+
+/* Animation for card entrance */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.glass-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Custom scrollbar for table */
+.table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: rgba(6, 182, 212, 0.1);
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #06b6d4, #6366f1);
+}

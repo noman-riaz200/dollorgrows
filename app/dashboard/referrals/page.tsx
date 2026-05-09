@@ -6,6 +6,7 @@ import { Copy, Check, Link2, Gift, User, Phone, Mail, Hash, Share2, MessageSquar
 import { QRCodeSVG } from "qrcode.react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { NeonButton } from "@/components/ui/NeonButton";
+import "../referrals.css";
 export default function ReferralsPage() {
   const { data: session } = useSession();
   const [copied, setCopied] = useState(false);
@@ -42,7 +43,7 @@ export default function ReferralsPage() {
   };
 
   return (
-    <div>
+    <div className="referrals-page">
       {/* Header */}
         <div className="referrals-header">
           <h1>Referral Link</h1>
